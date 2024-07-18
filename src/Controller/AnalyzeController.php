@@ -80,17 +80,28 @@ class AnalyzeController extends ControllerBase {
       '#markup' => '<h2>Security</h2>',
     ];
 
-    $security_table = [
-      '#type' => 'table',
-      '#header' => [['data' => 'Security', 'colspan' => 2, 'class' => ['header']]],
-      '#rows' => [
-        ['data' => ['PII (Personally Identifiable Information) Detection', 'No PII detected']],
-        ['data' => ['Malicious Link Detection', 'No malicious links detected']],
-      ],
-      '#attributes' => [
-        'class' => ['security-data-table'],
-        'style' => ['table-layout: fixed;'],
-      ],
+    $build['gauge_4'] = [
+      '#theme' => 'analyze_gauge',
+      '#caption' => 'PII (Personally Identifiable Information) Detection',
+      '#range_min_label' => 'PII Highly Improbable',
+      '#range_mid_label' => '',
+      '#range_max_label' => 'PII Highly Probable',
+      '#range_min' => '.01',
+      '#value' => '0',
+      '#display_value' => '1%',
+      '#range_max' => '.99',
+    ];
+
+    $build['gauge_5'] = [
+      '#theme' => 'analyze_gauge',
+      '#caption' => 'Malicious Link Detection',
+      '#range_min_label' => 'Malicious Links Highly Improbable',
+      '#range_mid_label' => '',
+      '#range_max_label' => 'Malicious Links Highly Probable',
+      '#range_min' => '.01',
+      '#value' => '0',
+      '#display_value' => '1%',
+      '#range_max' => '.99',
     ];
 
     $build['security_table'] = $security_table;
