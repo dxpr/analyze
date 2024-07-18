@@ -1,0 +1,26 @@
+analyze.analyze:
+  route_name: analyze.analyze
+  title: 'Analyze'
+  base_route: entity.node.canonical
+  weight: 0
+
+analyze.realtime_seo_full_report:
+  route_name: analyze.realtime_seo_full_report
+  title: 'Realtime SEO Full Report'
+  base_route: analyze.analyze
+  parent_id: analyze.analyze
+  weight: 10
+
+analyze.google_analytics_full_report:
+  route_name: analyze.google_analytics_full_report
+  title: 'Google Analytics Full Report'
+  base_route: analyze.analyze
+  parent_id: analyze.analyze
+  weight: 20
+
+analyze.accessibility_full_report:
+  route_name: analyze.accessibility_full_report
+  title: 'Accessibility Full Report'
+  base_route: analyze.analyze
+  parent_id: analyze.analyze
+  weight: 30

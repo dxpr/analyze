@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function analyze_theme() {
+  return [
+    'analyze_gauge' => [
+      'variables' => [
+        'caption' => NULL,
+        'range_min_label' => NULL,
+        'range_mid_label' => NULL,
+        'range_max_label' => NULL,
+        'range_min' => NULL,
+        'value' => NULL,
+        'display_value' => NULL,
+        'range_max' => NULL,
+      ],
+    ],
+  ];
+}
+
