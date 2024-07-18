@@ -53,7 +53,7 @@ class AnalyzeController extends ControllerBase {
     $build['sentiment_report'] = [
       '#type' => 'link',
       '#title' => $this->t('View sitewide sentiment report'),
-      '#url' => Url::fromRoute('analyze.accessibility_full_report', ['node' => $node->id()]),
+      '#url' => Url::fromRoute('system.status'),
       '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
     ];
 
@@ -76,7 +76,7 @@ class AnalyzeController extends ControllerBase {
     $build['security_report'] = [
       '#type' => 'link',
       '#title' => $this->t('View sitewide security report'),
-      '#url' => Url::fromRoute('analyze.accessibility_full_report', ['node' => $node->id()]),
+      '#url' => Url::fromRoute('system.status'),
       '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
     ];
 
@@ -99,7 +99,7 @@ class AnalyzeController extends ControllerBase {
     $build['statistics_report'] = [
       '#type' => 'link',
       '#title' => $this->t('View sitewide page views report'),
-      '#url' => Url::fromRoute('analyze.accessibility_full_report', ['node' => $node->id()]),
+      '#url' => Url::fromRoute('system.status'),
       '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
     ];
 
@@ -128,7 +128,7 @@ class AnalyzeController extends ControllerBase {
     $build['realtime_seo_report'] = [
       '#type' => 'link',
       '#title' => $this->t('View sitewide SEO report'),
-      '#url' => Url::fromRoute('analyze.realtime_seo_full_report', ['node' => $node->id()]),
+      '#url' => Url::fromRoute('system.status'),
       '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
     ];
 
@@ -157,7 +157,7 @@ class AnalyzeController extends ControllerBase {
     $build['google_analytics_report'] = [
       '#type' => 'link',
       '#title' => $this->t('View sitewide Google Analytics report'),
-      '#url' => Url::fromRoute('analyze.google_analytics_full_report', ['node' => $node->id()]),
+      '#url' => Url::fromRoute('system.status'),
       '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
     ];
 
@@ -186,7 +186,7 @@ class AnalyzeController extends ControllerBase {
     $build['accessibility_report'] = [
       '#type' => 'link',
       '#title' => $this->t('View sitewide accessibility report'),
-      '#url' => Url::fromRoute('analyze.accessibility_full_report', ['node' => $node->id()]),
+      '#url' => Url::fromRoute('system.status'),
       '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
     ];
 
