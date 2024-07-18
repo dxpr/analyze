@@ -57,6 +57,25 @@ class AnalyzeController extends ControllerBase {
       '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
     ];
 
+    $build['basic_header'] = [
+      '#markup' => '<h2>Basic content information</h2>',
+    ];
+
+    $basic_table = [
+      '#type' => 'table',
+      '#header' => [['data' => 'Security', 'colspan' => 2, 'class' => ['header']]],
+      '#rows' => [
+        ['data' => ['Word count', 498]],
+        ['data' => ['Image count', 2]],
+      ],
+      '#attributes' => [
+        'class' => ['basic-data-table'],
+        'style' => ['table-layout: fixed;'],
+      ],
+    ];
+
+    $build['basic_table'] = $basic_table;
+
     $build['security_header'] = [
       '#markup' => '<h2>Security</h2>',
     ];
@@ -65,10 +84,13 @@ class AnalyzeController extends ControllerBase {
       '#type' => 'table',
       '#header' => [['data' => 'Security', 'colspan' => 2, 'class' => ['header']]],
       '#rows' => [
-        ['data' => ['PII (Personally Identifiable Information) Detection:', 'No PII detected']],
-        ['data' => ['Malicious Link Detection:', 'No malicious links detected']],
+        ['data' => ['PII (Personally Identifiable Information) Detection', 'No PII detected']],
+        ['data' => ['Malicious Link Detection', 'No malicious links detected']],
       ],
-      '#attributes' => ['class' => ['analyze-data-table']],
+      '#attributes' => [
+        'class' => ['security-data-table'],
+        'style' => ['table-layout: fixed;'],
+      ],
     ];
 
     $build['security_table'] = $security_table;
@@ -88,10 +110,13 @@ class AnalyzeController extends ControllerBase {
       '#type' => 'table',
       '#header' => [['data' => 'Page popularity', 'colspan' => 2, 'class' => ['header']]],
       '#rows' => [
-        ['data' => ['Total page views:', 3229]],
-        ['data' => ['Today\'s page views:', 29]],
+        ['data' => ['Total page views', 3229]],
+        ['data' => ['Today\'s page views', 29]],
       ],
-      '#attributes' => ['class' => ['analyze-data-table']],
+      '#attributes' => [
+        'class' => ['statistics-data-table'],
+        'style' => ['table-layout: fixed;'],
+      ],
     ];
 
     $build['statistics_table'] = $statistics_table;
@@ -111,12 +136,14 @@ class AnalyzeController extends ControllerBase {
       '#type' => 'table',
       '#header' => [['data' => 'Realtime SEO', 'colspan' => 2, 'class' => ['header']]],
       '#rows' => [
-        ['data' => ['SEO Score:', '85%']],
-        ['data' => ['Focus Keyword:', '"Drupal 10 Module"']],
-        ['data' => ['Readability:', 'Good']],
+        ['data' => ['SEO Score', '85%']],
+        ['data' => ['Focus Keyword', '"Drupal 10 Module"']],
+        ['data' => ['Readability', 'Good']],
       ],
-      '#attributes' => ['class' => ['analyze-data-table']],
-    ];
+      '#attributes' => [
+        'class' => ['realtime-seo-data-table'],
+        'style' => ['table-layout: fixed;'],
+      ],    ];
 
     $build['realtime_seo_table'] = $realtime_seo_table;
     $build['realtime_seo_link'] = [
@@ -140,11 +167,14 @@ class AnalyzeController extends ControllerBase {
       '#type' => 'table',
       '#header' => [['data' => 'Google Analytics Node Reports', 'colspan' => 2, 'class' => ['header']]],
       '#rows' => [
-        ['data' => ['Page Views:', '1234']],
-        ['data' => ['Bounce Rate:', '45%']],
-        ['data' => ['Average Time on Page:', '2 minutes']],
+        ['data' => ['Page Views', '1234']],
+        ['data' => ['Bounce Rate', '45%']],
+        ['data' => ['Average Time on Page', '2 minutes']],
       ],
-      '#attributes' => ['class' => ['analyze-data-table']],
+      '#attributes' => [
+        'class' => ['google-analytics-data-table'],
+        'style' => ['table-layout: fixed;'],
+      ],
     ];
 
     $build['google_analytics_table'] = $google_analytics_table;
@@ -169,11 +199,14 @@ class AnalyzeController extends ControllerBase {
       '#type' => 'table',
       '#header' => [['data' => 'Editoria11y Accessibility Checker', 'colspan' => 2, 'class' => ['header']]],
       '#rows' => [
-        ['data' => ['Valid HTML:', 'Yes']],
-        ['data' => ['Alt Text for Images:', '95% complete']],
-        ['data' => ['Headings Structure:', 'Proper']],
+        ['data' => ['Valid HTML', 'Yes']],
+        ['data' => ['Alt Text for Images', '95% complete']],
+        ['data' => ['Headings Structure', 'Proper']],
       ],
-      '#attributes' => ['class' => ['analyze-data-table']],
+      '#attributes' => [
+        'class' => ['accessibility-data-table'],
+        'style' => ['table-layout: fixed;'],
+      ],
     ];
 
     $build['accessibility_table'] = $accessibility_table;
@@ -199,22 +232,20 @@ class AnalyzeController extends ControllerBase {
       ['data' => 'Value', 'class' => ['header']],
     ];
     $rows = [
-      ['data' => ['SEO Score:', '85%']],
-      ['data' => ['Focus Keyword:', '"Drupal 10 Module"']],
-      ['data' => ['Readability:', 'Good']],
-      ['data' => ['Meta Description:', 'Optimal length']],
-      ['data' => ['Internal Links:', '5']],
+      ['data' => ['SEO Score', '85%']],
+      ['data' => ['Focus Keyword', '"Drupal 10 Module"']],
+      ['data' => ['Readability', 'Good']],
+      ['data' => ['Meta Description', 'Optimal length']],
+      ['data' => ['Internal Links', '5']],
     ];
 
     return [
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#attributes' => ['class' => ['analyze-data-table']],
-      '#attached' => [
-        'library' => [
-          'analyze/analyze.styles',
-        ],
+      '#attributes' => [
+        'class' => ['realtime-seo-data-table'],
+        'style' => ['table-layout: fixed;'],
       ],
     ];
   }
@@ -225,22 +256,20 @@ class AnalyzeController extends ControllerBase {
       ['data' => 'Value', 'class' => ['header']],
     ];
     $rows = [
-      ['data' => ['Page Views:', '1234']],
-      ['data' => ['Bounce Rate:', '45%']],
-      ['data' => ['Average Time on Page:', '2 minutes']],
-      ['data' => ['New Users:', '345']],
-      ['data' => ['Returning Users:', '789']],
+      ['data' => ['Page Views', '1234']],
+      ['data' => ['Bounce Rate', '45%']],
+      ['data' => ['Average Time on Page', '2 minutes']],
+      ['data' => ['New Users', '345']],
+      ['data' => ['Returning Users', '789']],
     ];
 
     return [
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#attributes' => ['class' => ['analyze-data-table']],
-      '#attached' => [
-        'library' => [
-          'analyze/analyze.styles',
-        ],
+      '#attributes' => [
+        'class' => ['google-analytics-data-table'],
+        'style' => ['table-layout: fixed;'],
       ],
     ];
   }
@@ -251,22 +280,20 @@ class AnalyzeController extends ControllerBase {
       ['data' => 'Value', 'class' => ['header']],
     ];
     $rows = [
-      ['data' => ['Valid HTML:', 'Yes']],
-      ['data' => ['Alt Text for Images:', '95% complete']],
-      ['data' => ['Headings Structure:', 'Proper']],
-      ['data' => ['ARIA Roles:', 'All present']],
-      ['data' => ['Contrast Ratio:', 'Pass']],
+      ['data' => ['Valid HTML', 'Yes']],
+      ['data' => ['Alt Text for Images', '95% complete']],
+      ['data' => ['Headings Structure', 'Proper']],
+      ['data' => ['ARIA Roles', 'All present']],
+      ['data' => ['Contrast Ratio', 'Pass']],
     ];
 
     return [
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#attributes' => ['class' => ['analyze-data-table']],
-      '#attached' => [
-        'library' => [
-          'analyze/analyze.styles',
-        ],
+      '#attributes' => [
+        'class' => ['accessibility-data-table'],
+        'style' => ['table-layout: fixed;'],
       ],
     ];
   }
