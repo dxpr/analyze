@@ -6,8 +6,20 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 
+/**
+ * Controller for the Analyze module.
+ */
 class AnalyzeController extends ControllerBase {
 
+  /**
+   * Analyzes a node and returns a render array with various metrics.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The node to analyze.
+   *
+   * @return array
+   *   A render array containing the analysis results.
+   */
   public function analyze(NodeInterface $node) {
     $build = [
       '#type' => 'markup',
@@ -21,7 +33,8 @@ class AnalyzeController extends ControllerBase {
       '#range_mid_label' => 'Neutral',
       '#range_max_label' => 'Positive',
       '#range_min' => '0',
-      '#value' => '0.2',  // Example: 20% Positive
+    // Example: 20% Positive.
+      '#value' => '0.2',
       '#display_value' => '20%',
       '#range_max' => '1',
     ];
@@ -33,7 +46,8 @@ class AnalyzeController extends ControllerBase {
       '#range_mid_label' => 'Neutral',
       '#range_max_label' => 'Joyful',
       '#range_min' => '0',
-      '#value' => '0.6',  // Example: 60% Joyful
+    // Example: 60% Joyful.
+      '#value' => '0.6',
       '#display_value' => '60%',
       '#range_max' => '1',
     ];
@@ -45,7 +59,8 @@ class AnalyzeController extends ControllerBase {
       '#range_mid_label' => 'Neutral',
       '#range_max_label' => 'Angry',
       '#range_min' => '0',
-      '#value' => '0.8',  // Example: 80% Angry
+    // Example: 80% Angry.
+      '#value' => '0.8',
       '#display_value' => '80%',
       '#range_max' => '1',
     ];
@@ -154,7 +169,8 @@ class AnalyzeController extends ControllerBase {
       '#attributes' => [
         'class' => ['realtime-seo-data-table'],
         'style' => ['table-layout: fixed;'],
-      ],    ];
+      ],
+    ];
 
     $build['realtime_seo_table'] = $realtime_seo_table;
     $build['realtime_seo_link'] = [
@@ -237,6 +253,15 @@ class AnalyzeController extends ControllerBase {
     return $build;
   }
 
+  /**
+   * Generates a full report for realtime SEO analysis of a node.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The node to analyze.
+   *
+   * @return array
+   *   A render array containing the full realtime SEO report.
+   */
   public function realtimeSeoFullReport(NodeInterface $node) {
     $header = [
       ['data' => 'Metric', 'class' => ['header']],
@@ -261,6 +286,15 @@ class AnalyzeController extends ControllerBase {
     ];
   }
 
+  /**
+   * Generates a full report for Google Analytics data of a node.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The node to analyze.
+   *
+   * @return array
+   *   A render array containing the full Google Analytics report.
+   */
   public function googleAnalyticsFullReport(NodeInterface $node) {
     $header = [
       ['data' => 'Metric', 'class' => ['header']],
@@ -285,6 +319,15 @@ class AnalyzeController extends ControllerBase {
     ];
   }
 
+  /**
+   * Generates a full accessibility report for a node.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The node to analyze.
+   *
+   * @return array
+   *   A render array containing the full accessibility report.
+   */
   public function accessibilityFullReport(NodeInterface $node) {
     $header = [
       ['data' => 'Metric', 'class' => ['header']],
@@ -308,4 +351,5 @@ class AnalyzeController extends ControllerBase {
       ],
     ];
   }
+
 }
