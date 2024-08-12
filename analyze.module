@@ -2,10 +2,13 @@
 
 /**
  * @file
+ * Provides analysis functionality for the site.
  */
 
 /**
  * Implements hook_theme().
+ *
+ * Defines the theme for the analyze gauge.
  */
 function analyze_theme() {
   return [
