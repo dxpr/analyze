@@ -2,6 +2,8 @@
 
 API framework adding analysis data to Drupal entities' Analyze tab.
 
+- See also https://www.drupal.org/project/analyze.
+
 ## Analyze Module
 
 The Analyze module provides an API framework for adding content-related 
