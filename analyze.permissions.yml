@@ -1,0 +1,8 @@
+administer analyze:
+  title: 'Administer Analyze'
+  description: 'Admin access to administer Analyze settings'
+  restrict access: true
+view analyze reports:
+  title: 'View Analyze reports'
+  description: 'Access to administer Analyze settings'
+  restrict access: true

@@ -51,7 +51,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
             ])
             ->setOption('_admin_route', TRUE);
 
-          $collection->add($entity_type->id() . '.analyze', $route);
+          $collection->add('entity.' . $entity_type->id() . '.analyze', $route);
         }
       }
     }
