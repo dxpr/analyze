@@ -6,7 +6,7 @@ use Drupal\analyze\AnalyzePluginManager;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller for the Analyze module.
