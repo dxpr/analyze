@@ -1,0 +1,9 @@
+{
+    "name": "dxpr/analyze",
+    "description": "The Analyze module provides an API framework for adding content-related information to Drupal entities with canonical URLs.",
+    "type": "drupal-module",
+    "keywords": ["Drupal"],
+    "license": "GPL-2.0+",
+    "minimum-stability": "dev",
+    "require": {}
+}
