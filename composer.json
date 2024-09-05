@@ -5,5 +5,8 @@
     "keywords": ["Drupal"],
     "license": "GPL-2.0+",
     "minimum-stability": "dev",
-    "require": {}
+    "require": {},
+    "suggest": {
+      "drupal/google_analytics_reports": "Required for the Google Analytics Analyzer module."
+    }
 }
