@@ -10,9 +10,9 @@ use Drupal\analyze\AnalyzePluginBase;
  * Plugin implementation of the analyze.
  *
  * @Analyze(
- *   id = "google_analytics",
- *   label = @Translation("Google Analytics"),
- *   description = @Translation("Provides data from the Google Analytics module for Analyzer.")
+ *   id = "analytics",
+ *   label = @Translation("Google Analytics Node Reports"),
+ *   description = @Translation("Provides data from Google Analytics for Analyzer.")
  * )
  */
 final class GoogleAnalytics extends AnalyzePluginBase {

@@ -2,3 +2,8 @@ services:
   plugin.manager.analyze:
     class: Drupal\analyze\AnalyzePluginManager
     parent: default_plugin_manager
+  analyze.route_subscriber:
+    class: Drupal\analyze\EventSubscriber\AnalyzeRouteSubscriber
+    arguments: ['@plugin.manager.analyze', '@entity_type.manager']
+    tags:
+      - { name: event_subscriber }

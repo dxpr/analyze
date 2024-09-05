@@ -4,6 +4,7 @@ namespace Drupal\analyze\Controller;
 
 use Drupal\analyze\AnalyzePluginManager;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -55,16 +56,25 @@ class AnalyzeController extends ControllerBase {
   }
 
   /**
-   * Analyzes a node and returns a render array with various metrics.
+   * Analyzes an entity and returns a render array with various metrics.
    *
-   * @param \Drupal\node\NodeInterface $node
-   *   The node to analyze.
+   * @param ContentEntityInterface $entity
+   *   The entity to analyze.
+   * @param string|null $plugin
+   *   A plugin id to load the report for.
    *
-   * @return array
+   * @return string[]
    *   A render array containing the analysis results.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function analyze(NodeInterface $node) {
-    $plugins = $this->getPlugins();
+  public function analyze(ContentEntityInterface $entity, string $plugin = NULL): array {
+    if ($plugin) {
+      $plugins = $this->getPlugins([$plugin]);
+    }
+    else {
+      $plugins = $this->getPlugins();
+    }
 
     $build = [
       '#type' => 'markup',
