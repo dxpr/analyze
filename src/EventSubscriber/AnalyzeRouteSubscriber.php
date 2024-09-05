@@ -32,7 +32,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
         if ($entity_type->hasLinkTemplate('canonical')) {
           $link = $entity_type->getLinkTemplate('canonical');
 
-          foreach ($plugins as $plugin_id) {
+          foreach ($plugins as $plugin_id => $plugin) {
             $route = new Route($link . '/' . $plugin_id);
             $route
               ->setDefaults([
