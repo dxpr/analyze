@@ -1,0 +1,4 @@
+services:
+  plugin.manager.analyze:
+    class: Drupal\analyze\AnalyzePluginManager
+    parent: default_plugin_manager
