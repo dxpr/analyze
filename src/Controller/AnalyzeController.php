@@ -2,14 +2,57 @@
 
 namespace Drupal\analyze\Controller;
 
+use Drupal\analyze\AnalyzePluginManager;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface
 
 /**
  * Controller for the Analyze module.
  */
 class AnalyzeController extends ControllerBase {
+
+  /**
+   * The controller constructor.
+   */
+  public function __construct(
+    private readonly AnalyzePluginManager $pluginManagerAnalyze,
+  ) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): self {
+    return new self(
+      $container->get('plugin.manager.analyze'),
+    );
+  }
+
+  /**
+   * Helper to obtain all the Analyze Plugins.
+   *
+   * @param array $plugin_ids
+   *   An array of specific plugins to load.
+   *
+   * @return array
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  private function getPlugins(array $plugin_ids = []): array {
+    $return = [];
+
+    if (empty($plugin_ids)) {
+      $plugin_ids = $this->pluginManagerAnalyze->getDefinitions();
+    }
+
+    foreach($plugin_ids as $id) {
+      if ($plugin = $this->pluginManagerAnalyze->getDefinition($plugin_ids, FALSE)) {
+        $return[$id] = $plugin;
+      }
+    }
+
+    return $return;
+  }
 
   /**
    * Analyzes a node and returns a render array with various metrics.
@@ -21,6 +64,8 @@ class AnalyzeController extends ControllerBase {
    *   A render array containing the analysis results.
    */
   public function analyze(NodeInterface $node) {
+    $plugins = $this->getPlugins();
+
     $build = [
       '#type' => 'markup',
       '#markup' => '<h2>Sentiment Analysis</h2>',
