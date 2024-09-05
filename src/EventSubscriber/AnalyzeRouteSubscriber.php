@@ -36,7 +36,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
             $route = new Route($link . '/' . $plugin_id);
             $route
               ->setDefaults([
-                '_controller' => 'Drupal\analyze\Controller::analyze',
+                '_controller' => 'Drupal\analyze\Controller\AnalyzeController::analyze',
                 'plugin' => $plugin_id,
               ])
               ->setOption('_admin_route', TRUE);
@@ -47,7 +47,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
           $route = new Route($link . '/analyze');
           $route
             ->setDefaults([
-              '_controller' => 'Drupal\analyze\Controller::analyze',
+              '_controller' => 'Drupal\analyze\Controller\AnalyzeController::analyze',
             ])
             ->setOption('_admin_route', TRUE);
 
