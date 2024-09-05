@@ -27,34 +27,33 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
    * {@inheritdoc}
    */
   protected function alterRoutes(RouteCollection $collection): void {
-    foreach ($this->entityTypeManager->getDefinitions() as $entity_type) {
-      if ($entity_type->hasLinkTemplate('canonical')) {
-        $link = $entity_type->getLinkTemplate('canonical');
+    if ($plugins = $this->pluginManagerAnalyze->getDefinitions()) {
+      foreach ($this->entityTypeManager->getDefinitions() as $entity_type) {
+        if ($entity_type->hasLinkTemplate('canonical')) {
+          $link = $entity_type->getLinkTemplate('canonical');
 
-        foreach ($this->pluginManagerAnalyze->getDefinitions() as $plugin_id) {
-          $route = new Route($link . '/' . $plugin_id);
+          foreach ($plugins as $plugin_id) {
+            $route = new Route($link . '/' . $plugin_id);
+            $route
+              ->setDefaults([
+                '_controller' => 'Drupal\analyze\Controller::analyze',
+                'plugin' => $plugin_id,
+              ])
+              ->setOption('_admin_route', TRUE);
+
+            $collection->add($entity_type->id() . '.' . $plugin_id, $route);
+          }
+
+          $route = new Route($link . '/analyze');
           $route
             ->setDefaults([
-              '_controller' => '\Drupal\analyze\Controller::analyze',
-              'plugin' => $plugin_id,
+              '_controller' => 'Drupal\analyze\Controller::analyze',
             ])
             ->setOption('_admin_route', TRUE);
 
-          $collection->add($entity_type->id() . '.' . $plugin_id, $route);
+          $collection->add($entity_type->id() . '.analyze', $route);
         }
-
-        $route = new Route($link . '/analyze');
-
-        $route
-          ->setDefaults([
-            '_controller' => '\Drupal\analyze\Controller::analyze',
-          ])
-          ->setOption('_admin_route', TRUE);
-
-        $collection->add($entity_type->id() . '.analyze', $route);
-
       }
-
     }
   }
 

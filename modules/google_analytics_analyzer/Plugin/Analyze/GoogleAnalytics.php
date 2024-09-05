@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Drupal\analyze\Plugin\Analyze;
+namespace Drupal\google_analytics_analyzer\Plugin\Analyze;
 
 use Drupal\analyze\AnalyzePluginBase;
 
