@@ -3,6 +3,7 @@
 namespace Drupal\analyze\Controller;
 
 use Drupal\analyze\AnalyzePluginManager;
+use Drupal\analyze\AnalyzeTrait;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
@@ -12,6 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Controller for the Analyze module.
  */
 class AnalyzeController extends ControllerBase {
+
+  use AnalyzeTrait;
 
   /**
    * The controller constructor.
@@ -72,6 +75,8 @@ class AnalyzeController extends ControllerBase {
     else {
       $plugins = $this->getPlugins();
     }
+
+    $entity = $this->getEntity($entity_type);
 
     $build = [
       '#type' => 'markup',
@@ -228,7 +233,7 @@ class AnalyzeController extends ControllerBase {
     $build['realtime_seo_link'] = [
       '#type' => 'link',
       '#title' => $this->t('View full report for this page'),
-      '#url' => Url::fromRoute('analyze.realtime_seo_full_report', ['node' => $node->id()]),
+      '#url' => Url::fromRoute('analyze.realtime_seo_full_report', ['node' => $entity->id()]),
       '#attributes' => ['class' => ['action-link', 'view-full-report']],
     ];
     $build['realtime_seo_report'] = [
@@ -260,7 +265,7 @@ class AnalyzeController extends ControllerBase {
     $build['google_analytics_link'] = [
       '#type' => 'link',
       '#title' => $this->t('View full report for this page'),
-      '#url' => Url::fromRoute('analyze.google_analytics_full_report', ['node' => $node->id()]),
+      '#url' => Url::fromRoute('analyze.google_analytics_full_report', ['node' => $entity->id()]),
       '#attributes' => ['class' => ['action-link', 'view-full-report']],
     ];
     $build['google_analytics_report'] = [
@@ -292,7 +297,7 @@ class AnalyzeController extends ControllerBase {
     $build['accessibility_link'] = [
       '#type' => 'link',
       '#title' => $this->t('View full report for this page'),
-      '#url' => Url::fromRoute('analyze.accessibility_full_report', ['node' => $node->id()]),
+      '#url' => Url::fromRoute('analyze.accessibility_full_report', ['node' => $entity->id()]),
       '#attributes' => ['class' => ['action-link', 'view-full-report']],
     ];
     $build['accessibility_report'] = [
@@ -308,13 +313,13 @@ class AnalyzeController extends ControllerBase {
   /**
    * Generates a full report for realtime SEO analysis of a node.
    *
-   * @param \Drupal\node\NodeInterface $node
+   * @param \Drupal\node\NodeInterface $entity
    *   The node to analyze.
    *
    * @return array
    *   A render array containing the full realtime SEO report.
    */
-  public function realtimeSeoFullReport(NodeInterface $node) {
+  public function realtimeSeoFullReport(NodeInterface $entity) {
     $header = [
       ['data' => 'Metric', 'class' => ['header']],
       ['data' => 'Value', 'class' => ['header']],
@@ -341,13 +346,13 @@ class AnalyzeController extends ControllerBase {
   /**
    * Generates a full report for Google Analytics data of a node.
    *
-   * @param \Drupal\node\NodeInterface $node
+   * @param \Drupal\node\NodeInterface $entity
    *   The node to analyze.
    *
    * @return array
    *   A render array containing the full Google Analytics report.
    */
-  public function googleAnalyticsFullReport(NodeInterface $node) {
+  public function googleAnalyticsFullReport(NodeInterface $entity) {
     $header = [
       ['data' => 'Metric', 'class' => ['header']],
       ['data' => 'Value', 'class' => ['header']],
@@ -374,13 +379,13 @@ class AnalyzeController extends ControllerBase {
   /**
    * Generates a full accessibility report for a node.
    *
-   * @param \Drupal\node\NodeInterface $node
+   * @param \Drupal\node\NodeInterface $entity
    *   The node to analyze.
    *
    * @return array
    *   A render array containing the full accessibility report.
    */
-  public function accessibilityFullReport(NodeInterface $node) {
+  public function accessibilityFullReport(NodeInterface $entity) {
     $header = [
       ['data' => 'Metric', 'class' => ['header']],
       ['data' => 'Value', 'class' => ['header']],

@@ -7,6 +7,7 @@ namespace Drupal\analyze\Access;
 use Drupal\analyze\AnalyzeTrait;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
+use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -40,7 +41,7 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
    *   - \Symfony\Component\HttpFoundation\Request
    *   - \Symfony\Component\Routing\Route
    */
-  public function access(Route $route, string|null $plugin = NULL, string|null $entity_type = NULL): AccessResult {
+  public function access(Route $route, AccountInterface $account, string|null $plugin = NULL, string|null $entity_type = NULL): AccessResult {
     if ($entity = $this->getEntity($entity_type)) {
       return AccessResult::allowed();
     }
