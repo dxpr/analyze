@@ -15,7 +15,7 @@ trait AnalyzeTrait {
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface|NULL
    */
-  protected EntityTypeManagerInterface|NULL $entityTypeManager = NULL;
+  protected $entityTypeManager = NULL;
 
   /**
    * Route Match interface.
@@ -30,7 +30,7 @@ trait AnalyzeTrait {
    * @return \Drupal\Core\Entity\EntityTypeManagerInterface
    *   The Entity Type Manager.
    */
-  private function entityTypeManager(): EntityTypeManagerInterface {
+  protected function entityTypeManager(): EntityTypeManagerInterface {
     if (!$this->entityTypeManager) {
       $this->entityTypeManager = \Drupal::entityTypeManager();
     }
