@@ -51,7 +51,7 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
       if ($account->hasPermission('view analyze reports')) {
         $return = AccessResult::forbidden('Entity not enabled for Analyze reporting.');
 
-        if ($config = $this->config()) {
+        if ($config = $this->analyzeConfig()) {
           if ($settings = $config->get('status')) {
             if (!empty($settings[$entity_type])) {
               if (!empty($settings[$entity_type][$entity->bundle()])) {

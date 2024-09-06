@@ -30,7 +30,7 @@ trait AnalyzeTrait {
    *
    * @var \Drupal\Core\Config\ImmutableConfig|NULL
    */
-  protected ImmutableConfig|null $config = NULL;
+  protected ImmutableConfig|null $analyzeConfig = NULL;
 
   /**
    * Helper to set and get the entity type manager.
@@ -66,12 +66,12 @@ trait AnalyzeTrait {
    * @return \Drupal\Core\Config\ImmutableConfig|null
    *   The config entity, or NULL if not set yet.
    */
-  private function config(): ?ImmutableConfig {
-    if (!$this->config) {
-      $this->config = \Drupal::config('analyze.settings');
+  protected function analyzeConfig(): ?ImmutableConfig {
+    if (!$this->analyzeConfig) {
+      $this->analyzeConfig = \Drupal::config('analyze.settings');
     }
 
-    return $this->config;
+    return $this->analyzeConfig;
   }
 
   /**
