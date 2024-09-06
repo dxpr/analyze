@@ -41,6 +41,8 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
    *   The current plugin being views (optional).
    *
    * @return \Drupal\Core\Access\AccessResult
+   *   The access result.
+   *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
