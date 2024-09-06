@@ -6,7 +6,6 @@ use Drupal\analyze\AnalyzePluginManager;
 use Drupal\analyze\AnalyzeTrait;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -37,19 +36,27 @@ class AnalyzeController extends ControllerBase {
    * Helper to obtain all the Analyze Plugins.
    *
    * @param array $plugin_ids
-   *   An array of specific plugins to load.
+   *    An array of specific plugins to load.
    *
    * @return \Drupal\analyze\AnalyzeInterface[]
-   *   An array of analyze plugins.
+   *    An array of analyze plugins.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   private function getPlugins(array $plugin_ids = []): array {
     $return = $this->pluginManagerAnalyze->getDefinitions();
 
-    if (!empty($plugin_ids)) {
-      foreach ($return as $key => $plugin) {
+    foreach ($return as $key => $plugin) {
+      if (!empty($plugin_ids)) {
         if (!in_array($key, $plugin_ids)) {
           unset($return[$key]);
         }
+        else {
+          $return[$key] = $this->pluginManagerAnalyze->createInstance($key);
+        }
+      }
+      else {
+        $return[$key] = $this->pluginManagerAnalyze->createInstance($key);
       }
     }
 
