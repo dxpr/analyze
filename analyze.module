@@ -5,12 +5,14 @@
  * Provides analysis functionality for the site.
  */
 
+use Drupal\Core\Form\FormStateInterface;
+
 /**
  * Implements hook_theme().
  *
  * Defines the theme for the analyze gauge.
  */
-function analyze_theme() {
+function analyze_theme(): array {
   return [
     'analyze_gauge' => [
       'variables' => [
@@ -25,4 +27,109 @@ function analyze_theme() {
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function analyze_form_alter(&$form, FormStateInterface $form_state, $form_id): void {
+  $is_bundle_form = $entity_type = $bundle = FALSE;
+  $form_object = $form_state->getFormObject();
+
+  // User's aren't bundle-able, but we want the opportunity to include them in
+  // insights so we'll hard-code the form id.
+  if ($form_id == 'user_admin_settings') {
+    $is_bundle_form = TRUE;
+    $entity_type = 'user';
+    $bundle = 'user';
+  }
+  else {
+
+    // Otherwise, we need to identify if this is a bundle entity's edit form by
+    // digging down to get the bundle_of setting.
+    if (method_exists($form_object, 'getEntity') && $entity = $form_object->getEntity()) {
+      if (method_exists($entity, 'getEntityType') && $type = $entity->getEntityType()) {
+        if (method_exists($type, 'getBundleOf') && $entity_type = $type->getBundleOf()) {
+          $is_bundle_form = TRUE;
+          $bundle = $entity->id();
+        }
+      }
+    }
+  }
+
+  if ($is_bundle_form) {
+    analyze_add_settings_form($form, $entity_type, $bundle);
+    $form_state->set('entity_type', $entity_type);
+    $form_state->set('bundle', $bundle);
+  }
+}
+
+/**
+ * Helper to add Analyze settings to a form.
+ *
+ * @param mixed[] $form
+ *   The form.
+ * @param string $entity_type
+ *   The entity type the settings are for.
+ * @param string $bundle
+ *   The bundle the settings are for.
+ */
+function analyze_add_settings_form(array &$form, string $entity_type, string $bundle): void {
+  if (\Drupal::currentUser()->hasPermission('administer analyze')) {
+    $config = \Drupal::config('analyze.settings')->get('status');
+
+    $form['analyze'] = [
+      '#type' => 'details',
+      '#title' => t('Analyze settings'),
+      '#description' => t('Enable Analyze reports for this entity.'),
+      '#parents' => ['analyze'],
+      '#open' => !empty($config[$entity_type][$bundle]),
+    ];
+
+    foreach (\Drupal::service('plugin.manager.analyze')->getDefinitions() as $id => $definition) {
+      $form['analyze'][$id] = [
+        '#type' => 'checkbox',
+        '#title' => $definition['label'],
+        '#default_value' => isset($config[$entity_type][$bundle][$id]),
+        '#parents' => ['analyze', $id],
+      ];
+    }
+
+    if (isset($form['actions']['submit']['#submit'])) {
+      $form['actions']['submit']['#submit'][] = 'analyze_add_settings_form_submit';
+    }
+    elseif (isset($form['#submit'])) {
+      $form['#submit'][] = 'analyze_add_settings_form_submit';
+    }
+  }
+}
+
+/**
+ * Store the Analyze settings, if they have been set.
+ *
+ * @param mixed[] $form
+ *   The Drupal form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state.
+ */
+function analyze_add_settings_form_submit(array &$form, FormStateInterface $form_state): void {
+  $one = 1;
+  if ($values = $form_state->cleanValues()->getValue('analyze')) {
+    $config = \Drupal::configFactory()->getEditable('analyze.settings')->get('status');
+    $entity_type = $form_state->get('entity_type');
+    $bundle = $form_state->get('bundle');
+
+    // Clear any old settings for this bundle.
+    $config[$entity_type][$bundle] = [];
+
+    foreach ($values as $plugin_id => $status) {
+      if ($status) {
+        $config[$entity_type][$bundle][$plugin_id] = TRUE;
+      }
+    }
+
+    \Drupal::configFactory()->getEditable('analyze.settings')
+      ->set('status', $config)
+      ->save();
+  }
 }

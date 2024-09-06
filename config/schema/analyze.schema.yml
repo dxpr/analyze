@@ -1,0 +1,8 @@
+# Schema for the configuration files of the Analyze module.
+analyze.settings:
+  type: config_object
+  label: 'Analyze settings'
+  mapping:
+    status:
+      type: array
+      label: 'Plugin Status'

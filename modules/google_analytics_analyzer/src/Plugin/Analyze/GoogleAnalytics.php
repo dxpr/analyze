@@ -11,7 +11,7 @@ use Drupal\analyze\AnalyzePluginBase;
  *
  * @Analyze(
  *   id = "analytics",
- *   label = @Translation("Google Analytics Node Reports"),
+ *   label = @Translation("Google Analytics Entity Reports"),
  *   description = @Translation("Provides data from Google Analytics for Analyzer.")
  * )
  */
