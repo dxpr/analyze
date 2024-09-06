@@ -4,6 +4,7 @@ namespace Drupal\analyze\Controller;
 
 use Drupal\analyze\AnalyzePluginManager;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -18,6 +19,7 @@ class AnalyzeController extends ControllerBase {
    */
   public function __construct(
     private readonly AnalyzePluginManager $pluginManagerAnalyze,
+    private readonly RouteMatchInterface $routeMatch,
   ) {}
 
   /**
@@ -26,6 +28,7 @@ class AnalyzeController extends ControllerBase {
   public static function create(ContainerInterface $container): self {
     return new self(
       $container->get('plugin.manager.analyze'),
+      $container->get('current_route_match'),
     );
   }
 
@@ -35,8 +38,8 @@ class AnalyzeController extends ControllerBase {
    * @param array $plugin_ids
    *   An array of specific plugins to load.
    *
-   * @return array
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @return \Drupal\analyze\AnalyzeInterface[]
+   *   An array of analyze plugins.
    */
   private function getPlugins(array $plugin_ids = []): array {
     $return = $this->pluginManagerAnalyze->getDefinitions();
@@ -60,7 +63,7 @@ class AnalyzeController extends ControllerBase {
    * @param string|null $entity_type
    *    An entity type to load the report for.
    *
-   * @return string[]
+   * @return mixed[]
    *   A render array containing the analysis results.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
