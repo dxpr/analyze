@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\analyze;
 
-use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
@@ -56,12 +56,26 @@ trait AnalyzeTrait {
    * Helper to return an entity from parameters.
    *
    * @param string $entity_type
-   *   The entity type.
+   *    The entity type.
    *
-   * @return \Drupal\Core\Entity\ContentEntityInterface|null
-   *   The entity, or NULL on error.
+   * @return \Drupal\Core\Entity\EntityInterface|null
+   *    The entity, or NULL on error.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  private function getEntity(string $entity_type): ?ContentEntityInterface {
-    return $this->routeMatch()->getParameter($entity_type);
+  private function getEntity(string $entity_type): ?EntityInterface {
+    $return = NULL;
+
+    if ($entity_id = $this->routeMatch()->getParameter($entity_type)) {
+      if (!$entity_id instanceof EntityInterface) {
+        $return = $this->entityTypeManager()->getStorage($entity_type)->load($entity_id);
+      }
+      else {
+        $return = $entity_id;
+      }
+    }
+
+    return $return;
   }
 }
