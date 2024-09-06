@@ -78,7 +78,6 @@ class AnalyzeController extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-
   public function analyze(string $plugin = NULL, string $entity_type = NULL): array {
     if ($plugin) {
       $plugins = $this->getPlugins([$plugin]);
@@ -93,7 +92,7 @@ class AnalyzeController extends ControllerBase {
 
     foreach ($plugins as $id => $plugin) {
       $build[$id] = $plugin->renderSummary($entity);
-      $build[$id]['weight'] = $weight;
+      $build[$id]['#weight'] = $weight;
       $build[$id . '-report'] = [
         '#type' => 'link',
         '#title' => $this->t('View the full report'),

@@ -31,7 +31,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface 
   public function getFullReportUrl(EntityInterface $entity): Url {
     $entity_type = $entity->getEntityTypeId();
 
-    return Url::fromRoute($entity_type . '.' . $this->getPluginId(), [$entity_type => $entity]);
+    return Url::fromRoute($entity_type . '.' . $this->getPluginId(), [$entity_type => $entity->id()]);
   }
 
   /**
