@@ -113,7 +113,6 @@ function analyze_add_settings_form(array &$form, string $entity_type, string $bu
  *   The form state.
  */
 function analyze_add_settings_form_submit(array &$form, FormStateInterface $form_state): void {
-  $one = 1;
   if ($values = $form_state->cleanValues()->getValue('analyze')) {
     $config = \Drupal::configFactory()->getEditable('analyze.settings')->get('status');
     $entity_type = $form_state->get('entity_type');

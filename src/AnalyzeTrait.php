@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\analyze;
 
+use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -23,6 +24,13 @@ trait AnalyzeTrait {
    * @var \Drupal\Core\Routing\RouteMatchInterface|null
    */
   protected RouteMatchInterface|NULL $routeMatch = NULL;
+
+  /**
+   * Config for the Analyze module.
+   *
+   * @var \Drupal\Core\Config\ImmutableConfig|NULL
+   */
+  protected ImmutableConfig|null $config = NULL;
 
   /**
    * Helper to set and get the entity type manager.
@@ -53,6 +61,20 @@ trait AnalyzeTrait {
   }
 
   /**
+   * Helper to return the Analyze config, if set.
+   *
+   * @return \Drupal\Core\Config\ImmutableConfig|null
+   *   The config entity, or NULL if not set yet.
+   */
+  private function config(): ?ImmutableConfig {
+    if (!$this->config) {
+      $this->config = \Drupal::config('analyze.settings');
+    }
+
+    return $this->config;
+  }
+
+  /**
    * Helper to return an entity from parameters.
    *
    * @param string $entity_type
@@ -78,4 +100,5 @@ trait AnalyzeTrait {
 
     return $return;
   }
+
 }

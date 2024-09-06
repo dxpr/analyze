@@ -29,26 +29,55 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
   use AnalyzeTrait;
 
   /**
-   * Access callback.
+   * Access callback for Analyze routes.
    *
-   * @DCG
-   * Drupal does some magic when resolving arguments for this callback. Make
-   * sure the parameter name matches the name of the placeholder defined in the
-   * route, and it is of the same type.
-   * The following additional parameters are resolved automatically.
-   *   - \Drupal\Core\Routing\RouteMatchInterface
-   *   - \Drupal\Core\Session\AccountInterface
-   *   - \Symfony\Component\HttpFoundation\Request
-   *   - \Symfony\Component\Routing\Route
+   * @param \Symfony\Component\Routing\Route $route
+   *   The current route.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The current logged in user.
+   * @param string $entity_type
+   *   The entity type the route relates to.
+   * @param string|null $plugin
+   *   The current plugin being views (optional).
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function access(Route $route, AccountInterface $account, string|null $plugin = NULL, string|null $entity_type = NULL): AccessResult {
+  public function access(Route $route, AccountInterface $account, string $entity_type, string|null $plugin = NULL): AccessResult {
     if ($entity = $this->getEntity($entity_type)) {
-      return AccessResult::allowed();
+      if ($account->hasPermission('view analyze reports')) {
+        $return = AccessResult::forbidden('Entity not enabled for Analyze reporting.');
+
+        if ($config = $this->config()) {
+          if ($settings = $config->get('status')) {
+            if (!empty($settings[$entity_type])) {
+              if (!empty($settings[$entity_type][$entity->bundle()])) {
+
+                // If we are looking at a specific plugin, check it as been
+                // enabled before granting access.
+                if ($plugin) {
+                  if (!empty($settings[$entity_type][$entity->bundle()][$plugin])) {
+                    $return = AccessResult::allowed();
+                  }
+                }
+                else {
+                  $return = AccessResult::allowed();
+                }
+              }
+            }
+          }
+        }
+      }
+      else {
+        $return = AccessResult::forbidden('User does not have the required access level.');
+      }
     }
     else {
-      return AccessResult::forbidden('Entity does not exist.');
+      $return = AccessResult::forbidden('Entity does not exist.');
     }
 
+    return $return;
   }
 
 }
