@@ -37,8 +37,8 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
    *   - \Symfony\Component\HttpFoundation\Request
    *   - \Symfony\Component\Routing\Route
    */
-  public function access(Route $route, mixed $parameter): AccessResult {
-    return AccessResult::allowedIf($parameter === $route->getRequirement('_analyze_access'));
+  public function access(Route $route, string|null $plugin, string|null $entity_type): AccessResult {
+    return AccessResult::allowed();
   }
 
 }

@@ -61,7 +61,7 @@ class AnalyzeController extends ControllerBase {
    * @param string|null $plugin
    *   A plugin id to load the report for.
    * @param string|null $entity_type
-   *    An entity type to load the report for.
+   *   An entity type to load the report for.
    *
    * @return mixed[]
    *   A render array containing the analysis results.
