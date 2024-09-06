@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\analyze\Access;
 
-use Drupal\Core\Access\AccessResult;
 use Drupal\analyze\AnalyzeTrait;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Symfony\Component\Routing\Route;
 
@@ -41,7 +41,13 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
    *   - \Symfony\Component\Routing\Route
    */
   public function access(Route $route, string|null $plugin = NULL, string|null $entity_type = NULL): AccessResult {
-    return AccessResult::allowed();
+    if ($entity = $this->getEntity($entity_type)) {
+      return AccessResult::allowed();
+    }
+    else {
+      return AccessResult::forbidden('Entity does not exist.');
+    }
+
   }
 
 }
