@@ -4,7 +4,6 @@ namespace Drupal\analyze\Controller;
 
 use Drupal\analyze\AnalyzePluginManager;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -40,15 +39,13 @@ class AnalyzeController extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   private function getPlugins(array $plugin_ids = []): array {
-    $return = [];
+    $return = $this->pluginManagerAnalyze->getDefinitions();
 
-    if (empty($plugin_ids)) {
-      $plugin_ids = $this->pluginManagerAnalyze->getDefinitions();
-    }
-
-    foreach($plugin_ids as $id) {
-      if ($plugin = $this->pluginManagerAnalyze->getDefinition($plugin_ids, FALSE)) {
-        $return[$id] = $plugin;
+    if (!empty($plugin_ids)) {
+      foreach ($return as $key => $plugin) {
+        if (!in_array($key, $plugin_ids)) {
+          unset($return[$key]);
+        }
       }
     }
 
@@ -58,17 +55,17 @@ class AnalyzeController extends ControllerBase {
   /**
    * Analyzes an entity and returns a render array with various metrics.
    *
-   * @param ContentEntityInterface $entity
-   *   The entity to analyze.
    * @param string|null $plugin
    *   A plugin id to load the report for.
+   * @param string|null $entity_type
+   *    An entity type to load the report for.
    *
    * @return string[]
    *   A render array containing the analysis results.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function analyze(ContentEntityInterface $entity, string $plugin = NULL): array {
+  public function analyze(string $plugin = NULL, string $entity_type = NULL): array {
     if ($plugin) {
       $plugins = $this->getPlugins([$plugin]);
     }

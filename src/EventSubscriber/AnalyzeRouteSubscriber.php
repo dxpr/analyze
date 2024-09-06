@@ -28,7 +28,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
    */
   protected function alterRoutes(RouteCollection $collection): void {
     if ($plugins = $this->pluginManagerAnalyze->getDefinitions()) {
-      foreach ($this->entityTypeManager->getDefinitions() as $entity_type) {
+      foreach ($this->entityTypeManager->getDefinitions() as $id => $entity_type) {
         if ($entity_type->hasLinkTemplate('canonical')) {
           $link = $entity_type->getLinkTemplate('canonical');
 
@@ -38,6 +38,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
               ->setDefaults([
                 '_controller' => 'Drupal\analyze\Controller\AnalyzeController::analyze',
                 'plugin' => $plugin_id,
+                'entity_type' => $entity_type->id(),
               ])
               ->setOption('_admin_route', TRUE)
               ->setRequirement('_analyze_access', 'TRUE');
@@ -49,6 +50,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
           $route
             ->setDefaults([
               '_controller' => 'Drupal\analyze\Controller\AnalyzeController::analyze',
+              'entity_type' => $entity_type->id(),
             ])
             ->setOption('_admin_route', TRUE)
             ->setRequirement('_analyze_access', 'TRUE');
