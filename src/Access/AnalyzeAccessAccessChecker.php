@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\analyze\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\analyze\AnalyzeTrait;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Symfony\Component\Routing\Route;
 
@@ -24,6 +25,8 @@ use Symfony\Component\Routing\Route;
  */
 final class AnalyzeAccessAccessChecker implements AccessInterface {
 
+  use AnalyzeTrait;
+
   /**
    * Access callback.
    *
@@ -37,7 +40,7 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
    *   - \Symfony\Component\HttpFoundation\Request
    *   - \Symfony\Component\Routing\Route
    */
-  public function access(Route $route, string|null $plugin, string|null $entity_type): AccessResult {
+  public function access(Route $route, string|null $plugin = NULL, string|null $entity_type = NULL): AccessResult {
     return AccessResult::allowed();
   }
 

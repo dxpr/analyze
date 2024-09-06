@@ -4,7 +4,6 @@ namespace Drupal\analyze\Controller;
 
 use Drupal\analyze\AnalyzePluginManager;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -19,7 +18,6 @@ class AnalyzeController extends ControllerBase {
    */
   public function __construct(
     private readonly AnalyzePluginManager $pluginManagerAnalyze,
-    private readonly RouteMatchInterface $routeMatch,
   ) {}
 
   /**
@@ -27,8 +25,7 @@ class AnalyzeController extends ControllerBase {
    */
   public static function create(ContainerInterface $container): self {
     return new self(
-      $container->get('plugin.manager.analyze'),
-      $container->get('current_route_match'),
+      $container->get('plugin.manager.analyze')
     );
   }
 
