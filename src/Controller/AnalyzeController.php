@@ -4,6 +4,7 @@ namespace Drupal\analyze\Controller;
 
 use Drupal\analyze\AnalyzePluginManager;
 use Drupal\analyze\AnalyzeTrait;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
@@ -77,8 +78,23 @@ class AnalyzeController extends ControllerBase {
     }
 
     $entity = $this->getEntity($entity_type);
+    $build = [];
+    $weight = 0;
 
-    $build = [
+    foreach ($plugins as $id => $plugin) {
+      $build[$id] = $plugin->renderSummary($entity);
+      $build[$id]['weight'] = $weight;
+      $build[$id . '-report'] = [
+        '#type' => 'link',
+        '#title' => $this->t('View the full report'),
+        '#url' => $plugin->getFullReportUrl($entity),
+        '#attributes' => ['class' => ['action-link', Html::cleanCssIdentifier('view-' . $id . '-report')]],
+        '#wight' => $weight,
+      ];
+      $weight++;
+    }
+
+    $build['header'] = [
       '#type' => 'markup',
       '#markup' => '<h2>Sentiment Analysis</h2>',
     ];
@@ -120,13 +136,6 @@ class AnalyzeController extends ControllerBase {
       '#value' => '0.8',
       '#display_value' => '80%',
       '#range_max' => '1',
-    ];
-
-    $build['sentiment_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide sentiment report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
     ];
 
     $build['basic_header'] = [
@@ -176,15 +185,6 @@ class AnalyzeController extends ControllerBase {
       '#range_max' => '.99',
     ];
 
-    $build['security_table'] = $security_table;
-
-    $build['security_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide security report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
-    ];
-
     $build['statistics_header'] = [
       '#markup' => '<h2>Page views</h2>',
     ];
@@ -203,13 +203,6 @@ class AnalyzeController extends ControllerBase {
     ];
 
     $build['statistics_table'] = $statistics_table;
-
-    $build['statistics_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide page views report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
-    ];
 
     $build['realtime_seo_header'] = [
       '#markup' => '<h2>Realtime SEO</h2>',
@@ -230,50 +223,6 @@ class AnalyzeController extends ControllerBase {
     ];
 
     $build['realtime_seo_table'] = $realtime_seo_table;
-    $build['realtime_seo_link'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View full report for this page'),
-      '#url' => Url::fromRoute('analyze.realtime_seo_full_report', ['node' => $entity->id()]),
-      '#attributes' => ['class' => ['action-link', 'view-full-report']],
-    ];
-    $build['realtime_seo_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide SEO report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
-    ];
-
-    $build['google_analytics_header'] = [
-      '#markup' => '<h2>Google Analytics Node Reports</h2>',
-    ];
-
-    $google_analytics_table = [
-      '#type' => 'table',
-      '#header' => [['data' => 'Google Analytics Node Reports', 'colspan' => 2, 'class' => ['header']]],
-      '#rows' => [
-        ['data' => ['Page Views', '1234']],
-        ['data' => ['Bounce Rate', '45%']],
-        ['data' => ['Average Time on Page', '2 minutes']],
-      ],
-      '#attributes' => [
-        'class' => ['google-analytics-data-table'],
-        'style' => ['table-layout: fixed;'],
-      ],
-    ];
-
-    $build['google_analytics_table'] = $google_analytics_table;
-    $build['google_analytics_link'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View full report for this page'),
-      '#url' => Url::fromRoute('analyze.google_analytics_full_report', ['node' => $entity->id()]),
-      '#attributes' => ['class' => ['action-link', 'view-full-report']],
-    ];
-    $build['google_analytics_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide Google Analytics report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
-    ];
 
     $build['accessibility_header'] = [
       '#markup' => '<h2>Editoria11y Accessibility Checker</h2>',
@@ -294,18 +243,6 @@ class AnalyzeController extends ControllerBase {
     ];
 
     $build['accessibility_table'] = $accessibility_table;
-    $build['accessibility_link'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View full report for this page'),
-      '#url' => Url::fromRoute('analyze.accessibility_full_report', ['node' => $entity->id()]),
-      '#attributes' => ['class' => ['action-link', 'view-full-report']],
-    ];
-    $build['accessibility_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide accessibility report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
-    ];
 
     return $build;
   }
