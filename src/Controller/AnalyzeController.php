@@ -74,8 +74,11 @@ class AnalyzeController extends ControllerBase {
    * @return mixed[]
    *   A render array containing the analysis results.
    *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
+
   public function analyze(string $plugin = NULL, string $entity_type = NULL): array {
     if ($plugin) {
       $plugins = $this->getPlugins([$plugin]);
