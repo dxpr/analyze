@@ -33,7 +33,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
           $link = $entity_type->getLinkTemplate('canonical');
 
           foreach ($plugins as $plugin_id => $plugin) {
-            $route = new Route($link . '/' . $plugin_id);
+            $route = new Route($link . '/analyze/' . $plugin_id);
             $route
               ->setDefaults([
                 '_controller' => 'Drupal\analyze\Controller\AnalyzeController::analyze',
