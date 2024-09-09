@@ -30,6 +30,65 @@ function analyze_theme(): array {
 }
 
 /**
+ * Implements hook_menu_local_actions_alter().
+ */
+function analyze_menu_local_actions_alter(&$local_actions): void {
+
+  /** @var \Drupal\analyze\AnalyzePluginManager $service */
+  $service = \Drupal::service('plugin.manager.analyze');
+
+  // Add local actions for all entities if we have plugins enabled.
+  if ($plugins = $service->getDefinitions()) {
+    foreach ($plugins as $plugin) {
+      foreach (analyze_get_entity_types() as $id => $route) {
+        $analyze_route = 'entity.' . $id . '.analyze';
+        $plugin_route = $id . '.' . $plugin['id'];
+
+        $local_actions[$plugin_route] = [
+          'id' => $plugin_route,
+          'title' => $plugin['label'],
+          'route_name' => $plugin_route,
+          'route_parameters' => [],
+          'appears_on' => [$analyze_route],
+          'class' => 'Drupal\Core\Menu\LocalActionDefault',
+          'provider' => 'analyze',
+          'options' => [],
+          'weight' => 0,
+        ];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_local_tasks_alter().
+ */
+function analyze_local_tasks_alter(&$local_tasks): void {
+
+  /** @var \Drupal\analyze\AnalyzePluginManager $service */
+  $service = \Drupal::service('plugin.manager.analyze');
+
+  // Add local actions for all entities if we have plugins enabled.
+  if ($service->getDefinitions()) {
+    foreach (analyze_get_entity_types() as $id => $route) {
+      $analyze_route = 'entity.' . $id . '.analyze';
+
+      $local_tasks[$analyze_route] = [
+        'id' => $analyze_route,
+        'title' => t('Analyze'),
+        'route_name' => $analyze_route,
+        'route_parameters' => [],
+        'base_route' => $route,
+        'class' => 'Drupal\Core\Menu\LocalTaskDefault',
+        'provider' => 'analyze',
+        'options' => [],
+        'weight' => 0,
+      ];
+    }
+  }
+}
+
+/**
  * Implements hook_form_alter().
  */
 function analyze_form_alter(&$form, FormStateInterface $form_state, $form_id): void {
@@ -131,4 +190,22 @@ function analyze_add_settings_form_submit(array &$form, FormStateInterface $form
       ->set('status', $config)
       ->save();
   }
+}
+
+/**
+ * Helper to get all entities with a canonical route.
+ *
+ * @return string[]
+ *   An array of entity id => canonical route name.
+ */
+function analyze_get_entity_types(): array {
+  $return = [];
+
+  foreach (\Drupal::entityTypeManager()->getDefinitions() as $entity_type) {
+    if ($entity_type->hasLinkTemplate('canonical')) {
+      $return[$entity_type->id()] = 'entity.' . $entity_type->id() . '.canonical';
+    }
+  }
+
+  return $return;
 }

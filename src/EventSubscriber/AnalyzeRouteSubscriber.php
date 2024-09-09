@@ -28,7 +28,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
    */
   protected function alterRoutes(RouteCollection $collection): void {
     if ($plugins = $this->pluginManagerAnalyze->getDefinitions()) {
-      foreach ($this->entityTypeManager->getDefinitions() as $id => $entity_type) {
+      foreach ($this->entityTypeManager->getDefinitions() as $entity_type) {
         if ($entity_type->hasLinkTemplate('canonical')) {
           $link = $entity_type->getLinkTemplate('canonical');
 

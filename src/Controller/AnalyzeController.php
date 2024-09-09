@@ -36,10 +36,10 @@ class AnalyzeController extends ControllerBase {
    * Helper to obtain all the Analyze Plugins.
    *
    * @param array $plugin_ids
-   *    An array of specific plugins to load.
+   *   An array of specific plugins to load.
    *
    * @return \Drupal\analyze\AnalyzeInterface[]
-   *    An array of analyze plugins.
+   *   An array of analyze plugins.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
