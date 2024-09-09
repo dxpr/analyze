@@ -38,8 +38,13 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface 
    * {@inheritdoc}
    */
   public function isEnabled(EntityInterface $entity):bool {
-    // @todo Implement proper check against config.
-    return TRUE;
+    $return = FALSE;
+
+    if ($config = $this->analyzeConfig()->get('status')) {
+      $return = !empty($config[$entity->getEntityTypeId()][$entity->bundle()][$this->getPluginId()]);
+    }
+
+    return $return;
   }
 
 }

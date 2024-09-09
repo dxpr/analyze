@@ -9,12 +9,15 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
+/**
+ * Provides shared service and functions to use across analyze entities.
+ */
 trait AnalyzeTrait {
 
   /**
    * Entity Type Manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|NULL
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|null
    */
   protected $entityTypeManager = NULL;
 
@@ -28,7 +31,7 @@ trait AnalyzeTrait {
   /**
    * Config for the Analyze module.
    *
-   * @var \Drupal\Core\Config\ImmutableConfig|NULL
+   * @var \Drupal\Core\Config\ImmutableConfig|null
    */
   protected ImmutableConfig|null $analyzeConfig = NULL;
 

@@ -93,22 +93,29 @@ class AnalyzeController extends ControllerBase {
     $weight = 0;
 
     foreach ($plugins as $id => $plugin) {
-      $build[$id . '/wrapper'] = [
-        '#type' => 'fieldset',
-        '#title' => $plugin->label(),
-        '#weight' => $weight,
-        $id => ($full_report) ? $plugin->renderFullReport($entity) : $plugin->renderSummary($entity),
-      ];
-
-      if (!$full_report) {
-        $build[$id . '/wrapper']['full_report'] = [
-          '#type' => 'link',
-          '#title' => $this->t('View the full report'),
-          '#url' => $plugin->getFullReportUrl($entity),
-          '#attributes' => ['class' => ['action-link', Html::cleanCssIdentifier('view-' . $id . '-report')]],
+      if ($plugin->isEnabled($entity)) {
+        $build[$id . '/wrapper'] = [
+          '#type' => 'fieldset',
+          '#title' => $plugin->label(),
+          '#weight' => $weight,
+          $id => ($full_report) ? $plugin->renderFullReport($entity) : $plugin->renderSummary($entity),
         ];
+
+        if (!$full_report) {
+          $build[$id . '/wrapper']['full_report'] = [
+            '#type' => 'link',
+            '#title' => $this->t('View the full report'),
+            '#url' => $plugin->getFullReportUrl($entity),
+            '#attributes' => [
+              'class' => [
+                'action-link',
+                Html::cleanCssIdentifier('view-' . $id . '-report'),
+              ],
+            ],
+          ];
+        }
+        $weight++;
       }
-      $weight++;
     }
 
     return $build;
