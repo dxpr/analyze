@@ -43,9 +43,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
                 'plugin' => $plugin_id,
                 'entity_type' => $entity_type->id(),
                 'full_report' => TRUE,
-                '_title' => $this->t(':plugin Full Report', [
-                  ':plugin' => $plugin['label'],
-                ]),
+                '_title' => $plugin['label'] . ' Full Report',
               ])
               ->setOption('_admin_route', TRUE)
               ->setRequirement('_analyze_access', 'TRUE');
@@ -58,7 +56,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
             ->setDefaults([
               '_controller' => 'Drupal\analyze\Controller\AnalyzeController::analyze',
               'entity_type' => $entity_type->id(),
-              '_title' => $this->t('Analyze'),
+              '_title' => 'Analyze',
             ])
             ->setOption('_admin_route', TRUE)
             ->setRequirement('_analyze_access', 'TRUE');
