@@ -70,6 +70,8 @@ class AnalyzeController extends ControllerBase {
    *   A plugin id to load the report for.
    * @param string|null $entity_type
    *   An entity type to load the report for.
+   * @param bool $full_report
+   *   Whether to render the full report. FALSE to render the summary.
    *
    * @return mixed[]
    *   A render array containing the analysis results.
@@ -78,7 +80,7 @@ class AnalyzeController extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function analyze(string $plugin = NULL, string $entity_type = NULL): array {
+  public function analyze(string $plugin = NULL, string $entity_type = NULL, $full_report = FALSE): array {
     if ($plugin) {
       $plugins = $this->getPlugins([$plugin]);
     }
@@ -95,15 +97,17 @@ class AnalyzeController extends ControllerBase {
         '#type' => 'fieldset',
         '#title' => $plugin->label(),
         '#weight' => $weight,
-        $id => $plugin->renderSummary($entity),
-        'full_report' => [
+        $id => ($full_report) ? $plugin->renderFullReport($entity) : $plugin->renderSummary($entity),
+      ];
+
+      if (!$full_report) {
+        $build[$id . '/wrapper']['full_report'] = [
           '#type' => 'link',
           '#title' => $this->t('View the full report'),
           '#url' => $plugin->getFullReportUrl($entity),
           '#attributes' => ['class' => ['action-link', Html::cleanCssIdentifier('view-' . $id . '-report')]],
-          '#wight' => $weight,
-        ],
-      ];
+        ];
+      }
       $weight++;
     }
 

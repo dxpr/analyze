@@ -29,6 +29,17 @@ interface AnalyzeInterface {
   public function renderSummary(EntityInterface $entity): array;
 
   /**
+   * Render a full report for an entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *    The entity to render the summary for.
+   *
+   * @return mixed[]
+   *    A render array to include in the full report page.
+   */
+  public function renderFullReport(EntityInterface $entity): array;
+
+  /**
    * Helper to return the URL to the full report.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity

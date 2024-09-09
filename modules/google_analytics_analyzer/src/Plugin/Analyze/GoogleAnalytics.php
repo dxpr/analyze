@@ -37,4 +37,23 @@ final class GoogleAnalytics extends AnalyzePluginBase {
     ];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function renderFullReport(EntityInterface $entity): array {
+    return [
+      '#type' => 'table',
+      '#header' => [['data' => $this->t('Google Analytics'), 'colspan' => 2, 'class' => ['header']]],
+      '#rows' => [
+        ['data' => [$this->t('Page Views'), '1234']],
+        ['data' => [$this->t('Bounce Rate'), '45%']],
+        ['data' => [$this->t('Average Time on Page'), '2 minutes']],
+      ],
+      '#attributes' => [
+        'class' => ['google-analytics-data-table'],
+        'style' => ['table-layout: fixed;'],
+      ],
+    ];
+  }
+
 }
