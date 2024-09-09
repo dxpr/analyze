@@ -1,1 +1,45 @@
-name: Guage&#10props:&#10  type: object&#10  required:&#10    - caption&#10    - range_min_label&#10    - range_mid_label&#10    - range_max_label&#10    - range_min&#10    - value&#10    - display_value&#10    - range_max&#10  properties:&#10      caption:&#10        type: string&#10        title: Caption&#10        description: 'Caption for the guage chart.'&#10      range_min_label:&#10        type: string&#10        title: 'Min Label'&#10        description: 'Minimum label for the chart.'&#10      range_mid_label:&#10        type: string&#10        title: 'Mid Label'&#10        description: 'Median label for the chart.'&#10      range_max_label:&#10        type: string&#10        title: 'Max Label'&#10        description: 'Maximum label for the chart.'&#10      range_min:&#10        type: number&#10        title: 'Range Min'&#10        description: 'Minimum range number for the chart.'&#10      value:&#10        type: number&#10        title: 'Value'&#10        description: 'Value to display for the chart.'&#10      display_value:&#10        type: string&#10        title: 'Display Value'&#10        description: 'Value to display for the chart.'&#10      range_max:&#10        type: number&#10        title: 'Range Max'&#10        description: 'Maximum range for the chart.'
+name: Guage
+props:
+  type: object
+  required:
+    - caption
+    - range_min_label
+    - range_mid_label
+    - range_max_label
+    - range_min
+    - value
+    - display_value
+    - range_max
+  properties:
+    caption:
+      type: string
+      title: Caption
+      description: 'Caption for the guage chart.'
+    range_min_label:
+      type: string
+      title: 'Min Label'
+      description: 'Minimum label for the chart.'
+    range_mid_label:
+      type: string
+      title: 'Mid Label'
+      description: 'Median label for the chart.'
+    range_max_label:
+      type: string
+      title: 'Max Label'
+      description: 'Maximum label for the chart.'
+    range_min:
+      type: number
+      title: 'Range Min'
+      description: 'Minimum range number for the chart.'
+    value:
+      type: number
+      title: 'Value'
+      description: 'Value to display for the chart.'
+    display_value:
+      type: string
+      title: 'Display Value'
+      description: 'Value to display for the chart.'
+    range_max:
+      type: number
+      title: 'Range Max'
+      description: 'Maximum range for the chart.'

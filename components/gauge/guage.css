@@ -1,1 +1,100 @@
-.analyze--gauge {&#10  width: calc(100% - 6rem);&#10  margin: 0 3rem;&#10  display: -webkit-box;&#10  display: -ms-flexbox;&#10  display: flex;&#10  -webkit-box-orient: vertical;&#10  -webkit-box-direction: normal;&#10  -ms-flex-direction: column;&#10  flex-direction: column;&#10}&#10.analyze--gauge table, .analyze--gauge thead, .analyze--gauge tbody, .analyze--gauge tr, .analyze--gauge th, .analyze--gauge td {&#10  padding: 0;&#10  margin: 0;&#10  border: none;&#10  background: transparent;&#10}&#10.analyze--gauge thead, .analyze--gauge thead tr, .analyze--gauge tbody tr {&#10  display: -webkit-box;&#10  display: -ms-flexbox;&#10  display: flex;&#10  width: 100%;&#10}&#10.analyze--gauge thead th {&#10  -webkit-box-flex: 1;&#10  -ms-flex: 1;&#10  flex: 1;&#10  text-align: center;&#10  font-weight: bold;&#10  white-space: nowrap;&#10}&#10.analyze--gauge thead th.analyze-start {&#10  text-align: left;&#10}&#10.analyze--gauge thead th.analyze-mid {&#10  text-align: center;&#10}&#10.analyze--gauge thead th.analyze-end {&#10  text-align: right;&#10}&#10.analyze--gauge tbody {&#10  display: -webkit-box;&#10  display: -ms-flexbox;&#10  display: flex;&#10  -webkit-box-pack: center;&#10  -ms-flex-pack: center;&#10  justify-content: center;&#10  -webkit-box-align: center;&#10  -ms-flex-align: center;&#10  align-items: center;&#10  height: 50px;&#10  position: relative;&#10  background-image: linear-gradient(90deg, #ddd 2px, transparent 2px);&#10  background-size: calc(25% - 0.5px) 100%;&#10}&#10.analyze--gauge tbody tr th.analyze-range-label {&#10  position: absolute;&#10  font-weight: bold;&#10  top: 50%;&#10  -webkit-transform: translateY(-50%);&#10  transform: translateY(-50%);&#10  white-space: nowrap;&#10}&#10.analyze--gauge tbody tr th.analyze-start {&#10  right: 100%;&#10  text-align: right;&#10  margin-right: 1rem;&#10}&#10.analyze--gauge tbody tr th.analyze-end {&#10  left: 100%;&#10  text-align: left;&#10  margin-left: 1rem;&#10}&#10.analyze--gauge tbody tr td {&#10  position: relative;&#10  height: 2px;&#10  width: 100%;&#10  background-color: #000;&#10}&#10.analyze--gauge tbody tr td::before {&#10  content: "";&#10  position: absolute;&#10  left: calc(var(--value, 0) * 100%);&#10  top: 50%;&#10  width: 4px;&#10  height: 30px;&#10  background-color: #000;&#10  -webkit-transform: translate(-50%, -50%);&#10  transform: translate(-50%, -50%);&#10}&#10.analyze--gauge tbody tr td .analyze-data {&#10  position: absolute;&#10  left: calc(var(--value, 0) * 100%);&#10  top: 1rem;&#10  -webkit-transform: translateX(-50%);&#10  transform: translateX(-50%);&#10  white-space: nowrap;&#10  font-weight: bold;&#10  color: #000;&#10}
+.analyze--gauge {
+  width: calc(100% - 6rem);
+  margin: 0 3rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+.analyze--gauge table, .analyze--gauge thead, .analyze--gauge tbody, .analyze--gauge tr, .analyze--gauge th, .analyze--gauge td {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+}
+.analyze--gauge thead, .analyze--gauge thead tr, .analyze--gauge tbody tr {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+}
+.analyze--gauge thead th {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+  white-space: nowrap;
+}
+.analyze--gauge thead th.analyze-start {
+  text-align: left;
+}
+.analyze--gauge thead th.analyze-mid {
+  text-align: center;
+}
+.analyze--gauge thead th.analyze-end {
+  text-align: right;
+}
+.analyze--gauge tbody {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 50px;
+  position: relative;
+  background-image: linear-gradient(90deg, #ddd 2px, transparent 2px);
+  background-size: calc(25% - 0.5px) 100%;
+}
+.analyze--gauge tbody tr th.analyze-range-label {
+  position: absolute;
+  font-weight: bold;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+.analyze--gauge tbody tr th.analyze-start {
+  right: 100%;
+  text-align: right;
+  margin-right: 1rem;
+}
+.analyze--gauge tbody tr th.analyze-end {
+  left: 100%;
+  text-align: left;
+  margin-left: 1rem;
+}
+.analyze--gauge tbody tr td {
+  position: relative;
+  height: 2px;
+  width: 100%;
+  background-color: #000;
+}
+.analyze--gauge tbody tr td::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--value, 0) * 100%);
+  top: 50%;
+  width: 4px;
+  height: 30px;
+  background-color: #000;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.analyze--gauge tbody tr td .analyze-data {
+  position: absolute;
+  left: calc(var(--value, 0) * 100%);
+  top: 1rem;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-weight: bold;
+  color: #000;
+}
