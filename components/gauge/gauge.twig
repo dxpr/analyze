@@ -1,0 +1,21 @@
+<div class="layer-wrapper gin-layer-wrapper">
+  <table class="analyze-charts-css analyze--gauge analyze-show-heading analyze-show-labels" role="presentation">
+    <caption>{{ caption }}</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="analyze-start">{{ range_min_label }}</th>
+        <th scope="col" class="analyze-mid">{{ range_mid_label }}</th>
+        <th scope="col" class="analyze-end">{{ range_max_label }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row" class="analyze-range-label analyze-start">{{ range_min }}</th>
+        <td colspan="2" style="--value: {{ value }};">
+          <span class="analyze-data">{{ display_value }}</span>
+        </td>
+        <th scope="row" class="analyze-range-label analyze-end">{{ range_max }}</th>
+      </tr>
+    </tbody>
+  </table>
+</div>

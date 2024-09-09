@@ -1,24 +1,13 @@
 {# templates/analyze-gauge.html.twig #}
 
-{{ attach_library('analyze/analyze.styles') }}
-<div class="layer-wrapper gin-layer-wrapper">
-  <table class="analyze-charts-css analyze--gauge analyze-show-heading analyze-show-labels" role="presentation">
-    <caption>{{ caption }}</caption>
-    <thead>
-      <tr>
-        <th scope="col" class="analyze-start">{{ range_min_label }}</th>
-        <th scope="col" class="analyze-mid">{{ range_mid_label }}</th>
-        <th scope="col" class="analyze-end">{{ range_max_label }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope="row" class="analyze-range-label analyze-start">{{ range_min }}</th>
-        <td colspan="2" style="--value: {{ value }};">
-          <span class="analyze-data">{{ display_value }}</span>
-        </td>
-        <th scope="row" class="analyze-range-label analyze-end">{{ range_max }}</th>
-      </tr>
-    </tbody>
-  </table>
-</div>
+{% embed 'analyze:guage' with {
+    caption: caption,
+    range_min_label: range_min_label,
+    range_mid_label: range_mid_label,
+    range_max_label: range_max_label,
+    range_min: range_min,
+    value: value,
+    display_value: display_value,
+    range_max: range_max,
+} %}
+{% endembed %}
