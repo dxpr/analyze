@@ -23,20 +23,16 @@ final class GoogleAnalytics extends AnalyzePluginBase {
    */
   public function renderSummary(EntityInterface $entity): array {
     return [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Google Analytics Node Reports'),
-      'table' => [
-        '#type' => 'table',
-        '#header' => [['data' => 'Google Analytics Node Reports', 'colspan' => 2, 'class' => ['header']]],
-        '#rows' => [
-          ['data' => ['Page Views', '1234']],
-          ['data' => ['Bounce Rate', '45%']],
-          ['data' => ['Average Time on Page', '2 minutes']],
-        ],
-        '#attributes' => [
-          'class' => ['google-analytics-data-table'],
-          'style' => ['table-layout: fixed;'],
-        ],
+      '#type' => 'table',
+      '#header' => [['data' => $this->t('Google Analytics'), 'colspan' => 2, 'class' => ['header']]],
+      '#rows' => [
+        ['data' => [$this->t('Page Views'), '1234']],
+        ['data' => [$this->t('Bounce Rate'), '45%']],
+        ['data' => [$this->t('Average Time on Page'), '2 minutes']],
+      ],
+      '#attributes' => [
+        'class' => ['google-analytics-data-table'],
+        'style' => ['table-layout: fixed;'],
       ],
     ];
   }

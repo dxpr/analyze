@@ -91,14 +91,18 @@ class AnalyzeController extends ControllerBase {
     $weight = 0;
 
     foreach ($plugins as $id => $plugin) {
-      $build[$id] = $plugin->renderSummary($entity);
-      $build[$id]['#weight'] = $weight;
-      $build[$id . '-report'] = [
-        '#type' => 'link',
-        '#title' => $this->t('View the full report'),
-        '#url' => $plugin->getFullReportUrl($entity),
-        '#attributes' => ['class' => ['action-link', Html::cleanCssIdentifier('view-' . $id . '-report')]],
-        '#wight' => $weight,
+      $build[$id . '/wrapper'] = [
+        '#type' => 'fieldset',
+        '#title' => $plugin->label(),
+        '#weight' => $weight,
+        $id => $plugin->renderSummary($entity),
+        'full_report' => [
+          '#type' => 'link',
+          '#title' => $this->t('View the full report'),
+          '#url' => $plugin->getFullReportUrl($entity),
+          '#attributes' => ['class' => ['action-link', Html::cleanCssIdentifier('view-' . $id . '-report')]],
+          '#wight' => $weight,
+        ],
       ];
       $weight++;
     }
