@@ -61,11 +61,11 @@ final class ContentInfo extends AnalyzePluginBase {
         '#range_min_label' => 'Negative',
         '#range_mid_label' => 'Neutral',
         '#range_max_label' => 'Positive',
-        '#range_min' => '0',
+        '#range_min' => 0,
         // Example: 20% Positive.
-        '#value' => '0.2',
+        '#value' => 0.2,
         '#display_value' => '20%',
-        '#range_max' => '1',
+        '#range_max' => 1,
       ],
       'gauge_two' => [
         '#theme' => 'analyze_gauge',
@@ -73,11 +73,11 @@ final class ContentInfo extends AnalyzePluginBase {
         '#range_min_label' => 'Sad',
         '#range_mid_label' => 'Neutral',
         '#range_max_label' => 'Joyful',
-        '#range_min' => '0',
+        '#range_min' => 0,
         // Example: 60% Joyful.
-        '#value' => '0.6',
+        '#value' => 0.6,
         '#display_value' => '60%',
-        '#range_max' => '1',
+        '#range_max' => 1,
       ],
       'gauge_three' => [
         '#theme' => 'analyze_gauge',
@@ -85,11 +85,11 @@ final class ContentInfo extends AnalyzePluginBase {
         '#range_min_label' => 'Calm',
         '#range_mid_label' => 'Neutral',
         '#range_max_label' => 'Angry',
-        '#range_min' => '0',
+        '#range_min' => 0,
         // Example: 80% Angry.
-        '#value' => '0.8',
+        '#value' => 0.8,
         '#display_value' => '80%',
-        '#range_max' => '1',
+        '#range_max' => 1,
       ],
     ];
   }
