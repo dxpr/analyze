@@ -41,10 +41,13 @@ function analyze_menu_local_actions_alter(&$local_actions): void {
 
   // Add local actions for all entities if we have plugins enabled.
   if ($plugins = $service->getDefinitions()) {
+    $plugin_routes = [];
+
     foreach ($plugins as $plugin) {
       foreach (analyze_get_entity_types() as $id => $route) {
         $analyze_route = 'entity.' . $id . '.analyze';
         $plugin_route = 'analyze.' . $id . '.' . $plugin['id'];
+        $plugin_routes[] = $plugin_route;
 
         $local_actions[$plugin_route] = [
           'id' => $plugin_route,
@@ -57,6 +60,13 @@ function analyze_menu_local_actions_alter(&$local_actions): void {
           'options' => [],
           'weight' => 0,
         ];
+      }
+    }
+
+    // Add the plugins as local tasks on the plug report pages as well.
+    foreach ($plugin_routes as $route) {
+      if (!empty($local_actions[$route]['appears_on'])) {
+        $local_actions[$route]['appears_on'] = array_merge($local_actions[$route]['appears_on'], $plugin_routes);
       }
     }
   }
