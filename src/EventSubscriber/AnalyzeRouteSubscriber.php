@@ -44,7 +44,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
                 'entity_type' => $entity_type->id(),
                 'full_report' => TRUE,
                 '_title' => $this->t(':plugin Full Report', [
-                  ':plugin' => $plugin->label(),
+                  ':plugin' => $plugin['label'],
                 ]),
               ])
               ->setOption('_admin_route', TRUE)
