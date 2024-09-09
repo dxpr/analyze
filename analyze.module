@@ -44,7 +44,7 @@ function analyze_menu_local_actions_alter(&$local_actions): void {
     foreach ($plugins as $plugin) {
       foreach (analyze_get_entity_types() as $id => $route) {
         $analyze_route = 'entity.' . $id . '.analyze';
-        $plugin_route = 'analyze' . $id . '.' . $plugin['id'];
+        $plugin_route = 'analyze.' . $id . '.' . $plugin['id'];
 
         $local_actions[$plugin_route] = [
           'id' => $plugin_route,
@@ -106,8 +106,6 @@ function analyze_menu_local_tasks_alter(&$local_tasks, $route_name, RefinableCac
           $entity_route = 'entity.' . $id . '.canonical';
 
           if ($route_name === $plugin_route) {
-            // Show the same local tasks on node revision pages as the ones displayed
-            // on node canonical pages.
             $canonical_local_tasks = \Drupal::service('plugin.manager.menu.local_task')
               ->getLocalTasks($entity_route);
             $local_tasks['tabs'][0] = $canonical_local_tasks['tabs'];
