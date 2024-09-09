@@ -48,7 +48,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
               ->setOption('_admin_route', TRUE)
               ->setRequirement('_analyze_access', 'TRUE');
 
-            $collection->add($entity_type->id() . '.' . $plugin_id, $route);
+            $collection->add('analyze.' . $entity_type->id() . '.' . $plugin_id, $route);
           }
 
           $route = new Route($link . '/analyze');
