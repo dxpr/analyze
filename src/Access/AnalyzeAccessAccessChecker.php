@@ -11,18 +11,7 @@ use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
 
 /**
- * Checks if passed parameter matches the route configuration.
- *
- * Usage example:
- * @code
- * foo.example:
- *   path: '/example/{parameter}'
- *   defaults:
- *     _title: 'Example'
- *     _controller: '\Drupal\analyze\Controller\AnalyzeController'
- *   requirements:
- *     _analyze_access: 'some value'
- * @endcode
+ * Checks access against enabled plugins for Analyze report routes.
  */
 final class AnalyzeAccessAccessChecker implements AccessInterface {
 
