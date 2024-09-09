@@ -8,7 +8,7 @@ use Drupal\analyze\AnalyzePluginBase;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
- * Plugin implementation of the analyze.
+ * Analyze plugin to display Google Analytics data.
  *
  * @Analyze(
  *   id = "analytics",

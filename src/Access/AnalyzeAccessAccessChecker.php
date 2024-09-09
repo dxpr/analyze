@@ -60,6 +60,7 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
                 // enabled before granting access.
                 if ($plugin) {
                   if (!empty($settings[$entity_type][$entity->bundle()][$plugin])) {
+                    // @todo Allow plugins to add access conditions.
                     $return = AccessResult::allowed();
                   }
                 }

@@ -1,0 +1,5 @@
+name: 'Basic Content Info'
+type: module
+description: 'Provides a plugin for analyzing content statistics'
+package: Analyzer
+core_version_requirement: ^10 || ^11
