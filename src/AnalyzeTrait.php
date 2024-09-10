@@ -167,11 +167,11 @@ trait AnalyzeTrait {
           unset($return[$key]);
         }
         else {
-          $return[$key] = $this->pluginManagerAnalyze->createInstance($key);
+          $return[$key] = $this->pluginManager()->createInstance($key);
         }
       }
       else {
-        $return[$key] = $this->pluginManagerAnalyze->createInstance($key);
+        $return[$key] = $this->pluginManager()->createInstance($key);
       }
     }
 

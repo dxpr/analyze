@@ -5,7 +5,6 @@ namespace Drupal\analyze\Controller;
 use Drupal\analyze\AnalyzeTrait;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller for the Analyze module.
@@ -31,7 +30,7 @@ class AnalyzeController extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function analyze(string $plugin = NULL, string $entity_type = NULL, $full_report = FALSE): array {
+  public function analyze(string $plugin = NULL, string $entity_type = NULL, bool $full_report = FALSE): array {
     if ($plugin) {
       $plugins = $this->getPlugins([$plugin]);
     }
