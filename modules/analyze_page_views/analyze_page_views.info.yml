@@ -1,7 +1,8 @@
-name: 'Page Views'
+name: 'Node Views'
 type: module
-description: 'Displays Page Views from Statistics module'
+description: 'Displays Node Views from Statistics module'
 package: Analyze
 core_version_requirement: ^10 || ^11
 dependencies:
   - drupal:statistics
+  - drupal:node
