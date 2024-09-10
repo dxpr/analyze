@@ -6,6 +6,7 @@ namespace Drupal\analyze;
 
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
@@ -26,7 +27,7 @@ trait AnalyzeTrait {
    *
    * @var \Drupal\Core\Routing\RouteMatchInterface|null
    */
-  protected RouteMatchInterface|NULL $routeMatch = NULL;
+  protected $routeMatch = NULL;
 
   /**
    * Config for the Analyze module.
@@ -34,6 +35,20 @@ trait AnalyzeTrait {
    * @var \Drupal\Core\Config\ImmutableConfig|null
    */
   protected ImmutableConfig|null $analyzeConfig = NULL;
+
+  /**
+   * The plugin manager.
+   *
+   * @var \Drupal\analyze\AnalyzePluginManager|null
+   */
+  protected AnalyzePluginManager|null $pluginManager = NULL;
+
+  /**
+   * Entity Type Bundle Info Service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface|null
+   */
+  protected EntityTypeBundleInfoInterface|null $entityTypeBundleInfo = NULL;
 
   /**
    * Helper to set and get the entity type manager.
@@ -78,6 +93,34 @@ trait AnalyzeTrait {
   }
 
   /**
+   * Helper to return the Analyze Plugin Manager.
+   *
+   * @return \Drupal\analyze\AnalyzePluginManager
+   *   The Plugin Manager.
+   */
+  protected function pluginManager(): AnalyzePluginManager {
+    if (!isset($this->pluginManager)) {
+      $this->pluginManager = \Drupal::service('plugin.manager.analyze');
+    }
+
+    return $this->pluginManager;
+  }
+
+  /**
+   * Helper to return an Entity Type Bundle Info service.
+   *
+   * @return \Drupal\Core\Entity\EntityTypeBundleInfoInterface
+   *   The Entity Type Bundle Info service.
+   */
+  protected function entityTypeBundleInfo(): EntityTypeBundleInfoInterface {
+    if (!isset($this->entityTypeBundleInfo)) {
+      $this->entityTypeBundleInfo = \Drupal::service('entity_type.bundle.info');
+    }
+
+    return $this->entityTypeBundleInfo;
+  }
+
+  /**
    * Helper to return an entity from parameters.
    *
    * @param string $entity_type
@@ -102,6 +145,50 @@ trait AnalyzeTrait {
     }
 
     return $return;
+  }
+
+  /**
+   * Helper to obtain all the Analyze Plugins.
+   *
+   * @param array $plugin_ids
+   *   An array of specific plugins to load.
+   *
+   * @return \Drupal\analyze\AnalyzeInterface[]
+   *   An array of analyze plugins.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   */
+  private function getPlugins(array $plugin_ids = []): array {
+    $return = $this->pluginManager()->getDefinitions();
+
+    foreach ($return as $key => $plugin) {
+      if (!empty($plugin_ids)) {
+        if (!in_array($key, $plugin_ids)) {
+          unset($return[$key]);
+        }
+        else {
+          $return[$key] = $this->pluginManagerAnalyze->createInstance($key);
+        }
+      }
+      else {
+        $return[$key] = $this->pluginManagerAnalyze->createInstance($key);
+      }
+    }
+
+    return $return;
+  }
+
+  /**
+   * Helper to obtain all bundles for an entity type.
+   *
+   * @param string $entity_type
+   *   The entity type machine name.
+   *
+   * @return mixed[]
+   *   An array of bundle information.
+   */
+  private function getEntityBundles(string $entity_type): array {
+    return $this->entityTypeBundleInfo()->getBundleInfo($entity_type);
   }
 
 }

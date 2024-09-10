@@ -45,10 +45,10 @@ interface AnalyzeInterface {
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to get the URL from.
    *
-   * @return \Drupal\Core\Url
-   *   A URL to the Full Report page for this plugin.
+   * @return \Drupal\Core\Url|null
+   *   A URL to the Full Report page for this plugin. NULL for no link.
    */
-  public function getFullReportUrl(EntityInterface $entity): Url;
+  public function getFullReportUrl(EntityInterface $entity): ?Url;
 
   /**
    * Helper to identify if the plugin is enabled.

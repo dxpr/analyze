@@ -2,7 +2,6 @@
 
 namespace Drupal\analyze\Controller;
 
-use Drupal\analyze\AnalyzePluginManager;
 use Drupal\analyze\AnalyzeTrait;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
@@ -14,53 +13,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class AnalyzeController extends ControllerBase {
 
   use AnalyzeTrait;
-
-  /**
-   * The controller constructor.
-   */
-  public function __construct(
-    private readonly AnalyzePluginManager $pluginManagerAnalyze,
-  ) {}
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container): self {
-    return new self(
-      $container->get('plugin.manager.analyze')
-    );
-  }
-
-  /**
-   * Helper to obtain all the Analyze Plugins.
-   *
-   * @param array $plugin_ids
-   *   An array of specific plugins to load.
-   *
-   * @return \Drupal\analyze\AnalyzeInterface[]
-   *   An array of analyze plugins.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\PluginException
-   */
-  private function getPlugins(array $plugin_ids = []): array {
-    $return = $this->pluginManagerAnalyze->getDefinitions();
-
-    foreach ($return as $key => $plugin) {
-      if (!empty($plugin_ids)) {
-        if (!in_array($key, $plugin_ids)) {
-          unset($return[$key]);
-        }
-        else {
-          $return[$key] = $this->pluginManagerAnalyze->createInstance($key);
-        }
-      }
-      else {
-        $return[$key] = $this->pluginManagerAnalyze->createInstance($key);
-      }
-    }
-
-    return $return;
-  }
 
   /**
    * Analyzes an entity and returns a render array with various metrics.
@@ -100,11 +52,11 @@ class AnalyzeController extends ControllerBase {
           $id => ($full_report) ? $plugin->renderFullReport($entity) : $plugin->renderSummary($entity),
         ];
 
-        if (!$full_report) {
+        if (!$full_report && $url = $plugin->getFullReportUrl($entity)) {
           $build[$id . '/wrapper']['full_report'] = [
             '#type' => 'link',
             '#title' => $this->t('View the full report'),
-            '#url' => $plugin->getFullReportUrl($entity),
+            '#url' => $url,
             '#attributes' => [
               'class' => [
                 'action-link',

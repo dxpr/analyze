@@ -1,0 +1,7 @@
+analyze.analyze_settings:
+  path: '/admin/config/system/analyze-settings'
+  defaults:
+    _title: 'Analyze settings'
+    _form: 'Drupal\analyze\Form\AnalyzeSettingsForm'
+  requirements:
+    _permission: 'administer analyze'

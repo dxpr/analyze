@@ -21,7 +21,6 @@ final class AnalyzePluginManager extends DefaultPluginManager {
     parent::__construct('Plugin/Analyze', $namespaces, $module_handler, AnalyzeInterface::class, Analyze::class);
     $this->alterInfo('analyze_info');
     $this->setCacheBackend($cache_backend, 'analyze_plugins');
-    $this->alterInfo('analyze_info');
   }
 
 }
