@@ -47,17 +47,22 @@ final class NodeViews extends AnalyzePluginBase implements ContainerFactoryPlugi
    * {@inheritdoc}
    */
   public function renderSummary(EntityInterface $entity): array {
-    $views = $this->nodeStatisticsDatabaseStorage->fetchView($entity->id());
+    $total = $day = 0;
+
+    if ($views = $this->nodeStatisticsDatabaseStorage->fetchView($entity->id())) {
+      $total = $views->getTotalCount();
+      $day = $views->getDayCount();
+    }
 
     return [
       '#type' => 'table',
-      '#header' => [['data' => 'Security', 'colspan' => 2, 'class' => ['header']]],
+      '#header' => [['data' => $this->t('Node Views'), 'colspan' => 2, 'class' => ['header']]],
       '#rows' => [
-        ['data' => ['Word count', 498]],
-        ['data' => ['Image count', 2]],
+        ['data' => [$this->t('Total views'), $total]],
+        ['data' => [$this->t("Today's count"), $day]],
       ],
       '#attributes' => [
-        'class' => ['basic-data-table'],
+        'class' => ['page-views-table'],
         'style' => ['table-layout: fixed;'],
       ],
     ];

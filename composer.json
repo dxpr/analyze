@@ -7,6 +7,7 @@
     "minimum-stability": "dev",
     "require": {},
     "suggest": {
-      "drupal/google_analytics_reports": "Required for the Google Analytics Analyzer module."
+      "drupal/google_analytics_reports": "Required for the Google Analytics Analyzer module.",
+      "drupal/statistics": "Replacement for the deprecated core Statistics module, required for the Node Views module."
     }
 }
