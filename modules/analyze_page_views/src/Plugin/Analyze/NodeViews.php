@@ -22,6 +22,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 final class NodeViews extends AnalyzePluginBase implements ContainerFactoryPluginInterface {
 
+  /**
+   * Creates the plugin.
+   *
+   * @param array $configuration
+   *   Configuration.
+   * @param $plugin_id
+   *   Plugin ID.
+   * @param $plugin_definition
+   *   Plugin Definition.
+   * @param \Drupal\statistics\NodeStatisticsDatabaseStorage $nodeStatisticsDatabaseStorage
+   *   Statistics service.
+   */
   public function __construct(
     array $configuration,
     $plugin_id,
