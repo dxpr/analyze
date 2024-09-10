@@ -2,4 +2,5 @@ name: 'Analyze'
 type: module
 description: 'API for adding information in the Analyze tab of entities'
 core_version_requirement: ^10 | ^11
+configure: analyze.analyze_settings
 package: Custom

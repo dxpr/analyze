@@ -27,3 +27,14 @@ function hook_analyze_info_alter(array &$analyzers): void {
     $analyzers['security_analysis']['label'] = t('Enhanced Security Analysis');
   }
 }
+
+/**
+ * Implements hook_theme().
+ */
+function analyze_theme() {
+
+  // To use the module's 'analyze_guage' render method, see the
+  // analyze_plugin_example sub-module's Example.php plugin file for an example
+  // implementation.
+
+}

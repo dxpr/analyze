@@ -28,7 +28,14 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface 
   /**
    * {@inheritdoc}
    */
-  public function getFullReportUrl(EntityInterface $entity): Url {
+  public function renderFullReport(EntityInterface $entity): array {
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFullReportUrl(EntityInterface $entity): ?Url {
     $entity_type = $entity->getEntityTypeId();
 
     return Url::fromRoute('analyze.' . $entity_type . '.' . $this->getPluginId(), [$entity_type => $entity->id()]);
@@ -60,7 +67,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface 
   /**
    * {@inheritdoc}
    */
-  public function isEnabled(EntityInterface $entity):bool {
+  public function isEnabled(EntityInterface $entity): bool {
     $return = FALSE;
 
     if ($config = $this->analyzeConfig()->get('status')) {
