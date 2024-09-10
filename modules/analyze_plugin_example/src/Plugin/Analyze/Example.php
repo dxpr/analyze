@@ -9,7 +9,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
 
 /**
- * Analyze plugin to display Google Analytics data.
+ * Analyze plugin to display Example data.
  *
  * @Analyze(
  *   id = "example",
