@@ -7,7 +7,7 @@ namespace Drupal\analyze\Form;
 use Drupal\analyze\AnalyzeTrait;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Render\Element;
 
 /**
  * Configure Analyze settings for this site.
@@ -37,6 +37,9 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
     $values = $this->config('analyze.settings')->get('status') ?? [];
 
     if ($plugins = $this->getPlugins()) {
+      $form['welcome'] = [
+        '#markup' => $this->t('<p>Enable or disabled the Analyze plugins for each entity with a canonical URL using the form below.</p>'),
+      ];
       foreach ($this->entityTypeManager()->getDefinitions() as $entity_type) {
         if ($entity_type->hasLinkTemplate('canonical')) {
           $id = $entity_type->id();
@@ -44,16 +47,16 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
             '#type' => 'details',
             '#title' => $entity_type->getLabel(),
             '#open' => !empty($values[$id]),
-            '#parents' => ['analyze'],
+            '#parents' => ['analyze', $id],
           ];
 
-          if ($type = $entity_type->getBundleEntityType()) {
+          if ($entity_type->getBundleEntityType()) {
             foreach ($this->getEntityBundles($id) as $bundle => $data) {
               $form[$id][$bundle] = [
                 '#type' => 'details',
-                '#title' => $bundle,
+                '#title' => $data['label'],
                 '#open' => isset($values[$id][$bundle]),
-                '#parents' => ['analyze', $id],
+                '#parents' => ['analyze', $id, $bundle],
               ];
             }
           }
@@ -62,17 +65,17 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
               '#type' => 'details',
               '#title' => $entity_type->getLabel(),
               '#open' => isset($values[$id][$id]),
-              '#parents' => ['analyze', $id],
+              '#parents' => ['analyze', $id, $id],
             ];
           }
 
-          foreach ($form[$id] as $key => &$value) {
+          foreach (Element::children($form[$id]) as $key) {
             foreach ($plugins as $plugin_id => $plugin) {
-              $value[$plugin_id] = [
+              $form[$id][$key][$plugin_id] = [
                 '#type' => 'checkbox',
                 '#title' => $plugin->label(),
-                '#default_value' => isset($config[$id][$key][$plugin_id]),
-                '#parents' => ['analyze', $id, $key],
+                '#default_value' => isset($values[$id][$key][$plugin_id]),
+                '#parents' => ['analyze', $id, $key, $plugin_id],
               ];
             }
           }
@@ -81,7 +84,7 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
     }
     else {
       $form = [
-        '#markup' => $this->t('You don\'t currently have any Analyze plugins available: please enable one or modules implementing the plugins.'),
+        '#markup' => $this->t("You don't currently have any Analyze plugins available: please enable one or modules implementing the plugins."),
       ];
     }
 
@@ -92,8 +95,21 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
+    $values = $form_state->cleanValues()->getValues();
+    $settings = [];
+
+    foreach ($values['analyze'] as $entity_type => $data) {
+      foreach ($data as $bundle => $value) {
+        foreach ($value as $plugin_id => $setting) {
+          if ($setting) {
+            $settings[$entity_type][$bundle][$plugin_id] = $setting;
+          }
+        }
+      }
+    }
+
     $this->config('analyze.settings')
-      ->set('example', $form_state->getValue('example'))
+      ->set('status', $settings)
       ->save();
     parent::submitForm($form, $form_state);
   }

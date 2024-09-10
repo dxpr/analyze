@@ -139,34 +139,36 @@ function analyze_menu_local_tasks_alter(&$local_tasks, $route_name, RefinableCac
  * Implements hook_form_alter().
  */
 function analyze_form_alter(&$form, FormStateInterface $form_state, $form_id): void {
-  $is_bundle_form = $entity_type = $bundle = FALSE;
-  $form_object = $form_state->getFormObject();
+  if ($form_id !== 'analyze_analyze_settings') {
+    $is_bundle_form = $entity_type = $bundle = FALSE;
+    $form_object = $form_state->getFormObject();
 
-  // User's aren't bundle-able, but we want the opportunity to include them in
-  // insights so we'll hard-code the form id.
-  if ($form_id == 'user_admin_settings') {
-    $is_bundle_form = TRUE;
-    $entity_type = 'user';
-    $bundle = 'user';
-  }
-  else {
+    // User's aren't bundle-able, but we want the opportunity to include them in
+    // insights so we'll hard-code the form id.
+    if ($form_id == 'user_admin_settings') {
+      $is_bundle_form = TRUE;
+      $entity_type = 'user';
+      $bundle = 'user';
+    }
+    else {
 
-    // Otherwise, we need to identify if this is a bundle entity's edit form by
-    // digging down to get the bundle_of setting.
-    if (method_exists($form_object, 'getEntity') && $entity = $form_object->getEntity()) {
-      if (method_exists($entity, 'getEntityType') && $type = $entity->getEntityType()) {
-        if (method_exists($type, 'getBundleOf') && $entity_type = $type->getBundleOf()) {
-          $is_bundle_form = TRUE;
-          $bundle = $entity->id();
+      // Otherwise, we need to identify if this is a bundle entity's edit form
+      // by digging down to get the bundle_of setting.
+      if (method_exists($form_object, 'getEntity') && $entity = $form_object->getEntity()) {
+        if (method_exists($entity, 'getEntityType') && $type = $entity->getEntityType()) {
+          if (method_exists($type, 'getBundleOf') && $entity_type = $type->getBundleOf()) {
+            $is_bundle_form = TRUE;
+            $bundle = $entity->id();
+          }
         }
       }
     }
-  }
 
-  if ($is_bundle_form) {
-    analyze_add_settings_form($form, $entity_type, $bundle);
-    $form_state->set('entity_type', $entity_type);
-    $form_state->set('bundle', $bundle);
+    if ($is_bundle_form) {
+      analyze_add_settings_form($form, $entity_type, $bundle);
+      $form_state->set('entity_type', $entity_type);
+      $form_state->set('bundle', $bundle);
+    }
   }
 }
 
