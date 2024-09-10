@@ -6,7 +6,6 @@ use Drupal\analyze\AnalyzePluginManager;
 use Drupal\analyze\AnalyzeTrait;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
