@@ -1,0 +1,7 @@
+name: 'Page Views'
+type: module
+description: 'Displays Page Views from Statistics module'
+package: Analyze
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:statistics
