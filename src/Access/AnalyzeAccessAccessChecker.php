@@ -33,6 +33,7 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
    *   The access result.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function access(Route $route, AccountInterface $account, string $entity_type, string|null $plugin = NULL): AccessResult {
@@ -49,8 +50,18 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
                 // enabled before granting access.
                 if ($plugin) {
                   if (!empty($settings[$entity_type][$entity->bundle()][$plugin])) {
-                    // @todo Allow plugins to add access conditions.
-                    $return = AccessResult::allowed();
+                    if ($plugins = $this->getPlugins([$plugin])) {
+
+                      $analyze = reset($plugins);
+
+                      // If the plugin modifies the full report URL, we should
+                      // deny access to our default route.
+                      if (!$analyze->fullReportUrlOverridden($entity)) {
+
+                        // @todo Allow plugins to add access conditions.
+                        $return = AccessResult::allowed();
+                      }
+                    }
                   }
                 }
                 else {

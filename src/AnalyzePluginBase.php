@@ -35,6 +35,29 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface 
   }
 
   /**
+   * Helper to check whether a plugin has overridden the full report URL.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   An entity to get against.
+   *
+   * @return bool
+   *   TRUE if the URL is overridden or nullified, FALSE if not.
+   */
+  public function fullReportUrlOverridden(EntityInterface $entity): bool {
+    $return = TRUE;
+
+    if ($url = $this->getFullReportUrl($entity)) {
+      $entity_type = $entity->getEntityTypeId();
+
+      if ($url->getRouteName() == 'analyze.' . $entity_type . '.' . $this->getPluginId()) {
+        $return = FALSE;
+      }
+    }
+
+    return $return;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function isEnabled(EntityInterface $entity):bool {
