@@ -36,6 +36,8 @@ function analyze_theme(): array {
  */
 function analyze_menu_local_actions_alter(&$local_actions): void {
 
+  // @todo replace with a deriver: see field_ui or menu_test.
+
   /** @var \Drupal\analyze\AnalyzePluginManager $service */
   $service = \Drupal::service('plugin.manager.analyze');
 

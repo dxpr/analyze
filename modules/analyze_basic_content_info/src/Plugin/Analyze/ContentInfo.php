@@ -150,7 +150,6 @@ final class ContentInfo extends AnalyzePluginBase implements ContainerFactoryPlu
             $return += count($values);
           }
         }
-
       }
     }
 
