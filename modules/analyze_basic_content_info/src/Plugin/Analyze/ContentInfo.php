@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Drupal\analyze_basic_content_info\Plugin\Analyze;
 
 use Drupal\analyze\AnalyzePluginBase;
+use Drupal\analyze\HelperInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   description = @Translation("Provides basic statistics about content for Analyzer.")
  * )
  */
-final class ContentInfo extends AnalyzePluginBase implements ContainerFactoryPluginInterface {
+final class ContentInfo extends AnalyzePluginBase {
 
   /**
    * Creates the plugin.
@@ -32,6 +32,8 @@ final class ContentInfo extends AnalyzePluginBase implements ContainerFactoryPlu
    *   Plugin ID.
    * @param $plugin_definition
    *   Plugin Definition.
+   * @param \Drupal\analyze\HelperInterface $helper
+   *   Analyze helper service.
    * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager
    *   Statistics service.
    */
@@ -39,9 +41,10 @@ final class ContentInfo extends AnalyzePluginBase implements ContainerFactoryPlu
     array $configuration,
     $plugin_id,
     $plugin_definition,
+    HelperInterface $helper,
     protected EntityFieldManagerInterface $entityFieldManager,
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper);
   }
 
   /**
@@ -52,6 +55,7 @@ final class ContentInfo extends AnalyzePluginBase implements ContainerFactoryPlu
       $configuration,
       $plugin_id,
       $plugin_definition,
+      $container->get('analyze.helper'),
       $container->get('entity_field.manager')
     );
   }

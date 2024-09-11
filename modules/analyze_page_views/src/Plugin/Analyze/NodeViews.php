@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Drupal\analyze_page_views\Plugin\Analyze;
 
 use Drupal\analyze\AnalyzePluginBase;
+use Drupal\analyze\HelperInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\statistics\NodeStatisticsDatabaseStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   description = @Translation("Provides details from the Statistics module about nodes for Analyzer.")
  * )
  */
-final class NodeViews extends AnalyzePluginBase implements ContainerFactoryPluginInterface {
+final class NodeViews extends AnalyzePluginBase {
 
   /**
    * Creates the plugin.
@@ -31,6 +31,8 @@ final class NodeViews extends AnalyzePluginBase implements ContainerFactoryPlugi
    *   Plugin ID.
    * @param $plugin_definition
    *   Plugin Definition.
+   * @param \Drupal\analyze\HelperInterface $helper
+   *   Analyze helper service.
    * @param \Drupal\statistics\NodeStatisticsDatabaseStorage $nodeStatisticsDatabaseStorage
    *   Statistics service.
    */
@@ -38,9 +40,10 @@ final class NodeViews extends AnalyzePluginBase implements ContainerFactoryPlugi
     array $configuration,
     $plugin_id,
     $plugin_definition,
+    HelperInterface $helper,
     protected NodeStatisticsDatabaseStorage $nodeStatisticsDatabaseStorage,
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper);
   }
 
   /**
@@ -51,6 +54,7 @@ final class NodeViews extends AnalyzePluginBase implements ContainerFactoryPlugi
       $configuration,
       $plugin_id,
       $plugin_definition,
+      $container->get('analyze.helper'),
       $container->get('statistics.storage.node')
     );
   }

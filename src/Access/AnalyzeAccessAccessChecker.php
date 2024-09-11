@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\analyze\Access;
 
-use Drupal\analyze\AnalyzeTrait;
+use Drupal\analyze\HelperInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -15,7 +15,15 @@ use Symfony\Component\Routing\Route;
  */
 final class AnalyzeAccessAccessChecker implements AccessInterface {
 
-  use AnalyzeTrait;
+  /**
+   * Constructs the access check.
+   *
+   * @param \Drupal\analyze\HelperInterface $helper
+   *   The Analyze helper service.
+   */
+  public function __construct(
+    private readonly HelperInterface $helper
+  ) {}
 
   /**
    * Access callback for Analyze routes.
@@ -37,11 +45,11 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function access(Route $route, AccountInterface $account, string $entity_type, string|null $plugin = NULL): AccessResult {
-    if ($entity = $this->getEntity($entity_type)) {
+    if ($entity = $this->helper->getEntity($entity_type)) {
       if ($account->hasPermission('view analyze reports')) {
         $return = AccessResult::forbidden('Entity not enabled for Analyze reporting.');
 
-        if ($config = $this->analyzeConfig()) {
+        if ($config = $this->helper->getConfig()) {
           if ($settings = $config->get('status')) {
             if (!empty($settings[$entity_type])) {
               if (!empty($settings[$entity_type][$entity->bundle()])) {
@@ -50,7 +58,7 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
                 // enabled before granting access.
                 if ($plugin) {
                   if (!empty($settings[$entity_type][$entity->bundle()][$plugin])) {
-                    if ($plugins = $this->getPlugins([$plugin])) {
+                    if ($plugins = $this->helper->getPlugins([$plugin])) {
 
                       $analyze = reset($plugins);
 

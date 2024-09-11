@@ -9,5 +9,9 @@ services:
       - { name: event_subscriber }
   access_check.analyze.analyze_access:
     class: Drupal\analyze\Access\AnalyzeAccessAccessChecker
+    arguments: ['@analyze.helper']
     tags:
       - { name: access_check, applies_to: _analyze_access }
+  analyze.helper:
+    class: Drupal\analyze\Helper
+    arguments: ['@entity_type.manager', '@current_route_match', '@plugin.manager.analyze', '@config.factory', '@entity_type.bundle.info']

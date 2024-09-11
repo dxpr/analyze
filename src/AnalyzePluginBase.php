@@ -6,16 +6,50 @@ namespace Drupal\analyze;
 
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base class for analyze plugins.
  */
-abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface {
+abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface, ContainerFactoryPluginInterface {
 
-  use AnalyzeTrait;
   use StringTranslationTrait;
+
+  /**
+   * Creates the plugin.
+   *
+   * @param array $configuration
+   *   Configuration.
+   * @param $plugin_id
+   *   Plugin ID.
+   * @param $plugin_definition
+   *   Plugin Definition.
+   * @param \Drupal\analyze\HelperInterface $helper
+   *   Analyze helper service.
+   */
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    protected HelperInterface $helper,
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('analyze.helper')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -70,7 +104,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface 
   public function isEnabled(EntityInterface $entity): bool {
     $return = FALSE;
 
-    if ($config = $this->analyzeConfig()->get('status')) {
+    if ($config = $this->helper->getConfig()->get('status')) {
       $return = !empty($config[$entity->getEntityTypeId()][$entity->bundle()][$this->getPluginId()]);
     }
 

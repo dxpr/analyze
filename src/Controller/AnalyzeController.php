@@ -2,16 +2,34 @@
 
 namespace Drupal\analyze\Controller;
 
-use Drupal\analyze\AnalyzeTrait;
+use Drupal\analyze\HelperInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller for the Analyze module.
  */
 class AnalyzeController extends ControllerBase {
 
-  use AnalyzeTrait;
+  /**
+   * Constructs the controller.
+   *
+   * @param \Drupal\analyze\HelperInterface $helper
+   *   The Analyze Helper service.
+   */
+  public function __construct(
+    protected readonly HelperInterface $helper
+  ) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('analyze.helper')
+    );
+  }
 
   /**
    * Analyzes an entity and returns a render array with various metrics.
@@ -32,13 +50,13 @@ class AnalyzeController extends ControllerBase {
    */
   public function analyze(string $plugin = NULL, string $entity_type = NULL, bool $full_report = FALSE): array {
     if ($plugin) {
-      $plugins = $this->getPlugins([$plugin]);
+      $plugins = $this->helper->getPlugins([$plugin]);
     }
     else {
-      $plugins = $this->getPlugins();
+      $plugins = $this->helper->getPlugins();
     }
 
-    $entity = $this->getEntity($entity_type);
+    $entity = $this->helper->getEntity($entity_type);
     $build = [];
     $weight = 0;
 
