@@ -1,8 +1,0 @@
-name: 'Google Analytics Analyzer'
-type: module
-description: 'Provides a plugin for analyzing Google Analytics data'
-package: Analyzer
-core_version_requirement: ^10 || ^11
-dependencies:
-  - analyze:analyze
-  - google_analytics_reports:google_analytics_reports_api
