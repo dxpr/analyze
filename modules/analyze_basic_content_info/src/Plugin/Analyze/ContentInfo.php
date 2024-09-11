@@ -111,14 +111,7 @@ final class ContentInfo extends AnalyzePluginBase {
       }
     }
     else {
-
-      // Handle potential differences in how titles are collected.
-      if (method_exists($entity, 'getTitle')) {
-        $countables[] = $entity->getTitle();
-      }
-      elseif (method_exists($entity, 'label')) {
-        $countables[] = $entity->label();
-      }
+      $countables[] = $entity->label();
     }
 
     foreach ($countables as $countable) {

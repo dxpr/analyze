@@ -102,6 +102,9 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    * {@inheritdoc}
    */
   public function isEnabled(EntityInterface $entity): bool {
+
+    // @todo implement an isApplicable method so plugins that only work with
+    // specific entities can be hidden from config forms for other entities.
     $return = FALSE;
 
     if ($config = $this->helper->getConfig()->get('status')) {

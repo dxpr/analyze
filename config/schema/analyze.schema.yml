@@ -4,5 +4,5 @@ analyze.settings:
   label: 'Analyze settings'
   mapping:
     status:
-      type: array
+      type: mapping
       label: 'Plugin Status'
