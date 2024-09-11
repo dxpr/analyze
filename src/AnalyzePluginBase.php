@@ -90,7 +90,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
     if ($url = $this->getFullReportUrl($entity)) {
       $entity_type = $entity->getEntityTypeId();
 
-      if ($url->getRouteName() == 'analyze.' . $entity_type . '.' . $this->getPluginId()) {
+      if ($url->isRouted() && $url->getRouteName() == 'analyze.' . $entity_type . '.' . $this->getPluginId()) {
         $return = FALSE;
       }
     }
