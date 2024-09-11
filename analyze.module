@@ -47,7 +47,7 @@ function analyze_menu_local_actions_alter(&$local_actions): void {
     $plugin_routes = [];
 
     foreach ($plugins as $plugin) {
-      foreach (\Drupal::service('analyze.helper')->getEntityDefinitions as $entity_type) {
+      foreach (\Drupal::service('analyze.helper')->getEntityDefinitions() as $entity_type) {
         $id = $entity_type->id();
         $analyze_route = 'entity.' . $id . '.analyze';
         $plugin_route = 'analyze.' . $id . '.' . $plugin['id'];
@@ -86,7 +86,7 @@ function analyze_local_tasks_alter(&$local_tasks): void {
 
   // Add local actions for all entities if we have plugins enabled.
   if ($service->getDefinitions()) {
-    foreach (\Drupal::service('analyze.helper')->getEntityDefinitions as $entity_type) {
+    foreach (\Drupal::service('analyze.helper')->getEntityDefinitions() as $entity_type) {
       $id = $entity_type->id();
       $analyze_route = 'entity.' . $id . '.analyze';
 
@@ -115,7 +115,7 @@ function analyze_menu_local_tasks_alter(&$local_tasks, $route_name, RefinableCac
 
     // Add local actions for all entities if we have plugins enabled.
     if ($plugins = $service->getDefinitions()) {
-      foreach (\Drupal::service('analyze.helper')->getEntityDefinitions as $entity_type) {
+      foreach (\Drupal::service('analyze.helper')->getEntityDefinitions() as $entity_type) {
         $id = $entity_type->id();
         foreach ($plugins as $plugin) {
           $plugin_route = 'analyze.' . $id . '.' . $plugin['id'];
