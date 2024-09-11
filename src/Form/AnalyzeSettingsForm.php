@@ -70,43 +70,41 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
         '#markup' => $this->t('<p>Enable or disabled the Analyze plugins for each entity with a canonical URL using the form below.</p>'),
       ];
       foreach ($this->helper->getEntityDefinitions() as $entity_type) {
-        if ($entity_type->hasLinkTemplate('canonical')) {
-          $id = $entity_type->id();
-          $form[$id] = [
-            '#type' => 'details',
-            '#title' => $entity_type->getLabel(),
-            '#open' => !empty($values[$id]),
-            '#parents' => ['analyze', $id],
-          ];
+        $id = $entity_type->id();
+        $form[$id] = [
+          '#type' => 'details',
+          '#title' => $entity_type->getLabel(),
+          '#open' => !empty($values[$id]),
+          '#parents' => ['analyze', $id],
+        ];
 
-          if ($entity_type->getBundleEntityType()) {
-            foreach ($this->helper->getEntityBundles($id) as $bundle => $data) {
-              $form[$id][$bundle] = [
-                '#type' => 'details',
-                '#title' => $data['label'],
-                '#open' => isset($values[$id][$bundle]),
-                '#parents' => ['analyze', $id, $bundle],
-              ];
-            }
-          }
-          else {
-            $form[$id][$id] = [
+        if ($entity_type->getBundleEntityType()) {
+          foreach ($this->helper->getEntityBundles($id) as $bundle => $data) {
+            $form[$id][$bundle] = [
               '#type' => 'details',
-              '#title' => $entity_type->getLabel(),
-              '#open' => isset($values[$id][$id]),
-              '#parents' => ['analyze', $id, $id],
+              '#title' => $data['label'],
+              '#open' => isset($values[$id][$bundle]),
+              '#parents' => ['analyze', $id, $bundle],
             ];
           }
+        }
+        else {
+          $form[$id][$id] = [
+            '#type' => 'details',
+            '#title' => $entity_type->getLabel(),
+            '#open' => isset($values[$id][$id]),
+            '#parents' => ['analyze', $id, $id],
+          ];
+        }
 
-          foreach (Element::children($form[$id]) as $key) {
-            foreach ($plugins as $plugin_id => $plugin) {
-              $form[$id][$key][$plugin_id] = [
-                '#type' => 'checkbox',
-                '#title' => $plugin->label(),
-                '#default_value' => isset($values[$id][$key][$plugin_id]),
-                '#parents' => ['analyze', $id, $key, $plugin_id],
-              ];
-            }
+        foreach (Element::children($form[$id]) as $key) {
+          foreach ($plugins as $plugin_id => $plugin) {
+            $form[$id][$key][$plugin_id] = [
+              '#type' => 'checkbox',
+              '#title' => $plugin->label(),
+              '#default_value' => isset($values[$id][$key][$plugin_id]),
+              '#parents' => ['analyze', $id, $key, $plugin_id],
+            ];
           }
         }
       }

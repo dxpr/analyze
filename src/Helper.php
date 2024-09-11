@@ -98,7 +98,15 @@ final class Helper implements HelperInterface {
    *   An array of entity types.
    */
   public function getEntityDefinitions(): array {
-    return $this->entityTypeManager->getDefinitions();
+    $return = [];
+
+    foreach ($this->entityTypeManager->getDefinitions() as $entity_type) {
+      if ($entity_type->hasLinkTemplate('canonical')) {
+        $return[$entity_type->id()] = $entity_type;
+      }
+
+    }
+    return $return;
   }
 
 }
