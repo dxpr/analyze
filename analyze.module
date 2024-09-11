@@ -95,7 +95,7 @@ function analyze_local_tasks_alter(&$local_tasks): void {
         'title' => t('Analyze'),
         'route_name' => $analyze_route,
         'route_parameters' => [],
-        'base_route' => 'entity.' . $id . 'canonical',
+        'base_route' => 'entity.' . $id . '.canonical',
         'class' => 'Drupal\Core\Menu\LocalTaskDefault',
         'provider' => 'analyze',
         'options' => [],
