@@ -5,6 +5,7 @@ namespace Drupal\analyze\Controller;
 use Drupal\analyze\HelperInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -78,6 +79,22 @@ class AnalyzeController extends ControllerBase {
               'class' => [
                 'action-link',
                 Html::cleanCssIdentifier('view-' . $id . '-report'),
+              ],
+            ],
+          ];
+        }
+        elseif ($full_report) {
+          $build[$id . '/wrapper']['back'] = [
+            '#type' => 'link',
+            '#title' => $this->t('Back to the Summary'),
+            '#url' => Url::fromRoute('entity.' . $entity->getEntityTypeId() . '.analyze', [
+              $entity->getEntityTypeId() => $entity->id(),
+            ]),
+            '#attributes' => [
+              'class' => [
+                'action-link',
+                Html::cleanCssIdentifier('view-' . $id . '-back'),
+                'analyze-back',
               ],
             ],
           ];
