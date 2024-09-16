@@ -136,6 +136,7 @@ function analyze_add_settings_form(array &$form, string $entity_type, string $bu
       '#type' => 'details',
       '#title' => t('Analyze settings'),
       '#description' => t('Enable Analyze reports for this entity.'),
+      '#group' => 'additional_settings',
       '#parents' => ['analyze'],
       '#open' => !empty($config[$entity_type][$bundle]),
     ];
