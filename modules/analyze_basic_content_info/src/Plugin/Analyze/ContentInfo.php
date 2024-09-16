@@ -8,7 +8,10 @@ use Drupal\analyze\AnalyzePluginBase;
 use Drupal\analyze\HelperInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -35,7 +38,13 @@ final class ContentInfo extends AnalyzePluginBase {
    * @param \Drupal\analyze\HelperInterface $helper
    *   Analyze helper service.
    * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager
-   *   Statistics service.
+   *   The entity field manager.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   Entity type manager.
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer service.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
+   *   The language manager service.
    */
   public function __construct(
     array $configuration,
@@ -43,6 +52,9 @@ final class ContentInfo extends AnalyzePluginBase {
     $plugin_definition,
     HelperInterface $helper,
     protected EntityFieldManagerInterface $entityFieldManager,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected RendererInterface $renderer,
+    protected LanguageManagerInterface $languageManager
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $helper);
   }
@@ -56,7 +68,10 @@ final class ContentInfo extends AnalyzePluginBase {
       $plugin_id,
       $plugin_definition,
       $container->get('analyze.helper'),
-      $container->get('entity_field.manager')
+      $container->get('entity_field.manager'),
+      $container->get('entity_type.manager'),
+      $container->get('renderer'),
+      $container->get('language_manager'),
     );
   }
 
@@ -88,42 +103,13 @@ final class ContentInfo extends AnalyzePluginBase {
    *   The counted words. Defaults to 0.
    */
   private function getWordCount(EntityInterface $entity): int {
-    $return = 0;
-    $countables = [];
+    // Get the current active langcode from the site.
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
 
-    if ($entity instanceof FieldableEntityInterface) {
-      foreach ($this->getFieldDefinitionsByType($entity, [
-        'string',
-        'string_long',
-        'text_long',
-        'text_with_summary',
-        'text',
-      ]) as $definition) {
-        if ($name = $definition->getName()) {
-          if ($name !== 'timezone') {
-            $value = $entity->get($name)->getValue();
-
-            if (!empty($value[0]['value'])) {
-              $countables[] = $value[0]['value'];
-            }
-          }
-        }
-      }
-    }
-    else {
-      $countables[] = $entity->label();
-    }
-
-    foreach ($countables as $countable) {
-      $matches = [];
-      preg_match_all("/(\w+)/", strip_tags($countable), $matches);
-
-      if ($matches[0]) {
-        $return += count($matches[0]);
-      }
-    }
-
-    return $return;
+    // Get the rendered entity view in default mode.
+    $view = $this->entityTypeManager->getViewBuilder($entity->getEntityTypeId())->view($entity, 'default', $langcode);
+    $rendered = $this->renderer->render($view);
+    return str_word_count(strip_tags($rendered->__toString()));
   }
 
   /**
