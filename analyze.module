@@ -53,6 +53,20 @@ function analyze_menu_local_actions_alter(&$local_actions): void {
         $plugin_route = 'analyze.' . $id . '.' . $plugin['id'];
         $plugin_routes[] = $plugin_route;
 
+        if (empty($local_actions[$analyze_route])) {
+          $local_actions[$analyze_route] = [
+            'id' => $analyze_route,
+            'title' => t('Analyze'),
+            'route_name' => $analyze_route,
+            'route_parameters' => [],
+            'appears_on' => [$analyze_route],
+            'class' => 'Drupal\Core\Menu\LocalActionDefault',
+            'provider' => 'analyze',
+            'options' => [],
+            'weight' => 0,
+          ];
+        }
+
         $local_actions[$plugin_route] = [
           'id' => $plugin_route,
           'title' => $plugin['label'],
