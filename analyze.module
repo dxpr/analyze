@@ -81,42 +81,6 @@ function analyze_local_tasks_alter(&$local_tasks): void {
 }
 
 /**
- * Implements hook_menu_local_tasks_alter().
- */
-function analyze_menu_local_tasks_alter(&$local_tasks, $route_name, RefinableCacheableDependencyInterface &$cacheability): void {
-  if (str_starts_with($route_name, 'analyze.')) {
-    /** @var \Drupal\analyze\AnalyzePluginManager $service */
-    $service = \Drupal::service('plugin.manager.analyze');
-
-    // Add local actions for all entities if we have plugins enabled.
-    if ($plugins = $service->getDefinitions()) {
-      foreach (\Drupal::service('analyze.helper')->getEntityDefinitions() as $entity_type) {
-        $id = $entity_type->id();
-        foreach ($plugins as $plugin) {
-          $plugin_route = 'analyze.' . $id . '.' . $plugin['id'];
-          $entity_route = 'entity.' . $id . '.canonical';
-
-          if ($route_name === $plugin_route) {
-            $canonical_local_tasks = \Drupal::service('plugin.manager.menu.local_task')
-              ->getLocalTasks($entity_route);
-            $local_tasks['tabs'][0] = $canonical_local_tasks['tabs'];
-
-            // Mark the version history local task as active when viewing a node
-            // revision.
-            foreach ($local_tasks['tabs'][0] as $route_name => &$tab) {
-              $tab['#active'] = $route_name === 'entity.' . $id . '.analyze';
-            }
-
-            $cacheability = CacheableMetadata::createFromObject($cacheability)
-              ->merge($canonical_local_tasks['cacheability']);
-          }
-        }
-      }
-    }
-  }
-}
-
-/**
  * Implements hook_form_alter().
  */
 function analyze_form_alter(&$form, FormStateInterface $form_state, $form_id): void {
