@@ -33,64 +33,6 @@ function analyze_theme(): array {
 }
 
 /**
- * Implements hook_menu_local_actions_alter().
- */
-function analyze_menu_local_actions_alter(&$local_actions): void {
-
-  // @todo replace with a deriver: see field_ui or menu_test.
-
-  /** @var \Drupal\analyze\AnalyzePluginManager $service */
-  $service = \Drupal::service('plugin.manager.analyze');
-
-  // Add local actions for all entities if we have plugins enabled.
-  if ($plugins = $service->getDefinitions()) {
-    $plugin_routes = [];
-
-    foreach ($plugins as $plugin) {
-      foreach (\Drupal::service('analyze.helper')->getEntityDefinitions() as $entity_type) {
-        $id = $entity_type->id();
-        $analyze_route = 'entity.' . $id . '.analyze';
-        $plugin_route = 'analyze.' . $id . '.' . $plugin['id'];
-        $plugin_routes[] = $plugin_route;
-
-        if (empty($local_actions[$analyze_route])) {
-          $local_actions[$analyze_route] = [
-            'id' => $analyze_route,
-            'title' => t('Analyze'),
-            'route_name' => $analyze_route,
-            'route_parameters' => [],
-            'appears_on' => [$analyze_route],
-            'class' => 'Drupal\Core\Menu\LocalActionDefault',
-            'provider' => 'analyze',
-            'options' => [],
-            'weight' => 0,
-          ];
-        }
-
-        $local_actions[$plugin_route] = [
-          'id' => $plugin_route,
-          'title' => $plugin['label'],
-          'route_name' => $plugin_route,
-          'route_parameters' => [],
-          'appears_on' => [$analyze_route],
-          'class' => 'Drupal\Core\Menu\LocalActionDefault',
-          'provider' => 'analyze',
-          'options' => [],
-          'weight' => 0,
-        ];
-      }
-    }
-
-    // Add the plugins as local tasks on the plug report pages as well.
-    foreach ($plugin_routes as $route) {
-      if (!empty($local_actions[$route]['appears_on'])) {
-        $local_actions[$route]['appears_on'] = array_merge($local_actions[$route]['appears_on'], $plugin_routes);
-      }
-    }
-  }
-}
-
-/**
  * Implements hook_local_tasks_alter().
  */
 function analyze_local_tasks_alter(&$local_tasks): void {
@@ -115,6 +57,32 @@ function analyze_local_tasks_alter(&$local_tasks): void {
         'options' => [],
         'weight' => 0,
       ];
+
+      $plugin_routes = [];
+
+      foreach (\Drupal::service('analyze.helper')->getPlugins as $plugin) {
+        $plugin_route = 'analyze.' . $id . '.' . $plugin['id'];
+        $plugin_routes[] = $plugin_route;
+
+        $local_tasks[$plugin_route] = [
+          'id' => $plugin_route,
+          'title' => $plugin['label'],
+          'route_name' => $plugin_route,
+          'route_parameters' => [],
+          'appears_on' => [$analyze_route],
+          'class' => 'Drupal\Core\Menu\LocalActionDefault',
+          'provider' => 'analyze',
+          'options' => [],
+          'weight' => 0,
+        ];
+      }
+
+      // Add the plugins as local tasks on the plug report pages as well.
+      foreach ($plugin_routes as $route) {
+        if (!empty($local_tasks[$route]['appears_on'])) {
+          $local_tasks[$route]['appears_on'] = array_merge($local_tasks[$route]['appears_on'], $plugin_routes);
+        }
+      }
     }
   }
 }
