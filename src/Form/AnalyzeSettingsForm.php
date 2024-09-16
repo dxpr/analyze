@@ -21,10 +21,10 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\Core\Config\TypedConfigManagerInterface|null $typedConfigManager
-   *   The typed config manager.
    * @param \Drupal\analyze\HelperInterface $helper
    *   The Analyze Helper service.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface|null $typedConfigManager
+   *   The typed config manager.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
