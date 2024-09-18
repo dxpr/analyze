@@ -70,7 +70,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
     $url = $entity->toUrl()->toString();
     return [
       '#type' => 'view',
-      '#name' => 'analize_google_analytics',
+      '#name' => 'analyze_google_analytics',
       '#display_id' => 'summary',
       '#arguments' => [
         $this->aliasManager->getAliasByPath($url),
@@ -86,7 +86,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
 
     return [
       '#type' => 'view',
-      '#name' => 'analize_google_analytics',
+      '#name' => 'analyze_google_analytics',
       '#display_id' => 'full_report',
       '#arguments' => [
         $this->aliasManager->getAliasByPath($url),

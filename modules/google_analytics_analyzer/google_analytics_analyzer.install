@@ -10,5 +10,5 @@
  */
 function google_analytics_analyzer_uninstall() {
   // Uninstall our views.
-  \Drupal::configFactory()->getEditable('views.view.analize_google_analytics')->delete();
+  \Drupal::configFactory()->getEditable('views.view.analyze_google_analytics')->delete();
 }

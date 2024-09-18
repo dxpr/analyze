@@ -4,8 +4,8 @@ dependencies:
   module:
     - google_analytics_reports
     - google_analytics_analyzer
-id: analize_google_analytics
-label: 'Analize Google Analytics'
+id: analyze_google_analytics
+label: 'Analyze Google Analytics'
 module: views
 description: ''
 tag: ''
