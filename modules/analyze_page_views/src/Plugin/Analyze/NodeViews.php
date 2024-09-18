@@ -101,18 +101,6 @@ final class NodeViews extends AnalyzePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function isEnabled(EntityInterface $entity): bool {
-    // Statistics are only recorded for node entities.
-    if ($entity->getEntityTypeId() == 'node') {
-      return parent::isEnabled($entity);
-    }
-
-    return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function isApplicable(string $entity_type, string $bundle): bool {
     // Statistics are only recorded for node entities.
     return $entity_type == 'node';
