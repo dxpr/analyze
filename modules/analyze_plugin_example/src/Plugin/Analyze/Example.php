@@ -31,9 +31,8 @@ final class Example extends AnalyzePluginBase {
    * {@inheritdoc}
    *
    * This method is used to return a summary to display on an entity's Analyze
-   * report page, and so it is recommended that limited data is returned: any
-   * large amounts of data should be restricted to the plugin's full report
-   * page.
+   * report page. Max 3 pieces of information can be shown - any large amounts
+   * of data should be restricted to the plugin's full report page.
    */
   public function renderSummary(EntityInterface $entity): array {
 
