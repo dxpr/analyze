@@ -46,6 +46,7 @@ function analyze_local_tasks_alter(&$local_tasks): void {
       $id = $entity_type->id();
       $analyze_route = 'entity.' . $id . '.analyze';
 
+      // The analyze route.
       $local_tasks[$analyze_route] = [
         'id' => $analyze_route,
         'title' => t('Analyze'),
@@ -58,7 +59,22 @@ function analyze_local_tasks_alter(&$local_tasks): void {
         'weight' => 0,
       ];
 
-      // Add local actions for all entities if we have plugins enabled.
+      // The default secondary tab.
+      $default = $analyze_route . '.default';
+      $local_tasks[$default] = [
+        'id' => $default,
+        'title' => t('Summary'),
+        'route_name' => $analyze_route,
+        'route_parameters' => [],
+        'base_route' => 'entity.' . $id . '.canonical',
+        'class' => 'Drupal\Core\Menu\LocalTaskDefault',
+        'provider' => 'analyze',
+        'parent_id' => $analyze_route,
+        'options' => [],
+        'weight' => 0,
+      ];
+
+      // Add secondary tabs for all entities if we have plugins enabled.
       if ($service->getDefinitions()) {
         foreach ($plugins as $plugin) {
           $route = 'analyze.' . $id . '.' . $plugin['id'];
