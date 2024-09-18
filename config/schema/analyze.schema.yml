@@ -4,5 +4,16 @@ analyze.settings:
   label: 'Analyze settings'
   mapping:
     status:
-      type: mapping
-      label: 'Plugin Status'
+      type: sequence
+      label: Status
+      orderby: key
+      sequence:
+        type: sequence
+        label: Entity status
+        orderby: key
+        sequence:
+          type: sequence
+          label: Plugin status
+          sequence:
+            type: boolean
+            label: Enabled
