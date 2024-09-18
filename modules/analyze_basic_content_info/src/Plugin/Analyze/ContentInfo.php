@@ -12,6 +12,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -51,12 +52,13 @@ final class ContentInfo extends AnalyzePluginBase {
     $plugin_id,
     $plugin_definition,
     HelperInterface $helper,
+    AccountProxyInterface $currentUser,
     protected EntityFieldManagerInterface $entityFieldManager,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected RendererInterface $renderer,
     protected LanguageManagerInterface $languageManager
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper, $currentUser);
   }
 
   /**
@@ -68,6 +70,7 @@ final class ContentInfo extends AnalyzePluginBase {
       $plugin_id,
       $plugin_definition,
       $container->get('analyze.helper'),
+      $container->get('current_user'),
       $container->get('entity_field.manager'),
       $container->get('entity_type.manager'),
       $container->get('renderer'),

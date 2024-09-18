@@ -109,4 +109,29 @@ final class Helper implements HelperInterface {
     return $return;
   }
 
+  /**
+   * Helper to return all applicable definitions based on an entity.
+   *
+   * @param string $entity_type
+   *   The entity type.
+   * @param string $bundle
+   *   The bundle.
+   *
+   * @return \Drupal\Analyze\AnalyzeInterface[]
+   *   An array of Analyze plugins that are applicable.
+   */
+  public function getApplicableDefinitions(string $entity_type, string $bundle): array {
+    $return = [];
+
+    foreach ($this->pluginManagerAnalyze->getDefinitions() as $id => $definition) {
+      $plugin = $this->pluginManagerAnalyze->createInstance($id);
+
+      if ($plugin->isApplicable($entity_type, $bundle)) {
+        $return[$id] = $definition;
+      }
+    }
+
+    return $return;
+  }
+
 }

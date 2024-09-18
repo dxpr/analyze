@@ -62,7 +62,8 @@ class AnalyzeController extends ControllerBase {
     $weight = 0;
 
     foreach ($plugins as $id => $plugin) {
-      if ($plugin->isEnabled($entity)) {
+      // It should be enabled and the user should have access to it.
+      if ($plugin->isEnabled($entity) && $plugin->access($entity)) {
         $build[$id . '/wrapper'] = [
           '#type' => 'fieldset',
           '#title' => $plugin->label(),

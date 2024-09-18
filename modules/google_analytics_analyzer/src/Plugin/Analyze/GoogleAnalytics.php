@@ -7,6 +7,7 @@ namespace Drupal\google_analytics_analyzer\Plugin\Analyze;
 use Drupal\analyze\AnalyzePluginBase;
 use Drupal\analyze\HelperInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\path_alias\AliasManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -32,6 +33,8 @@ final class GoogleAnalytics extends AnalyzePluginBase {
    *   Plugin Definition.
    * @param \Drupal\analyze\HelperInterface $helper
    *   Analyze helper service.
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   The current user.
    * @param \Drupal\path_alias\AliasManagerInterface $aliasManager
    *   Statistics service.
    */
@@ -40,9 +43,10 @@ final class GoogleAnalytics extends AnalyzePluginBase {
     $plugin_id,
     $plugin_definition,
     HelperInterface $helper,
+    AccountProxyInterface $currentUser,
     protected AliasManagerInterface $aliasManager,
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper, $currentUser);
   }
 
   /**
@@ -54,6 +58,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
       $plugin_id,
       $plugin_definition,
       $container->get('analyze.helper'),
+      $container->get('current_user'),
       $container->get('path_alias.manager')
     );
   }
@@ -87,6 +92,14 @@ final class GoogleAnalytics extends AnalyzePluginBase {
         $this->aliasManager->getAliasByPath($url),
       ],
     ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function access(EntityInterface $entity): bool {
+    // Use the permission from the Google Analytics Reports module.
+    return $this->currentUser->hasPermission('access google analytics reports');
   }
 
 }

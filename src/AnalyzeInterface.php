@@ -60,4 +60,28 @@ interface AnalyzeInterface {
    */
   public function isEnabled(EntityInterface $entity): bool;
 
+  /**
+   * Helper to identify if the plugin is configurable on an entity type/bundle.
+   *
+   * @param string $entity_type
+   *   The Entity Type the plugin is showing for.
+   * @param string $bundle
+   *   The bundle the plugin is showing for.
+   *
+   * @return bool
+   *   TRUE if the plugin is configurable.
+   */
+  public function isApplicable(string $entity_type, string $bundle): bool;
+
+  /**
+   * Helper to identify if the user has access to the plugin.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The Entity the plugin is showing for.
+   *
+   * @return bool
+   *   TRUE if the user has access to the plugin.
+   */
+  public function access(EntityInterface $entity): bool;
+
 }

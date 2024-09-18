@@ -99,12 +99,15 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
 
         foreach (Element::children($form[$id]) as $key) {
           foreach ($plugins as $plugin_id => $plugin) {
-            $form[$id][$key][$plugin_id] = [
-              '#type' => 'checkbox',
-              '#title' => $plugin->label(),
-              '#default_value' => isset($values[$id][$key][$plugin_id]),
-              '#parents' => ['analyze', $id, $key, $plugin_id],
-            ];
+            // Check so its applicable to the entity.
+            if ($plugin->isApplicable($id, $key)) {
+              $form[$id][$key][$plugin_id] = [
+                '#type' => 'checkbox',
+                '#title' => $plugin->label(),
+                '#default_value' => isset($values[$id][$key][$plugin_id]),
+                '#parents' => ['analyze', $id, $key, $plugin_id],
+              ];
+            }
           }
         }
       }

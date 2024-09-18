@@ -168,4 +168,43 @@ final class Example extends AnalyzePluginBase {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   *
+   * This method exists to calculate if the plugin is configurable for an entity
+   * type or bundle. In most cases you can remove this from your own plugin and
+   * rely on the default implementation.
+   */
+  public function isApplicable(string $entity_type, string $bundle): bool {
+
+    // If you for instance want this plugin to only be configurable for the
+    // 'article' bundle of the 'node' entity type, you can override this method
+    // and perform your own calculation.
+    if ($entity_type == 'node' && $bundle == 'article') {
+      return TRUE;
+    }
+    else {
+      return parent::isApplicable($entity_type, $bundle);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * This method exists to calculate if the user has access to the plugin. If
+   * the plugin is using a third party module, you can usually use that module's
+   * permissions to determine access.
+   */
+  public function access(EntityInterface $entity): bool {
+
+    // If you want to use the permissions from another module, you can override
+    // this method and perform your own calculation.
+    if ($this->currentUser->hasPermission('access content')) {
+      return TRUE;
+    }
+    else {
+      return FALSE;
+    }
+  }
+
 }

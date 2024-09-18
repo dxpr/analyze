@@ -7,9 +7,12 @@ namespace Drupal\analyze_page_views\Plugin\Analyze;
 use Drupal\analyze\AnalyzePluginBase;
 use Drupal\analyze\HelperInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
 use Drupal\statistics\NodeStatisticsDatabaseStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 /**
  * Analyze plugin to display Basic data.
@@ -33,6 +36,8 @@ final class NodeViews extends AnalyzePluginBase {
    *   Plugin Definition.
    * @param \Drupal\analyze\HelperInterface $helper
    *   Analyze helper service.
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   The current user.
    * @param \Drupal\statistics\NodeStatisticsDatabaseStorage $nodeStatisticsDatabaseStorage
    *   Statistics service.
    */
@@ -41,9 +46,10 @@ final class NodeViews extends AnalyzePluginBase {
     $plugin_id,
     $plugin_definition,
     HelperInterface $helper,
+    AccountProxyInterface $currentUser,
     protected NodeStatisticsDatabaseStorage $nodeStatisticsDatabaseStorage,
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper, $currentUser);
   }
 
   /**
@@ -55,6 +61,7 @@ final class NodeViews extends AnalyzePluginBase {
       $plugin_id,
       $plugin_definition,
       $container->get('analyze.helper'),
+      $container->get('current_user'),
       $container->get('statistics.storage.node')
     );
   }
@@ -95,13 +102,28 @@ final class NodeViews extends AnalyzePluginBase {
    * {@inheritdoc}
    */
   public function isEnabled(EntityInterface $entity): bool {
-
     // Statistics are only recorded for node entities.
     if ($entity->getEntityTypeId() == 'node') {
       return parent::isEnabled($entity);
     }
 
     return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isApplicable(string $entity_type, string $bundle): bool {
+    // Statistics are only recorded for node entities.
+    return $entity_type == 'node';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function access(EntityInterface $entity): bool {
+    // Use the permission from the Statistics module.
+    return $this->currentUser->hasPermission('view post access counter');
   }
 
 }

@@ -7,6 +7,7 @@ namespace Drupal\analyze;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -29,12 +30,15 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    *   Plugin Definition.
    * @param \Drupal\analyze\HelperInterface $helper
    *   Analyze helper service.
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   The current user.
    */
   public function __construct(
     array $configuration,
     $plugin_id,
     $plugin_definition,
     protected HelperInterface $helper,
+    protected AccountProxyInterface $currentUser
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
@@ -47,7 +51,8 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('analyze.helper')
+      $container->get('analyze.helper'),
+      $container->get('current_user')
     );
   }
 
@@ -102,9 +107,6 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    * {@inheritdoc}
    */
   public function isEnabled(EntityInterface $entity): bool {
-
-    // @todo implement an isApplicable method so plugins that only work with
-    // specific entities can be hidden from config forms for other entities.
     $return = FALSE;
 
     if ($config = $this->helper->getConfig()->get('status')) {
@@ -112,6 +114,22 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
     }
 
     return $return;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isApplicable(string $entity_type, string $bundle): bool {
+    // Default to all entity types and bundles being accessible.
+    return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function access(EntityInterface $entity): bool {
+    // Default to having access.
+    return TRUE;
   }
 
 }

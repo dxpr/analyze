@@ -66,8 +66,11 @@ final class AnalyzeAccessAccessChecker implements AccessInterface {
                       // deny access to our default route.
                       if (!$analyze->fullReportUrlOverridden($entity)) {
 
-                        // @todo Allow plugins to add access conditions.
                         $return = AccessResult::allowed();
+                      }
+                      // If the user should not have access to the plugin.
+                      if (!$analyze->access($entity)) {
+                        $return = AccessResult::forbidden('User does not have the required access level.');
                       }
                     }
                   }

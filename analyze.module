@@ -41,7 +41,7 @@ function analyze_local_tasks_alter(&$local_tasks): void {
   $service = \Drupal::service('plugin.manager.analyze');
 
   // Add local actions for all entities if we have plugins enabled.
-  if ($service->getDefinitions()) {
+  if ($plugins = $service->getDefinitions()) {
     foreach (\Drupal::service('analyze.helper')->getEntityDefinitions() as $entity_type) {
       $id = $entity_type->id();
       $analyze_route = 'entity.' . $id . '.analyze';
@@ -59,8 +59,7 @@ function analyze_local_tasks_alter(&$local_tasks): void {
       ];
 
       // Add local actions for all entities if we have plugins enabled.
-      if ($plugins = $service->getDefinitions()) {
-
+      if ($service->getDefinitions()) {
         foreach ($plugins as $plugin) {
           $route = 'analyze.' . $id . '.' . $plugin['id'];
           $local_tasks[$route] = [
@@ -129,33 +128,40 @@ function analyze_form_alter(&$form, FormStateInterface $form_state, $form_id): v
  *   The bundle the settings are for.
  */
 function analyze_add_settings_form(array &$form, string $entity_type, string $bundle): void {
-  if (\Drupal::currentUser()->hasPermission('administer analyze')) {
-    $config = \Drupal::config('analyze.settings')->get('status');
+  // If the user doesn't have the permission.
+  if (!\Drupal::currentUser()->hasPermission('administer analyze')) {
+    return;
+  }
+  // If no applicable plugins are found.
+  $definitions = \Drupal::service('analyze.helper')->getApplicableDefinitions($entity_type, $bundle);
+  if (!$definitions) {
+    return;
+  }
+  $config = \Drupal::config('analyze.settings')->get('status');
 
-    $form['analyze'] = [
-      '#type' => 'details',
-      '#title' => t('Analyze settings'),
-      '#description' => t('Enable Analyze reports for this entity.'),
-      '#group' => 'additional_settings',
-      '#parents' => ['analyze'],
-      '#open' => !empty($config[$entity_type][$bundle]),
+  $form['analyze'] = [
+    '#type' => 'details',
+    '#title' => t('Analyze settings'),
+    '#description' => t('Enable Analyze reports for this entity.'),
+    '#group' => 'additional_settings',
+    '#parents' => ['analyze'],
+    '#open' => !empty($config[$entity_type][$bundle]),
+  ];
+
+  foreach ($definitions as $id => $definition) {
+    $form['analyze'][$id] = [
+      '#type' => 'checkbox',
+      '#title' => $definition['label'],
+      '#default_value' => isset($config[$entity_type][$bundle][$id]),
+      '#parents' => ['analyze', $id],
     ];
+  }
 
-    foreach (\Drupal::service('plugin.manager.analyze')->getDefinitions() as $id => $definition) {
-      $form['analyze'][$id] = [
-        '#type' => 'checkbox',
-        '#title' => $definition['label'],
-        '#default_value' => isset($config[$entity_type][$bundle][$id]),
-        '#parents' => ['analyze', $id],
-      ];
-    }
-
-    if (isset($form['actions']['submit']['#submit'])) {
-      $form['actions']['submit']['#submit'][] = 'analyze_add_settings_form_submit';
-    }
-    elseif (isset($form['#submit'])) {
-      $form['#submit'][] = 'analyze_add_settings_form_submit';
-    }
+  if (isset($form['actions']['submit']['#submit'])) {
+    $form['actions']['submit']['#submit'][] = 'analyze_add_settings_form_submit';
+  }
+  elseif (isset($form['#submit'])) {
+    $form['#submit'][] = 'analyze_add_settings_form_submit';
   }
 }
 
