@@ -18,7 +18,7 @@ for STANDARD in "${STANDARDS[@]}"; do
   
   $COMMAND \
     --extensions=$FILE_EXTENSIONS \
-    --ignore=$IGNORE \
+    --ignore=$IGNORE_PATHS \
     -v \
     .
   
