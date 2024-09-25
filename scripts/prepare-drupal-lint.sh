@@ -2,7 +2,7 @@
 
 if [ -z "$TARGET_DRUPAL_CORE_VERSION" ]; then
   # default to target Drupal 8, you can override this by setting the secrets value on your github repo
-  TARGET_DRUPAL_CORE_VERSION=8
+  TARGET_DRUPAL_CORE_VERSION=10
 fi
 
 echo "php --version"
