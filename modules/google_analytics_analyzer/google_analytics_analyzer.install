@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * @file
+ * Contains install and update functions for Google Analytics analyzer module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function google_analytics_analyzer_uninstall(): void {
+  // Uninstall our views.
+  \Drupal::configFactory()->getEditable('views.view.analyze_google_analytics')->delete();
+}
