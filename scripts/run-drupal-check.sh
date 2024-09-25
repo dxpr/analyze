@@ -26,6 +26,11 @@ if [ ! -L "web/modules/contrib/analyze" ]; then
   ln -s /src web/modules/contrib/analyze
 fi
 
+# Install the statistic modules if D11 (removed from core).
+if [[ $DRUPAL_RECOMMENDED_PROJECT == 11.* ]]; then
+  composer require drupal/statistics
+fi
+
 # Install drupal-check
 composer require $DRUPAL_CHECK_TOOL --dev
 
