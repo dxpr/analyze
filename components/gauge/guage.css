@@ -1,7 +1,4 @@
-/*
- * Linear Gauge Chart
- */
- .analyze--gauge {
+.analyze--gauge {
   width: calc(100% - 6rem);
   margin: 0 3rem;
   display: -webkit-box;
@@ -9,8 +6,8 @@
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
 }
 .analyze--gauge table, .analyze--gauge thead, .analyze--gauge tbody, .analyze--gauge tr, .analyze--gauge th, .analyze--gauge td {
   padding: 0;
@@ -26,8 +23,8 @@
 }
 .analyze--gauge thead th {
   -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
+  -ms-flex: 1;
+  flex: 1;
   text-align: center;
   font-weight: bold;
   white-space: nowrap;
@@ -46,11 +43,11 @@
   display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
   -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
   height: 50px;
   position: relative;
   background-image: linear-gradient(90deg, #ddd 2px, transparent 2px);
@@ -61,7 +58,7 @@
   font-weight: bold;
   top: 50%;
   -webkit-transform: translateY(-50%);
-          transform: translateY(-50%);
+  transform: translateY(-50%);
   white-space: nowrap;
 }
 .analyze--gauge tbody tr th.analyze-start {
@@ -89,16 +86,15 @@
   height: 30px;
   background-color: #000;
   -webkit-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 .analyze--gauge tbody tr td .analyze-data {
   position: absolute;
   left: calc(var(--value, 0) * 100%);
   top: 1rem;
   -webkit-transform: translateX(-50%);
-          transform: translateX(-50%);
+  transform: translateX(-50%);
   white-space: nowrap;
   font-weight: bold;
   color: #000;
 }
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9jaGFydHMvX2dhdWdlLnNjc3MiLCJjaGFydHMuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztFQUFBO0FBZ0JBO0VBQ0Usd0JBQUE7RUFDQSxjQUFBO0VBQ0Esb0JBQUE7RUFBQSxvQkFBQTtFQUFBLGFBQUE7RUFDQSw0QkFBQTtFQUFBLDZCQUFBO01BQUEsMEJBQUE7VUFBQSxzQkFBQTtBQ1pGO0FEY0U7RUFDRSxVQUFBO0VBQ0EsU0FBQTtFQUNBLFlBQUE7RUFDQSx1QkFBQTtBQ1pKO0FEY0U7RUFDRSxvQkFBQTtFQUFBLG9CQUFBO0VBQUEsYUFBQTtFQUNBLFdBQUE7QUNaSjtBRGlCSTtFQUNFLG1CQUFBO01BQUEsV0FBQTtVQUFBLE9BQUE7RUFDQSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0EsbUJBQUE7QUNYTjtBRGFJO0VBQ0UsZ0JBQUE7QUNYTjtBRGFJO0VBQ0Usa0JBQUE7QUNYTjtBRGFJO0VBQ0UsaUJBQUE7QUNYTjtBRGNFO0VBQ0Usb0JBQUE7RUFBQSxvQkFBQTtFQUFBLGFBQUE7RUFDQSx3QkFBQTtNQUFBLHFCQUFBO1VBQUEsdUJBQUE7RUFDQSx5QkFBQTtNQUFBLHNCQUFBO1VBQUEsbUJBQUE7RUFDQSxZQUFBO0VBQ0Esa0JBQUE7RUFDQSxtRUFDQTtFQUNBLHVDQUFBO0FDYko7QURpQk07RUFDRSxrQkFBQTtFQUNBLGlCQUFBO0VBQ0EsUUFBQTtFQUNBLG1DQUFBO1VBQUEsMkJBQUE7RUFDQSxtQkFBQTtBQ1hSO0FEYU07RUFDRSxXQUFBO0VBQ0EsaUJBQUE7RUFDQSxrQkFBQTtBQ1hSO0FEYU07RUFDRSxVQUFBO0VBQ0EsZ0JBQUE7RUFDQSxpQkFBQTtBQ1hSO0FEYU07RUFDRSxrQkFBQTtFQUNBLFdBQUE7RUFDQSxXQUFBO0VBQ0Esc0JBQUE7QUNYUjtBRFlRO0VBQ0UsV0FBQTtFQUNBLGtCQUFBO0VBQ0Esa0NBQUE7RUFDQSxRQUFBO0VBQ0EsVUFBQTtFQUNBLFlBQUE7RUFDQSxzQkFBQTtFQUNBLHdDQUFBO1VBQUEsZ0NBQUE7QUNWVjtBRFlRO0VBQ0Usa0JBQUE7RUFDQSxrQ0FBQTtFQUNBLFNBQUE7RUFDQSxtQ0FBQTtVQUFBLDJCQUFBO0VBQ0EsbUJBQUE7RUFDQSxpQkFBQTtFQUNBLFdBQUE7QUNWViIsImZpbGUiOiJjaGFydHMuY3NzIn0= */

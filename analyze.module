@@ -5,12 +5,17 @@
  * Provides analysis functionality for the site.
  */
 
+use Drupal\Core\Entity\EntityFormInterface;
+use Drupal\Core\Form\FormStateInterface;
+
 /**
  * Implements hook_theme().
  *
  * Defines the theme for the analyze gauge.
+ *
+ * @phpstan-return array<string, array<string, mixed>>
  */
-function analyze_theme() {
+function analyze_theme(): array {
   return [
     'analyze_gauge' => [
       'variables' => [
@@ -25,4 +30,184 @@ function analyze_theme() {
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_local_tasks_alter().
+ *
+ * @phpstan-param array<string, array<string, mixed>> $local_tasks
+ */
+function analyze_local_tasks_alter(array &$local_tasks): void {
+
+  /** @var \Drupal\analyze\AnalyzePluginManager $service */
+  $service = \Drupal::service('plugin.manager.analyze');
+
+  // Add local actions for all entities if we have plugins enabled.
+  if ($plugins = $service->getDefinitions()) {
+    foreach (\Drupal::service('analyze.helper')->getEntityDefinitions() as $entity_type) {
+      $id = $entity_type->id();
+      $analyze_route = 'entity.' . $id . '.analyze';
+
+      // The analyze route.
+      $local_tasks[$analyze_route] = [
+        'id' => $analyze_route,
+        'title' => t('Analyze'),
+        'route_name' => $analyze_route,
+        'route_parameters' => [],
+        'base_route' => 'entity.' . $id . '.canonical',
+        'class' => 'Drupal\Core\Menu\LocalTaskDefault',
+        'provider' => 'analyze',
+        'options' => [],
+        'weight' => 0,
+      ];
+
+      // The default secondary tab.
+      $default = $analyze_route . '.default';
+      $local_tasks[$default] = [
+        'id' => $default,
+        'title' => t('Summary'),
+        'route_name' => $analyze_route,
+        'route_parameters' => [],
+        'base_route' => 'entity.' . $id . '.canonical',
+        'class' => 'Drupal\Core\Menu\LocalTaskDefault',
+        'provider' => 'analyze',
+        'parent_id' => $analyze_route,
+        'options' => [],
+        'weight' => 0,
+      ];
+
+      // Add secondary tabs for all entities if we have plugins enabled.
+      if ($service->getDefinitions()) {
+        foreach ($plugins as $plugin) {
+          $route = 'analyze.' . $id . '.' . $plugin['id'];
+          $local_tasks[$route] = [
+            'id' => $route,
+            'title' => $plugin['label'],
+            'route_name' => $route,
+            'route_parameters' => [],
+            'class' => 'Drupal\Core\Menu\LocalTaskDefault',
+            'parent_id' => $analyze_route,
+            'provider' => 'analyze',
+            'options' => [],
+            'base_route' => 'entity.' . $id . '.canonical',
+          ];
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * @phpstan-param array<string, mixed> $form
+ */
+function analyze_form_alter(array &$form, FormStateInterface $form_state, string $form_id): void {
+  if ($form_id !== 'analyze_analyze_settings') {
+    $is_bundle_form = $entity_type = $bundle = FALSE;
+    $form_object = $form_state->getFormObject();
+
+    // User's aren't bundle-able, but we want the opportunity to include them in
+    // insights so we'll hard-code the form id.
+    if ($form_id == 'user_admin_settings') {
+      $is_bundle_form = TRUE;
+      $entity_type = 'user';
+      $bundle = 'user';
+    }
+    else {
+      // Otherwise, we need to identify if this is a bundle entity's edit form
+      // by digging down to get the bundle_of setting.
+      if ($form_object instanceof EntityFormInterface) {
+        $entity = $form_object->getEntity();
+        $type = $entity->getEntityType();
+        if ($entity_type = $type->getBundleOf()) {
+          $is_bundle_form = TRUE;
+          $bundle = $entity->id();
+        }
+      }
+    }
+
+    if ($is_bundle_form) {
+      analyze_add_settings_form($form, $entity_type, $bundle);
+      $form_state->set('analyze.entity_type', $entity_type);
+      $form_state->set('analyze.bundle', $bundle);
+    }
+  }
+}
+
+/**
+ * Helper to add Analyze settings to a form.
+ *
+ * @param mixed[] $form
+ *   The form.
+ * @param string $entity_type
+ *   The entity type the settings are for.
+ * @param string $bundle
+ *   The bundle the settings are for.
+ */
+function analyze_add_settings_form(array &$form, string $entity_type, string $bundle): void {
+  // If the user doesn't have the permission.
+  if (!\Drupal::currentUser()->hasPermission('administer analyze')) {
+    return;
+  }
+  // If no applicable plugins are found.
+  $definitions = \Drupal::service('analyze.helper')->getApplicableDefinitions($entity_type, $bundle);
+  if (!$definitions) {
+    return;
+  }
+  $config = \Drupal::config('analyze.settings')->get('status');
+
+  $form['analyze'] = [
+    '#type' => 'details',
+    '#title' => t('Analyze settings'),
+    '#description' => t('Enable Analyze reports for this entity.'),
+    '#group' => 'additional_settings',
+    '#parents' => ['analyze'],
+    '#open' => !empty($config[$entity_type][$bundle]),
+  ];
+
+  foreach ($definitions as $id => $definition) {
+    $form['analyze'][$id] = [
+      '#type' => 'checkbox',
+      '#title' => $definition['label'],
+      '#default_value' => isset($config[$entity_type][$bundle][$id]),
+      '#parents' => ['analyze', $id],
+    ];
+  }
+
+  if (isset($form['actions']['submit']['#submit'])) {
+    $form['actions']['submit']['#submit'][] = 'analyze_add_settings_form_submit';
+  }
+  elseif (isset($form['#submit'])) {
+    $form['#submit'][] = 'analyze_add_settings_form_submit';
+  }
+}
+
+/**
+ * Store the Analyze settings, if they have been set.
+ *
+ * @param mixed[] $form
+ *   The Drupal form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state.
+ */
+function analyze_add_settings_form_submit(array &$form, FormStateInterface $form_state): void {
+  if ($values = $form_state->cleanValues()->getValue('analyze')) {
+    $config = \Drupal::configFactory()->getEditable('analyze.settings')->get('status');
+    $entity_type = $form_state->get('analyze.entity_type');
+    $bundle = $form_state->get('analyze.bundle');
+
+    // Clear any old settings for this bundle.
+    $config[$entity_type][$bundle] = [];
+
+    foreach ($values as $plugin_id => $status) {
+      if ($status) {
+        $config[$entity_type][$bundle][$plugin_id] = TRUE;
+      }
+    }
+
+    \Drupal::configFactory()->getEditable('analyze.settings')
+      ->set('status', $config)
+      ->save();
+  }
 }
