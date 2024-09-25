@@ -19,10 +19,12 @@ composer global require phpcompatibility/php-compatibility
 export PATH="$PATH:$COMPOSER_HOME/vendor/bin"
 
 composer global require dealerdirect/phpcodesniffer-composer-installer
+composer global config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+
+phpcs --config-set installed_paths $COMPOSER_HOME/vendor/drupal/coder/coder_sniffer,$COMPOSER_HOME/vendor/phpcompatibility/php-compatibility
 
 composer global show -P
 phpcs -i
-
 
 phpcs --config-set colors 1
 # see: https://github.com/squizlabs/PHP_CodeSniffer/issues/262
