@@ -36,6 +36,46 @@ solid accessibility standards across our analytics user interfaces.
 - Provides an API for other modules to display analysis data.
 - Includes a linear gauge component for displaying a value on a spectrum.
 
+### Docker Commands
+
+This repository uses Docker to ensure consistent development and testing environments. Here are the key Docker commands you can use:
+
+#### Linting Drupal Code
+
+To run the Drupal linter:
+
+```bash
+docker compose run --rm drupal-lint
+```
+
+This command checks your Drupal code for adherence to coding standards and best practices.
+
+#### Running Drupal Deprecation and Analysis Checks
+
+To perform Drupal deprecation and analysis checks:
+
+```bash
+docker compose run --rm drupal-check
+```
+
+This command analyzes your code for usage of deprecated Drupal APIs and other potential issues.
+
+#### Auto-fixing Drupal Code
+
+To automatically fix some coding standard issues:
+
+```bash
+docker compose run --rm drupal-lint-auto-fix
+```
+
+This command will attempt to automatically fix coding standard violations in your Drupal code.
+
+#### Environment Variables
+
+The `DRUPAL_RECOMMENDED_PROJECT` environment variable is already defined in the process. You don't need to specify it when running the commands.
+
+These Docker commands help maintain code quality and compatibility across different Drupal versions. Make sure to run these checks before submitting pull requests or merging changes into the main branch.
+
 ### Post-Installation
 After installing the Analyze module, developers can use the provided API 
 to integrate their custom analyzers. There is no immediate user-facing 
