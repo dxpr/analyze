@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\analyze_plugin_example\Plugin\Analyze;
 
-// phpcs:disable Squiz.PHP.NonExecutableCode.Unreachable
-
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
 use Drupal\analyze\AnalyzePluginBase;
@@ -44,7 +42,7 @@ final class Example extends AnalyzePluginBase {
     // example describes a table.
     // First, you will have to implement your own methods to create your data
     // from the provided entity as required.
-    $data = $this->doStuff($entity);
+    $data = $this->getData($entity);
 
     // Then that data will need to be formatted into an appropriate Drupal
     // render array.
@@ -85,7 +83,7 @@ final class Example extends AnalyzePluginBase {
 
     // Again, you will need to implement your own methods to obtain the data you
     // wish to display on the full report page.
-    $data = $this->doStuff($entity);
+    $data = $this->getData($entity);
 
     // The default Full Report page will wrap any returned render array in a
     // fieldset, but if you wish to add multiple arrays to your data you may
@@ -136,17 +134,11 @@ final class Example extends AnalyzePluginBase {
    */
   public function getFullReportUrl(EntityInterface $entity): ?Url {
 
-    // If you want to use an alternative Url, you can create it yourself. If you
-    // do this, your module will need to provide a route and a controller to
-    // display your report.
-    return Url::fromUri('/example/url');
-
-    // Or you can use an existing module's route.
-    // @phpstan-ignore deadCode.unreachable
-    return Url::fromRoute('example.route', [$entity->getEntityTypeId() => $entity->id()]);
-
-    // Or to completely disable the Full return, you can just return a NULL.
-    return NULL;
+    // If you want to use an alternative Url, you can create it yourself using
+    // Drupal's existing options. If you use a custom route, your module will
+    // need to provide a both it and a controller to display the report. Or to
+    // completely disable the Full return, you can just return a NULL.
+    return $entity->toUrl();
   }
 
   /**
@@ -217,9 +209,12 @@ final class Example extends AnalyzePluginBase {
    * @return array<string, string>
    *   The label/values pairs of the analyze data.
    */
-  private function doStuff(EntityInterface $entity): array {
-    // Actual analyze data retrieval goes here.
-    return [];
+  private function getData(EntityInterface $entity): array {
+    return [
+      'Label One' => $entity->id(),
+      'Label Two' => 'Data',
+      'Label Three' => 'Data',
+    ];
   }
 
 }
