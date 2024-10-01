@@ -8,7 +8,7 @@
 /**
  * Implements hook_uninstall().
  */
-function google_analytics_analyzer_uninstall(): void {
+function analyze_google_analytics_uninstall(): void {
   // Uninstall our views.
   \Drupal::configFactory()->getEditable('views.view.analyze_google_analytics')->delete();
 }

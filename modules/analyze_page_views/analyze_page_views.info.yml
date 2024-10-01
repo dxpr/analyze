@@ -1,7 +1,7 @@
-name: 'Node Views'
+name: 'Analyze Node Statistics'
 type: module
-description: 'Displays Node Views from Statistics module'
-package: Analyzer
+description: 'Provides a plugin for analyzing node statistics'
+package: Analyze
 core_version_requirement: ^10 || ^11
 dependencies:
   - analyze:analyze

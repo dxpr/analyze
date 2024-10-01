@@ -1,7 +1,7 @@
-name: 'Google Analytics Analyzer'
+name: 'Analyze Google Analytics'
 type: module
 description: 'Provides a plugin for analyzing Google Analytics data'
-package: Analyzer
+package: Analyze
 core_version_requirement: ^10 || ^11
 dependencies:
   - analyze:analyze

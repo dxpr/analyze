@@ -3,7 +3,7 @@ status: true
 dependencies:
   module:
     - google_analytics_reports
-    - google_analytics_analyzer
+    - analyze_google_analytics
 id: analyze_google_analytics
 label: 'Analyze Google Analytics'
 module: views

@@ -1,7 +1,7 @@
-name: 'Basic Content Info'
+name: 'Analyze Basic Content Info'
 type: module
-description: 'Provides a plugin for analyzing content statistics'
-package: Analyzer
+description: 'Provides a plugin for analyzing basic content data like word count'
+package: Analyze
 core_version_requirement: ^10 || ^11
 
 dependencies:
