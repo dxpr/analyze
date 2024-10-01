@@ -1,4 +1,4 @@
-name: Guage
+name: Gauge
 props:
   type: object
   required:
@@ -14,7 +14,7 @@ props:
     caption:
       type: string
       title: Caption
-      description: 'Caption for the guage chart.'
+      description: 'Caption for the gauge chart.'
     range_min_label:
       type: string
       title: 'Min Label'

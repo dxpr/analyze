@@ -35,7 +35,7 @@ function hook_analyze_info_alter(array &$analyzers): void {
  */
 function analyze_theme() {
 
-  // To use the module's 'analyze_guage' render method, see the
+  // To use the module's 'analyze_gauge' render method, see the
   // analyze_plugin_example sub-module's Example.php plugin file for an example
   // implementation.
 }
