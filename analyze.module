@@ -228,3 +228,30 @@ function analyze_add_settings_form_submit(array &$form, FormStateInterface $form
       ->save();
   }
 }
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function analyze_preprocess_analyze_table(&$variables): void {
+  foreach ([
+    'one',
+    'two',
+    'three',
+  ] as $no) {
+    $key = 'row_' . $no;
+    if (isset($variables[$key])) {
+      if (!isset($variables[$key]['label']) || !isset($variables[$key]['data'])) {
+
+        // Incorrect structure so empty the whole row.
+        $variables[$key] = [];
+      }
+      else {
+        foreach ($variables[$key] as $type => $value) {
+
+          // Cast all variables as strings for translation.
+          $variables[$key][$type] = (string) $value;
+        }
+      }
+    }
+  }
+}

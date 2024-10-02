@@ -85,7 +85,7 @@ final class ContentInfo extends AnalyzePluginBase {
    */
   public function renderSummary(EntityInterface $entity): array {
     return [
-      '#type' => 'analyze_table',
+      '#theme' => 'analyze_table',
       '#table_title' => 'Basic Info',
       '#row_one' => [
         'label' => 'Word count',
