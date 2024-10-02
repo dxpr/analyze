@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\analyze_google_analytics\Plugin\Analyze;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\analyze\AnalyzePluginBase;
 use Drupal\analyze\HelperInterface;
@@ -17,7 +18,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @Analyze(
  *   id = "analytics",
  *   label = @Translation("Google Analytics Entity Reports"),
- *   description = @Translation("Provides data from Google Analytics for Analyzer.")
+ *   description = @Translation("Provides data from Google Analytics for
+ *   Analyzer.")
  * )
  */
 final class GoogleAnalytics extends AnalyzePluginBase {
@@ -37,6 +39,8 @@ final class GoogleAnalytics extends AnalyzePluginBase {
    *   The current user.
    * @param \Drupal\path_alias\AliasManagerInterface $aliasManager
    *   Statistics service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   Entity Type Manager.
    */
   public function __construct(
     array $configuration,
@@ -45,6 +49,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
     HelperInterface $helper,
     AccountProxyInterface $currentUser,
     protected AliasManagerInterface $aliasManager,
+    protected EntityTypeManagerInterface $entityTypeManager,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $helper, $currentUser);
   }
@@ -59,7 +64,8 @@ final class GoogleAnalytics extends AnalyzePluginBase {
       $plugin_definition,
       $container->get('analyze.helper'),
       $container->get('current_user'),
-      $container->get('path_alias.manager')
+      $container->get('path_alias.manager'),
+      $container->get('entity_type.manager'),
     );
   }
 
@@ -67,15 +73,47 @@ final class GoogleAnalytics extends AnalyzePluginBase {
    * {@inheritdoc}
    */
   public function renderSummary(EntityInterface $entity): array {
-    $url = $entity->toUrl()->toString();
-    return [
-      '#type' => 'view',
-      '#name' => 'analyze_google_analytics',
-      '#display_id' => 'summary',
-      '#arguments' => [
-        $this->aliasManager->getAliasByPath($url),
+    $return = [
+      '#theme' => 'analyze_table',
+      '#table_title' => 'Google Analytics Summary',
+      '#row_one' => [
+        'label' => 'No data',
+        'data' => 'There is no data recorded for this entity.',
       ],
     ];
+    $url = $entity->toUrl()->toString();
+
+    /** @var \Drupal\views\ViewEntityInterface $view */
+    if ($view = $this->entityTypeManager->getStorage('view')->load('analyze_google_analytics')) {
+      $view = $view->getExecutable();
+      $view->setArguments([$this->aliasManager->getAliasByPath($url)]);
+      $view->execute('summary');
+
+      if (!empty($view->result)) {
+        foreach ($view->result as $row) {
+          if ($row->screenPageViews) {
+            $return['#row_one'] = [
+              'label' => 'Page views',
+              'data' => $row->screenPageViews,
+            ];
+          }
+          if ($row->screenPageViewsPerUser) {
+            $return['#row_two'] = [
+              'label' => 'Page views per user',
+              'data' => number_format((float) $row->screenPageViewsPerUser, 2),
+            ];
+          }
+          if ($row->bounceRate) {
+            $return['#row_three'] = [
+              'label' => 'Bounce Rate',
+              'data' => number_format((float) $row->bounceRate, 2),
+            ];
+          }
+        }
+      }
+    }
+
+    return $return;
   }
 
   /**

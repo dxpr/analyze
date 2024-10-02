@@ -68,15 +68,19 @@ class AnalyzeController extends ControllerBase {
       // It should be enabled and the user should have access to it.
       if ($plugin->isEnabled($entity) && $plugin->access($entity)) {
         if ($plugin_data = $this->validatePluginData($plugin, $entity, $full_report)) {
-          $build[$id . '/wrapper'] = [
-            '#type' => 'fieldset',
-            '#title' => $plugin->label(),
+          $build[$id . '-title'] = [
+            '#type' => 'html_tag',
+            '#tag' => 'h3',
+            '#value' => $plugin->label(),
             '#weight' => $weight,
-            $id => $plugin_data,
           ];
+          $weight++;
+          $build[$id] = $plugin_data;
+          $build[$id]['#weight'] = $weight;
+          $weight++;
 
           if (!$full_report && $url = $plugin->getFullReportUrl($entity)) {
-            $build[$id . '/wrapper']['full_report'] = [
+            $build[$id . '-link'] = [
               '#type' => 'link',
               '#title' => $this->t('View the full report'),
               '#url' => $url,
@@ -86,10 +90,13 @@ class AnalyzeController extends ControllerBase {
                   Html::cleanCssIdentifier('view-' . $id . '-report'),
                 ],
               ],
+              '#weight' => $weight,
             ];
+
+            $weight++;
           }
           elseif ($full_report) {
-            $build[$id . '/wrapper']['back'] = [
+            $build[$id . '-back'] = [
               '#type' => 'link',
               '#title' => $this->t('Back to the Summary'),
               '#url' => Url::fromRoute('entity.' . $entity->getEntityTypeId() . '.analyze', [
@@ -102,9 +109,11 @@ class AnalyzeController extends ControllerBase {
                   'analyze-back',
                 ],
               ],
+              '#weight' => $weight,
             ];
+
+            $weight++;
           }
-          $weight++;
         }
         elseif (!$full_report) {
 
