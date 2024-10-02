@@ -1,0 +1,27 @@
+<div class="layer-wrapper gin-layer-wrapper">
+    <table class="analyze--table" role="presentation">
+        <thead>
+            <tr>
+                <th colspan="2" class="header">{{ table_title|t }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="row-one odd">
+                <td class="label">{{ row_one['label']|t }}</td>
+                <td class="data">{{ row_one['data']|t }}</td>
+            </tr>
+            {% if row_two %}
+                <tr class="row-two even">
+                    <td class="label">{{ row_two['label']|t }}</td>
+                    <td class="data">{{ row_two['data']|t }}</td>
+                </tr>
+                {% if row_three %}
+                    <tr class="row-three odd">
+                        <td class="label">{{ row_three['label']|t }}</td>
+                        <td class="data">{{ row_three['data']|t }}</td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </tbody>
+    </table>
+</div>

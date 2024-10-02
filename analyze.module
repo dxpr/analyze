@@ -29,6 +29,23 @@ function analyze_theme(): array {
         'range_max' => NULL,
       ],
     ],
+    'analyze_table' => [
+      'variables' => [
+        'table_title' => NULL,
+        'row_one' => [
+          'label' => NULL,
+          'data' => NULL,
+        ],
+        'row_two' => [
+          'label' => NULL,
+          'data' => NULL,
+        ],
+        'row_three' => [
+          'label' => NULL,
+          'data' => NULL,
+        ],
+      ],
+    ],
   ];
 }
 

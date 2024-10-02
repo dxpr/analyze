@@ -85,15 +85,15 @@ final class ContentInfo extends AnalyzePluginBase {
    */
   public function renderSummary(EntityInterface $entity): array {
     return [
-      '#type' => 'table',
-      '#header' => [['data' => 'Basic Info', 'colspan' => 2, 'class' => ['header']]],
-      '#rows' => [
-        ['data' => ['Word count', $this->getWordCount($entity)]],
-        ['data' => ['Image count', $this->getImageCount($entity)]],
+      '#type' => 'analyze_table',
+      '#table_title' => 'Basic Info',
+      '#row_one' => [
+        'label' => 'Word count',
+        'data' => $this->getWordCount($entity),
       ],
-      '#attributes' => [
-        'class' => ['basic-data-table'],
-        'style' => ['table-layout: fixed;'],
+      '#row_two' => [
+        'label' => 'Image count',
+        'data' => $this->getImageCount($entity),
       ],
     ];
   }
@@ -102,12 +102,15 @@ final class ContentInfo extends AnalyzePluginBase {
    * Helper to calculate a rough word count for the entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity to calculate a word count for.
+   *    The entity to calculate a word count for.
    *
    * @return int
-   *   The counted words. Defaults to 0.
+   *    The counted words. Defaults to 0.
+   *
+   * @throws \Exception
    */
   private function getWordCount(EntityInterface $entity): int {
+
     // Get the current active langcode from the site.
     $langcode = $this->languageManager->getCurrentLanguage()->getId();
 
