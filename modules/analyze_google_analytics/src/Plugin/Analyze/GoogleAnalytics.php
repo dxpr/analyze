@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Drupal\google_analytics_analyzer\Plugin\Analyze;
+namespace Drupal\analyze_google_analytics\Plugin\Analyze;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountProxyInterface;
