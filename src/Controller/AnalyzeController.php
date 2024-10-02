@@ -3,12 +3,12 @@
 namespace Drupal\analyze\Controller;
 
 use Drupal\analyze\AnalyzeInterface;
+use Drupal\analyze\HelperInterface;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
-use Drupal\analyze\HelperInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
