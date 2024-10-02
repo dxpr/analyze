@@ -50,7 +50,7 @@ final class Example extends AnalyzePluginBase {
     // analyze_gauge render array, please see $this->renderFullReport().
     $build = [
       '#theme' => 'analyze_table',
-      '#table_title' => 'Node views',
+      '#table_title' => 'Example Table',
     ];
 
     $key = 0;
@@ -65,9 +65,9 @@ final class Example extends AnalyzePluginBase {
         default => 'three',
       };
 
-      $build[$name] = [
+      $build['#row_' . $name] = [
         'label' => $label,
-        'value' => $value,
+        'data' => $value,
       ];
 
       $key++;
@@ -148,7 +148,11 @@ final class Example extends AnalyzePluginBase {
     // Drupal's existing options. If you use a custom route, your module will
     // need to provide a both it and a controller to display the report. Or to
     // completely disable the Full return, you can just return a NULL.
-    return $entity->toUrl();
+    if ($data = $this->getData($entity)) {
+      return parent::getFullReportUrl($entity);
+    }
+
+    return NULL;
   }
 
   /**

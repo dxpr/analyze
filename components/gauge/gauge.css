@@ -1,6 +1,6 @@
 .analyze--gauge {
   width: calc(100% - 6rem);
-  margin: 0 3rem;
+  margin: 3rem;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -8,6 +8,14 @@
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
+}
+.analyze--gauge .analyze-data {
+  font-size: 0.8rem;
+}
+.analyze--gauge caption {
+  font-size: 1.2rem;
+  font-weight: bolder;
+  margin: 0.5rem 0;
 }
 .analyze--gauge table, .analyze--gauge thead, .analyze--gauge tbody, .analyze--gauge tr, .analyze--gauge th, .analyze--gauge td {
   padding: 0;
