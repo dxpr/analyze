@@ -123,6 +123,10 @@ class AnalyzeController extends ControllerBase {
       }
     }
 
+    // Ensure reports don't get cached for the wrong entities.
+    $build['#cache']['contexts'][] = 'url';
+    $build['#cache']['tags'] = $entity->getCacheTags();
+
     return $build;
   }
 

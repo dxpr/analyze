@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\analyze\AnalyzePluginBase;
 use Drupal\analyze\HelperInterface;
+use Drupal\Core\Url;
 use Drupal\path_alias\AliasManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -81,34 +82,28 @@ final class GoogleAnalytics extends AnalyzePluginBase {
         'data' => 'There is no data recorded for this entity.',
       ],
     ];
-    $url = $entity->toUrl()->toString();
 
-    /** @var \Drupal\views\ViewEntityInterface $view */
-    if ($view = $this->entityTypeManager->getStorage('view')->load('analyze_google_analytics')) {
-      $view = $view->getExecutable();
-      $view->setArguments([$this->aliasManager->getAliasByPath($url)]);
-      $view->execute('summary');
+    $results = $this->getSummaryResults($entity);
 
-      if (!empty($view->result)) {
-        foreach ($view->result as $row) {
-          if ($row->screenPageViews) {
-            $return['#row_one'] = [
-              'label' => 'Page views',
-              'data' => $row->screenPageViews,
-            ];
-          }
-          if ($row->screenPageViewsPerUser) {
-            $return['#row_two'] = [
-              'label' => 'Page views per user',
-              'data' => number_format((float) $row->screenPageViewsPerUser, 2),
-            ];
-          }
-          if ($row->bounceRate) {
-            $return['#row_three'] = [
-              'label' => 'Bounce Rate',
-              'data' => number_format((float) $row->bounceRate, 2),
-            ];
-          }
+    if (!empty($results)) {
+      foreach ($results as $row) {
+        if ($row->screenPageViews) {
+          $return['#row_one'] = [
+            'label' => 'Page views',
+            'data' => $row->screenPageViews,
+          ];
+        }
+        if ($row->screenPageViewsPerUser) {
+          $return['#row_two'] = [
+            'label' => 'Page views per user',
+            'data' => number_format((float) $row->screenPageViewsPerUser, 2),
+          ];
+        }
+        if ($row->bounceRate) {
+          $return['#row_three'] = [
+            'label' => 'Bounce Rate',
+            'data' => number_format((float) $row->bounceRate, 2),
+          ];
         }
       }
     }
@@ -135,9 +130,53 @@ final class GoogleAnalytics extends AnalyzePluginBase {
   /**
    * {@inheritdoc}
    */
+  public function getFullReportUrl(EntityInterface $entity): ?Url {
+
+    // Only show a full report URL if we have results.
+    if ($this->getSummaryResults($entity)) {
+      parent::getFullReportUrl($entity);
+    }
+
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function access(EntityInterface $entity): bool {
     // Use the permission from the Google Analytics Reports module.
     return $this->currentUser->hasPermission('access google analytics reports');
+  }
+
+  /**
+   * Helper to get the results from the Summary display of our view.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to get the results for.
+   *
+   * @return \Drupal\views\ResultRow[]|null
+   *   An array of view results, or null on error.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Core\Entity\EntityMalformedException
+   */
+  private function getSummaryResults(EntityInterface $entity): ?array {
+    $return = NULL;
+    $url = $entity->toUrl()->toString();
+
+    /** @var \Drupal\views\ViewEntityInterface $view */
+    if ($view = $this->entityTypeManager->getStorage('view')->load('analyze_google_analytics')) {
+      $view = $view->getExecutable();
+      $view->setArguments([$this->aliasManager->getAliasByPath($url)]);
+      $view->execute('summary');
+
+      if ($view->result) {
+        $return = $view->result;
+      }
+    }
+
+    return $return;
   }
 
 }
