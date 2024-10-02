@@ -2,8 +2,11 @@
 
 namespace Drupal\analyze\Controller;
 
+use Drupal\analyze\AnalyzeInterface;
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
 use Drupal\analyze\HelperInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -64,47 +67,89 @@ class AnalyzeController extends ControllerBase {
     foreach ($plugins as $id => $plugin) {
       // It should be enabled and the user should have access to it.
       if ($plugin->isEnabled($entity) && $plugin->access($entity)) {
-        $build[$id . '/wrapper'] = [
-          '#type' => 'fieldset',
-          '#title' => $plugin->label(),
-          '#weight' => $weight,
-          $id => ($full_report) ? $plugin->renderFullReport($entity) : $plugin->renderSummary($entity),
-        ];
+        if ($plugin_data = $this->validatePluginData($plugin, $entity, $full_report)) {
+          $build[$id . '/wrapper'] = [
+            '#type' => 'fieldset',
+            '#title' => $plugin->label(),
+            '#weight' => $weight,
+            $id => $plugin_data,
+          ];
 
-        if (!$full_report && $url = $plugin->getFullReportUrl($entity)) {
-          $build[$id . '/wrapper']['full_report'] = [
-            '#type' => 'link',
-            '#title' => $this->t('View the full report'),
-            '#url' => $url,
-            '#attributes' => [
-              'class' => [
-                'action-link',
-                Html::cleanCssIdentifier('view-' . $id . '-report'),
+          if (!$full_report && $url = $plugin->getFullReportUrl($entity)) {
+            $build[$id . '/wrapper']['full_report'] = [
+              '#type' => 'link',
+              '#title' => $this->t('View the full report'),
+              '#url' => $url,
+              '#attributes' => [
+                'class' => [
+                  'action-link',
+                  Html::cleanCssIdentifier('view-' . $id . '-report'),
+                ],
               ],
-            ],
-          ];
-        }
-        elseif ($full_report) {
-          $build[$id . '/wrapper']['back'] = [
-            '#type' => 'link',
-            '#title' => $this->t('Back to the Summary'),
-            '#url' => Url::fromRoute('entity.' . $entity->getEntityTypeId() . '.analyze', [
-              $entity->getEntityTypeId() => $entity->id(),
-            ]),
-            '#attributes' => [
-              'class' => [
-                'action-link',
-                Html::cleanCssIdentifier('view-' . $id . '-back'),
-                'analyze-back',
+            ];
+          }
+          elseif ($full_report) {
+            $build[$id . '/wrapper']['back'] = [
+              '#type' => 'link',
+              '#title' => $this->t('Back to the Summary'),
+              '#url' => Url::fromRoute('entity.' . $entity->getEntityTypeId() . '.analyze', [
+                $entity->getEntityTypeId() => $entity->id(),
+              ]),
+              '#attributes' => [
+                'class' => [
+                  'action-link',
+                  Html::cleanCssIdentifier('view-' . $id . '-back'),
+                  'analyze-back',
+                ],
               ],
-            ],
-          ];
+            ];
+          }
+          $weight++;
         }
-        $weight++;
+        elseif (!$full_report) {
+
+          // Throw an exception if this is a summary as the plugin is malformed.
+          throw new InvalidPluginDefinitionException($id, 'Plugin does not return an approved render array type for its summary.');
+        }
       }
     }
 
     return $build;
   }
 
+  /**
+   * Helper to ensure a plugin summary returns an allowed render array.
+   *
+   * @param \Drupal\analyze\AnalyzeInterface $plugin
+   *   The Analyze plugin.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to generate the report for.
+   * @param bool $full_report
+   *   Whether this is the full report or the summary.
+   *
+   * @return array|null
+   */
+  private function validatePluginData(AnalyzeInterface $plugin, EntityInterface $entity, bool $full_report): ?array {
+    $return = NULL;
+
+    if ($full_report) {
+
+      // The full report can contain any data, so we need no further validation.
+      $return = $plugin->renderFullReport($entity);
+    }
+    else {
+      if ($plugin_data = $plugin->renderSummary($entity)) {
+        if (isset($plugin_data['#theme'])) {
+
+          // Summaries can only return a gauge or a table so we can enforce a
+          // three item limit on the render array.
+          if ($plugin_data['#theme'] == 'analyze_gauge' || $plugin_data['#theme'] == 'analyze_table') {
+            $return = $plugin_data;
+          }
+        }
+      }
+    }
+
+    return $return;
+  }
 }

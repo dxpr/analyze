@@ -44,22 +44,33 @@ final class Example extends AnalyzePluginBase {
     // from the provided entity as required.
     $data = $this->getData($entity);
 
-    // Then that data will need to be formatted into an appropriate Drupal
-    // render array.
+    // Then that data will need to be formatted into either an analyze_gauge or
+    // analyze_table render array: any other type of render array will throw an
+    // Exception when the summary tab is viewed. For an example of an
+    // analyze_gauge render array, please see $this->renderFullReport().
     $build = [
-      '#type' => 'table',
-      '#header' => [['data' => 'Example', 'colspan' => 2, 'class' => ['header']]],
-      '#rows' => [],
-      '#attributes' => [
-        'class' => ['example-table'],
-        'style' => ['table-layout: fixed;'],
-      ],
+      '#theme' => 'analyze_table',
+      '#table_title' => 'Node views',
     ];
 
+    $key = 0;
+
+    // The analyze_table only allows three rows of two columns for a summary, in
+    // order to keep the summary page usable. All summary data must be adapted
+    // to fit this structure or it will be ignored.
     foreach ($data as $label => $value) {
-      $build['#rows'][] = [
-        'data' => [$label, $value],
+      $name = match ($key) {
+        0 => 'one',
+        1 => 'two',
+        default => 'three',
+      };
+
+      $build[$name] = [
+        'label' => $label,
+        'value' => $value,
       ];
+
+      $key++;
     }
 
     return $build;
@@ -85,9 +96,8 @@ final class Example extends AnalyzePluginBase {
     // wish to display on the full report page.
     $data = $this->getData($entity);
 
-    // The default Full Report page will wrap any returned render array in a
-    // fieldset, but if you wish to add multiple arrays to your data you may
-    // want to wrap everything in your own fieldset for clarity.
+    // The default Full Report page allows the return of any valid Drupal render
+    // array.
     $build = [
       '#type' => 'fieldset',
       '#title' => $this->t('Example Full Report'),
