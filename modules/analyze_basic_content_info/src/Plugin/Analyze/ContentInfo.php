@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\analyze_basic_content_info\Plugin\Analyze;
 
-use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -40,8 +38,6 @@ final class ContentInfo extends AnalyzePluginBase {
    *   Analyze helper service.
    * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
    *   The current user.
-   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager
-   *   The entity field manager.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   Entity type manager.
    * @param \Drupal\Core\Render\RendererInterface $renderer
@@ -55,7 +51,6 @@ final class ContentInfo extends AnalyzePluginBase {
     $plugin_definition,
     HelperInterface $helper,
     AccountProxyInterface $currentUser,
-    protected EntityFieldManagerInterface $entityFieldManager,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected RendererInterface $renderer,
     protected LanguageManagerInterface $languageManager,
@@ -73,7 +68,6 @@ final class ContentInfo extends AnalyzePluginBase {
       $plugin_definition,
       $container->get('analyze.helper'),
       $container->get('current_user'),
-      $container->get('entity_field.manager'),
       $container->get('entity_type.manager'),
       $container->get('renderer'),
       $container->get('language_manager'),
@@ -102,22 +96,20 @@ final class ContentInfo extends AnalyzePluginBase {
    * Helper to calculate a rough word count for the entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   *    The entity to calculate a word count for.
+   *   The entity to calculate a word count for.
    *
    * @return int
-   *    The counted words. Defaults to 0.
+   *   The counted words. Defaults to 0.
    *
    * @throws \Exception
    */
   private function getWordCount(EntityInterface $entity): int {
+    $rendered = strip_tags($this->getHtml($entity));
 
-    // Get the current active langcode from the site.
-    $langcode = $this->languageManager->getCurrentLanguage()->getId();
-
-    // Get the rendered entity view in default mode.
-    $view = $this->entityTypeManager->getViewBuilder($entity->getEntityTypeId())->view($entity, 'default', $langcode);
-    $rendered = $this->renderer->render($view);
-    return str_word_count(strip_tags($rendered->__toString()));
+    // Non-breaking spaces are getting counted as words, so strip them out to
+    // improve the accuracy of the count.
+    $rendered = str_replace('&nbsp;', ' ', $rendered);
+    return str_word_count($rendered);
   }
 
   /**
@@ -128,46 +120,45 @@ final class ContentInfo extends AnalyzePluginBase {
    *
    * @return int
    *   The number of images. Defaults to 0.
+   *
+   * @throws \Exception
    */
   private function getImageCount(EntityInterface $entity): int {
     $return = 0;
 
-    if ($entity instanceof FieldableEntityInterface) {
-      foreach ($this->getFieldDefinitionsByType($entity, ['image']) as $definition) {
-        if ($name = $definition->getName()) {
-          if (!$entity->get($name)->isEmpty()) {
-            $values = $entity->get($name)->getValue();
+    $render = $this->getHtml($entity);
 
-            $return += count($values);
-          }
-        }
-      }
+    $matches = [];
+    preg_match_all('/<img/', $render, $matches);
+
+    if (isset($matches[0])) {
+      $return = count($matches[0]);
     }
 
     return $return;
   }
 
   /**
-   * Helper to return field definitions of a given type.
+   * Helper to get the rendered entity content.
    *
-   * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
-   *   The entity to get the definitions for.
-   * @param string[] $types
-   *   An array of types we want to return.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to render.
    *
-   * @return \Drupal\Core\Field\FieldDefinitionInterface[]
-   *   Any definitions of the required types.
+   * @return string
+   *   A HTML string of rendered content.
+   *
+   * @throws \Exception
    */
-  private function getFieldDefinitionsByType(FieldableEntityInterface $entity, array $types): array {
-    $return = [];
+  private function getHtml(EntityInterface $entity): string {
 
-    foreach ($this->entityFieldManager->getFieldDefinitions($entity->getEntityTypeId(), $entity->bundle()) as $definition) {
-      if (in_array($definition->getType(), $types)) {
-        $return[] = $definition;
-      }
-    }
+    // Get the current active langcode from the site.
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
 
-    return $return;
+    // Get the rendered entity view in default mode.
+    $view = $this->entityTypeManager->getViewBuilder($entity->getEntityTypeId())->view($entity, 'default', $langcode);
+    $rendered = $this->renderer->render($view);
+
+    return $rendered->__toString();
   }
 
   /**
