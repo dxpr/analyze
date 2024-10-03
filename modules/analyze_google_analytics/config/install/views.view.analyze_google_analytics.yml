@@ -1,9 +1,10 @@
+uuid: 0c45bdab-8090-46cb-bcfc-e82bfe570204
 langcode: en
 status: true
 dependencies:
   module:
     - google_analytics_reports
-    - analyze_google_analytics
+    - user
 id: analyze_google_analytics
 label: 'Analyze Google Analytics'
 module: views
@@ -183,8 +184,9 @@ display:
           sort_asc_label: Asc
           sort_desc_label: Desc
       access:
-        type: none
-        options: {  }
+        type: perm
+        options:
+          perm: 'access google analytics reports'
       cache:
         type: tag
         options: {  }
@@ -332,7 +334,92 @@ display:
         groups:
           1: AND
       style:
-        type: default
+        type: table
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          columns:
+            screenPageViews: screenPageViews
+            screenPageViewsPerSession: screenPageViewsPerSession
+            screenPageViewsPerUser: screenPageViewsPerUser
+            city: city
+            bounceRate: bounceRate
+            percentScrolled: percentScrolled
+            landingPage: landingPage
+            unifiedPagePathScreen: unifiedPagePathScreen
+            pageReferrer: pageReferrer
+          default: '-1'
+          info:
+            screenPageViews:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            screenPageViewsPerSession:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            screenPageViewsPerUser:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            city:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            bounceRate:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            percentScrolled:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            landingPage:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            unifiedPagePathScreen:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            pageReferrer:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: false
+          caption: ''
+          description: ''
       row:
         type: fields
       query:
@@ -347,6 +434,7 @@ display:
       contexts:
         - 'languages:language_interface'
         - url
+        - user.permissions
       tags: {  }
   full_report:
     id: full_report
@@ -806,6 +894,7 @@ display:
       contexts:
         - 'languages:language_interface'
         - url
+        - user.permissions
       tags: {  }
   summary:
     id: summary
@@ -819,4 +908,5 @@ display:
       contexts:
         - 'languages:language_interface'
         - url
+        - user.permissions
       tags: {  }
