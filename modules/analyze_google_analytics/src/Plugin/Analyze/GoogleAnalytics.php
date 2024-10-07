@@ -7,9 +7,9 @@ namespace Drupal\analyze_google_analytics\Plugin\Analyze;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\Url;
 use Drupal\analyze\AnalyzePluginBase;
 use Drupal\analyze\HelperInterface;
-use Drupal\Core\Url;
 use Drupal\path_alias\AliasManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -87,18 +87,21 @@ final class GoogleAnalytics extends AnalyzePluginBase {
 
     if (!empty($results)) {
       foreach ($results as $row) {
+        // @phpstan-ignore-next-line
         if ($row->screenPageViews) {
           $return['#row_one'] = [
             'label' => 'Page views',
             'data' => $row->screenPageViews,
           ];
         }
+        // @phpstan-ignore-next-line
         if ($row->screenPageViewsPerUser) {
           $return['#row_two'] = [
             'label' => 'Page views per user',
             'data' => number_format((float) $row->screenPageViewsPerUser, 2),
           ];
         }
+        // @phpstan-ignore-next-line
         if ($row->bounceRate) {
           $return['#row_three'] = [
             'label' => 'Bounce Rate',
@@ -165,9 +168,9 @@ final class GoogleAnalytics extends AnalyzePluginBase {
     $return = NULL;
     $url = $entity->toUrl()->toString();
 
-    /** @var \Drupal\views\ViewEntityInterface $view */
-    if ($view = $this->entityTypeManager->getStorage('view')->load('analyze_google_analytics')) {
-      $view = $view->getExecutable();
+    if ($view_entity = $this->entityTypeManager->getStorage('view')->load('analyze_google_analytics')) {
+      /** @var \Drupal\views\ViewEntityInterface $view_entity */
+      $view = $view_entity->getExecutable();
       $view->setArguments([$this->aliasManager->getAliasByPath($url)]);
       $view->execute('summary');
 

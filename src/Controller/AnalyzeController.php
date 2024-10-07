@@ -140,7 +140,8 @@ class AnalyzeController extends ControllerBase {
    * @param bool $full_report
    *   Whether this is the full report or the summary.
    *
-   * @return array|null
+   * @return array<string, mixed>|null
+   *   The validated data, or NULL if it fails.
    */
   private function validatePluginData(AnalyzeInterface $plugin, EntityInterface $entity, bool $full_report): ?array {
     $return = NULL;
@@ -165,4 +166,5 @@ class AnalyzeController extends ControllerBase {
 
     return $return;
   }
+
 }

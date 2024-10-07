@@ -148,7 +148,7 @@ final class Example extends AnalyzePluginBase {
     // Drupal's existing options. If you use a custom route, your module will
     // need to provide a both it and a controller to display the report. Or to
     // completely disable the Full return, you can just return a NULL.
-    if ($data = $this->getData($entity)) {
+    if ($this->getData($entity)) {
       return parent::getFullReportUrl($entity);
     }
 
