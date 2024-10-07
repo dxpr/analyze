@@ -137,7 +137,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
 
     // Only show a full report URL if we have results.
     if ($this->getSummaryResults($entity)) {
-      parent::getFullReportUrl($entity);
+      return parent::getFullReportUrl($entity);
     }
 
     return NULL;
