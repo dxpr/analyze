@@ -182,4 +182,16 @@ final class GoogleAnalytics extends AnalyzePluginBase {
     return $return;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function extraSummaryLinks(EntityInterface $entity): array {
+    return [
+      [
+        'title' => $this->t('View sitewide Google Analytics report'),
+        'url' => Url::fromRoute('view.google_analytics_summary.page_1'),
+      ],
+    ];
+  }
+
 }

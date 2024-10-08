@@ -82,7 +82,7 @@ class AnalyzeController extends ControllerBase {
           if (!$full_report && $url = $plugin->getFullReportUrl($entity)) {
             $build[$id . '-link'] = [
               '#type' => 'link',
-              '#title' => $this->t('View the full report'),
+              '#title' => $this->t('View full report of this page'),
               '#url' => $url,
               '#attributes' => [
                 'class' => [
@@ -113,6 +113,25 @@ class AnalyzeController extends ControllerBase {
             ];
 
             $weight++;
+          }
+          // If there are extra links for the summary, add them.
+          if (!$full_report && $links = $plugin->extraSummaryLinks($entity)) {
+            foreach ($links as $key => $link) {
+              $build[$id . '-extra-link-' . $key] = [
+                '#type' => 'link',
+                '#title' => $link['title'],
+                '#url' => $link['url'],
+                '#attributes' => [
+                  'class' => [
+                    'action-link',
+                    Html::cleanCssIdentifier('view-' . $id . '-report'),
+                  ],
+                ],
+                '#weight' => $weight,
+              ];
+
+              $weight++;
+            }
           }
         }
         elseif (!$full_report) {

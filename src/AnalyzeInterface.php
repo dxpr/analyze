@@ -96,4 +96,15 @@ interface AnalyzeInterface {
    */
   public function fullReportUrlOverridden(EntityInterface $entity): bool;
 
+  /**
+   * If the plugin wants to expose extra summary links, it can do so here.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   An entity to create links against.
+   *
+   * @return array<mixed>
+   *   An array of title and url pairs.
+   */
+  public function extraSummaryLinks(EntityInterface $entity): array;
+
 }

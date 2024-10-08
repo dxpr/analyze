@@ -128,4 +128,11 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
     return TRUE;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function extraSummaryLinks(EntityInterface $entity): array {
+    return [];
+  }
+
 }

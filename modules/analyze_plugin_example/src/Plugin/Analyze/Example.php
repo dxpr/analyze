@@ -231,4 +231,21 @@ final class Example extends AnalyzePluginBase {
     ];
   }
 
+  /**
+   * {@inheritdoc}
+   *
+   * This method exists to be able to add extra links to the summary page. For
+   * instance, if you have a plugin that provides a full global report, you can
+   * add a link to that report here or if there is some external tool being
+   * used.
+   */
+  public function extraSummaryLinks(EntityInterface $entity): array {
+    return [
+      'global_report' => [
+        'title' => $this->t('Global Report'),
+        'url' => Url::fromUri('https://example.com/global-report'),
+      ],
+    ];
+  }
+
 }
