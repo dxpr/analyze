@@ -3,45 +3,26 @@ props:
   type: object
   required:
     - table_title
-    - row_one
+    - rows
   properties:
     table_title:
       type: string
       title: Title
       description: 'The table title'
-    row_one:
+    rows:
       type: array
-      title: 'Row One'
-      description: 'The first row of data in the table'
-      label:
-        type: string
-        title: 'Label'
-        description: 'The label for the row data'
-      data:
-        type: string
-        title: 'Data'
-        description: 'The cell data for the row'
-    row_two:
-      type: array
-      title: 'Row Two'
-      description: 'The second row of data in the table'
-      label:
-        type: string
-        title: 'Label'
-        description: 'The label for the row data'
-      data:
-        type: string
-        title: 'Data'
-        description: 'The cell data for the row'
-    row_three:
-      type: array
-      title: 'Row Three'
-      description: 'The last row of data in the table'
-      label:
-        type: string
-        title: 'Label'
-        description: 'The label for the row data'
-      data:
-        type: string
-        title: 'Data'
-        description: 'The cell data for the row'
+      title: 'Rows'
+      description: 'The rows of data in the table'
+      minItems: 1
+      maxItems: 3
+      items:
+        type: object
+        properties:
+          label:
+            type: string
+            title: 'Label'
+            description: 'The label for the row data'
+          data:
+            type: string
+            title: 'Data'
+            description: 'The cell data for the row'

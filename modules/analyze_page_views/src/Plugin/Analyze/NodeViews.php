@@ -78,13 +78,15 @@ final class NodeViews extends AnalyzePluginBase {
     return [
       '#theme' => 'analyze_table',
       '#table_title' => 'Node views',
-      '#row_one' => [
-        'label' => 'Total views',
-        'data' => $total,
-      ],
-      '#row_two' => [
-        'label' => "Today's count",
-        'data' => $day,
+      '#rows' => [
+        [
+          'label' => 'Total views',
+          'data' => $total,
+        ],
+        [
+          'label' => "Today's count",
+          'data' => $day,
+        ],
       ],
     ];
   }

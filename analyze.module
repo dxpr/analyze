@@ -32,18 +32,7 @@ function analyze_theme(): array {
     'analyze_table' => [
       'variables' => [
         'table_title' => NULL,
-        'row_one' => [
-          'label' => NULL,
-          'data' => NULL,
-        ],
-        'row_two' => [
-          'label' => NULL,
-          'data' => NULL,
-        ],
-        'row_three' => [
-          'label' => NULL,
-          'data' => NULL,
-        ],
+        'rows' => [],
       ],
     ],
   ];
@@ -235,25 +224,9 @@ function analyze_add_settings_form_submit(array &$form, FormStateInterface $form
  * @phpstan-param array<string, mixed> $variables
  */
 function analyze_preprocess_analyze_table(array &$variables): void {
-  foreach ([
-    'one',
-    'two',
-    'three',
-  ] as $no) {
-    $key = 'row_' . $no;
-    if (isset($variables[$key])) {
-      if (!isset($variables[$key]['label']) || !isset($variables[$key]['data'])) {
-
-        // Incorrect structure so empty the whole row.
-        $variables[$key] = [];
-      }
-      else {
-        foreach ($variables[$key] as $type => $value) {
-
-          // Cast all variables as strings for translation.
-          $variables[$key][$type] = (string) $value;
-        }
-      }
-    }
+  if (!empty($variables['rows']))
+  foreach ($variables['rows'] as $key => $row) {
+    // Make sure to case row as string.
+    $variables['rows'][$key]['data'] = (string) $row['data'];
   }
 }

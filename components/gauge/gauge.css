@@ -106,3 +106,28 @@
   font-weight: bold;
   color: #000;
 }
+
+/* Special solutions for gin and other dark modes */
+@media (prefers-color-scheme: dark) {
+  .analyze--gauge tbody tr td {
+    background-color: #fff;
+  }
+  .analyze--gauge tbody tr td::before {
+    background-color: #fff;
+  }
+  .analyze--gauge tbody tr td .analyze-data {
+    color: #fff;
+  }
+}
+
+.gin--dark-mode .analyze--gauge tbody tr td {
+  background-color: #fff;
+}
+
+.gin--dark-mode .analyze--gauge tbody tr td::before {
+  background-color: #fff;
+}
+
+.gin--dark-mode .analyze--gauge tbody tr td .analyze-data {
+  color: #fff;
+}

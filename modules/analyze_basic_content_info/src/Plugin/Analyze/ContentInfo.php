@@ -81,13 +81,15 @@ final class ContentInfo extends AnalyzePluginBase {
     return [
       '#theme' => 'analyze_table',
       '#table_title' => 'Basic Info',
-      '#row_one' => [
-        'label' => 'Word count',
-        'data' => $this->getWordCount($entity),
-      ],
-      '#row_two' => [
-        'label' => 'Image count',
-        'data' => $this->getImageCount($entity),
+      '#rows' => [
+        [
+          'label' => 'Word count',
+          'data' => $this->getWordCount($entity),
+        ],
+        [
+          'label' => 'Image count',
+          'data' => $this->getImageCount($entity),
+        ],
       ],
     ];
   }

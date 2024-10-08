@@ -76,7 +76,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
   public function renderSummary(EntityInterface $entity): array {
     $return = [
       '#theme' => 'analyze_table',
-      '#table_title' => 'Google Analytics Summary',
+      '#table_title' => 'Google Analytics Summary Last 30 Days',
       '#row_one' => [
         'label' => 'No data',
         'data' => 'There is no data recorded for this entity.',
@@ -89,21 +89,21 @@ final class GoogleAnalytics extends AnalyzePluginBase {
       foreach ($results as $row) {
         // @phpstan-ignore-next-line
         if ($row->screenPageViews) {
-          $return['#row_one'] = [
+          $return['#rows'][] = [
             'label' => 'Page views',
             'data' => $row->screenPageViews,
           ];
         }
         // @phpstan-ignore-next-line
         if ($row->screenPageViewsPerUser) {
-          $return['#row_two'] = [
+          $return['#rows'][] = [
             'label' => 'Page views per user',
             'data' => number_format((float) $row->screenPageViewsPerUser, 2),
           ];
         }
         // @phpstan-ignore-next-line
         if ($row->bounceRate) {
-          $return['#row_three'] = [
+          $return['#rows'][] = [
             'label' => 'Bounce Rate',
             'data' => number_format((float) $row->bounceRate, 2),
           ];

@@ -6,22 +6,12 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="row-one odd">
-                <td class="label">{{ row_one['label']|t }}</td>
-                <td class="data">{{ row_one['data']|t }}</td>
-            </tr>
-            {% if row_two %}
-                <tr class="row-two even">
-                    <td class="label">{{ row_two['label']|t }}</td>
-                    <td class="data">{{ row_two['data']|t }}</td>
+            {% for row in rows %}
+                <tr class="row-{{ row.index }} d{% if loop.index is divisible by(2) %}even{% else %}odd{% endif %}">
+                    <td class="label">{{ row['label']|t }}</td>
+                    <td class="data">{{ row['data']|t }}</td>
                 </tr>
-                {% if row_three %}
-                    <tr class="row-three odd">
-                        <td class="label">{{ row_three['label']|t }}</td>
-                        <td class="data">{{ row_three['data']|t }}</td>
-                    </tr>
-                {% endif %}
-            {% endif %}
+            {% endfor %}
         </tbody>
     </table>
 </div>
