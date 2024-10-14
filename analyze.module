@@ -224,9 +224,10 @@ function analyze_add_settings_form_submit(array &$form, FormStateInterface $form
  * @phpstan-param array<string, mixed> $variables
  */
 function analyze_preprocess_analyze_table(array &$variables): void {
-  if (!empty($variables['rows']))
-  foreach ($variables['rows'] as $key => $row) {
-    // Make sure to case row as string.
-    $variables['rows'][$key]['data'] = (string) $row['data'];
+  if (!empty($variables['rows'])) {
+    foreach ($variables['rows'] as $key => $row) {
+      // Make sure to case row as string.
+      $variables['rows'][$key]['data'] = (string) $row['data'];
+    }
   }
 }
