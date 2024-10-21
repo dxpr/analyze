@@ -7,7 +7,7 @@
     "minimum-stability": "dev",
     "require": {},
     "require-dev": {
-      "drupal/google_analytics_reports": "^4.0"
+      "google/analytics-data": "*"
     },
     "suggest": {
       "drupal/statistics": "Replacement for the deprecated core Statistics module, required for the Node Views module."
