@@ -6,6 +6,9 @@
     "license": "GPL-2.0+",
     "minimum-stability": "dev",
     "require": {},
+    "require-dev": {
+      "drupal/google_analytics_reports": "^4.0"
+    },
     "suggest": {
       "drupal/statistics": "Replacement for the deprecated core Statistics module, required for the Node Views module."
     }

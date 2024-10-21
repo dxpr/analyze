@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Drupal\analyze_google_analytics\Plugin\Analyze;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
 use Drupal\analyze\AnalyzePluginBase;
 use Drupal\analyze\HelperInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\google_analytics_reports_api\GoogleAnalyticsReportsApiFeed;
 use Drupal\path_alias\AliasManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -124,8 +124,6 @@ final class GoogleAnalytics extends AnalyzePluginBase {
    * {@inheritdoc}
    */
   public function renderFullReport(EntityInterface $entity): array {
-    $url = $entity->toUrl()->toString();
-
     $results = $this->getSummaryResults($entity, 'full_report');
     $return = [
       '#theme' => 'table',
@@ -136,6 +134,8 @@ final class GoogleAnalytics extends AnalyzePluginBase {
     ];
     // We only get one aggregated row, so we can just grab the first one.
     if (!empty($results[0])) {
+      // Views are itterable.
+      // @phpstan-ignore-next-line
       foreach ($results[0] as $key => $value) {
         // If key starts with underscore or is the index field, skip it.
         if (strpos($key, '_') === 0 || $key === 'index') {

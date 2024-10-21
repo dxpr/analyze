@@ -2,8 +2,9 @@ name: 'Analyze Google Analytics'
 type: module
 description: 'Provides a plugin for analyzing Google Analytics data'
 package: Analyze
-core_version_requirement: ^10 || ^11
+core_version_requirement: ^10.3 || ^11
 dependencies:
   - analyze:analyze
+  - drupal:views
   - google_analytics_reports:google_analytics_reports
   - google_analytics_reports:google_analytics_reports_api
