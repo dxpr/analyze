@@ -66,13 +66,13 @@ interface AnalyzeInterface {
    *
    * @param string $entity_type
    *   The Entity Type the plugin is showing for.
-   * @param string $bundle
-   *   The bundle the plugin is showing for.
+   * @param string|null $bundle
+   *   The bundle the plugin is showing for, might not be set on creation form.
    *
    * @return bool
    *   TRUE if the plugin is applicable.
    */
-  public function isApplicable(string $entity_type, string $bundle): bool;
+  public function isApplicable(string $entity_type, ?string $bundle = NULL): bool;
 
   /**
    * Helper to identify if the user has access to the plugin.

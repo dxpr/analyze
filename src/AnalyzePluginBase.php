@@ -115,7 +115,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
   /**
    * {@inheritdoc}
    */
-  public function isApplicable(string $entity_type, string $bundle): bool {
+  public function isApplicable(string $entity_type, ?string $bundle = NULL): bool {
     // Default to all entity types and bundles being accessible.
     return TRUE;
   }

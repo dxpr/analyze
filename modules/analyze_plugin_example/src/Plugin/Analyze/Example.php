@@ -182,7 +182,7 @@ final class Example extends AnalyzePluginBase {
    * type or bundle. In most cases you can remove this from your own plugin and
    * rely on the default implementation.
    */
-  public function isApplicable(string $entity_type, string $bundle): bool {
+  public function isApplicable(string $entity_type, ?string $bundle = NULL): bool {
 
     // If you for instance want this plugin to only be configurable for the
     // 'article' bundle of the 'node' entity type, you can override this method

@@ -148,10 +148,10 @@ function analyze_form_alter(array &$form, FormStateInterface $form_state, string
  *   The form.
  * @param string $entity_type
  *   The entity type the settings are for.
- * @param string $bundle
+ * @param string|null $bundle
  *   The bundle the settings are for.
  */
-function analyze_add_settings_form(array &$form, string $entity_type, string $bundle): void {
+function analyze_add_settings_form(array &$form, string $entity_type, ?string $bundle = NULL): void {
   // If the user doesn't have the permission.
   if (!\Drupal::currentUser()->hasPermission('administer analyze')) {
     return;
@@ -198,10 +198,13 @@ function analyze_add_settings_form(array &$form, string $entity_type, string $bu
  *   The form state.
  */
 function analyze_add_settings_form_submit(array &$form, FormStateInterface $form_state): void {
-  if ($values = $form_state->cleanValues()->getValue('analyze')) {
+   if ($values = $form_state->cleanValues()->getValue('analyze')) {
     $config = \Drupal::configFactory()->getEditable('analyze.settings')->get('status');
     $entity_type = $form_state->get('analyze.entity_type');
-    $bundle = $form_state->get('analyze.bundle');
+    /** @var \Drupal\Core\Entity\ContentEntityFormInterface */
+    $content_form = $form_state->getFormObject();
+    // Get the entity if the bundle does not exist.
+    $bundle = $form_state->get('analyze.bundle') ?? $content_form->getEntity()->id();
 
     // Clear any old settings for this bundle.
     $config[$entity_type][$bundle] = [];

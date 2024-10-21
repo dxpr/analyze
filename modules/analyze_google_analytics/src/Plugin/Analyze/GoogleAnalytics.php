@@ -10,6 +10,8 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
 use Drupal\analyze\AnalyzePluginBase;
 use Drupal\analyze\HelperInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\google_analytics_reports_api\GoogleAnalyticsReportsApiFeed;
 use Drupal\path_alias\AliasManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -42,6 +44,8 @@ final class GoogleAnalytics extends AnalyzePluginBase {
    *   Statistics service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   Entity Type Manager.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   Config Factory.
    */
   public function __construct(
     array $configuration,
@@ -51,6 +55,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
     AccountProxyInterface $currentUser,
     protected AliasManagerInterface $aliasManager,
     protected EntityTypeManagerInterface $entityTypeManager,
+    protected ConfigFactoryInterface $configFactory,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $helper, $currentUser);
   }
@@ -67,6 +72,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
       $container->get('current_user'),
       $container->get('path_alias.manager'),
       $container->get('entity_type.manager'),
+      $container->get('config.factory')
     );
   }
 
@@ -120,14 +126,30 @@ final class GoogleAnalytics extends AnalyzePluginBase {
   public function renderFullReport(EntityInterface $entity): array {
     $url = $entity->toUrl()->toString();
 
-    return [
-      '#type' => 'view',
-      '#name' => 'analyze_google_analytics',
-      '#display_id' => 'full_report',
-      '#arguments' => [
-        $this->aliasManager->getAliasByPath($url),
+    $results = $this->getSummaryResults($entity, 'full_report');
+    $return = [
+      '#theme' => 'table',
+      '#title' => 'Google Analytics Summary Last 30 Days',
+      '#header' => [
+        $this->t('Google Analytics Summary Last 30 Days'),
       ],
     ];
+    // We only get one aggregated row, so we can just grab the first one.
+    if (!empty($results[0])) {
+      foreach ($results[0] as $key => $value) {
+        // If key starts with underscore or is the index field, skip it.
+        if (strpos($key, '_') === 0 || $key === 'index') {
+          continue;
+        }
+        // Transform snake_case to human readable.
+        $label = ucwords(str_replace('_', ' ', $key));
+        $return['#rows'][] = [
+          $label,
+          $value,
+        ];
+      }
+    }
+    return $return;
   }
 
   /**
@@ -146,6 +168,22 @@ final class GoogleAnalytics extends AnalyzePluginBase {
   /**
    * {@inheritdoc}
    */
+  public function isApplicable(string $entity_type, ?string $bundle = NULL): bool {
+    // Is only applicable Google Analytics report is setup.
+    return $this->isGoogleAnalyticsReportsSetup();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isEnabled(EntityInterface $entity): bool {
+    // Is only enabled if Google Analytics report is setup.
+    return $this->isGoogleAnalyticsReportsSetup();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function access(EntityInterface $entity): bool {
     // Use the permission from the Google Analytics Reports module.
     return $this->currentUser->hasPermission('access google analytics reports');
@@ -156,6 +194,8 @@ final class GoogleAnalytics extends AnalyzePluginBase {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to get the results for.
+   * @param string $report
+   *   The display of the view to get the results from.
    *
    * @return \Drupal\views\ResultRow[]|null
    *   An array of view results, or null on error.
@@ -164,7 +204,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityMalformedException
    */
-  private function getSummaryResults(EntityInterface $entity): ?array {
+  private function getSummaryResults(EntityInterface $entity, $report = 'summary'): ?array {
     $return = NULL;
     $url = $entity->toUrl()->toString();
 
@@ -172,7 +212,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
       /** @var \Drupal\views\ViewEntityInterface $view_entity */
       $view = $view_entity->getExecutable();
       $view->setArguments([$this->aliasManager->getAliasByPath($url)]);
-      $view->execute('summary');
+      $view->execute($report);
 
       if ($view->result) {
         $return = $view->result;
@@ -180,6 +220,18 @@ final class GoogleAnalytics extends AnalyzePluginBase {
     }
 
     return $return;
+  }
+
+  /**
+   * Helper function to check if Google Analytics Reports is setup.
+   *
+   * @return bool
+   *   TRUE if Google Analytics Reports is setup.
+   */
+  private function isGoogleAnalyticsReportsSetup(): bool {
+    $account = GoogleAnalyticsReportsApiFeed::service();
+    $imported = $this->configFactory->get('google_analytics_reports.settings')->get('metadata_last_time');
+    return $account && $account->isAuthenticated() && $imported;
   }
 
   /**

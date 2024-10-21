@@ -101,7 +101,7 @@ final class NodeViews extends AnalyzePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function isApplicable(string $entity_type, string $bundle): bool {
+  public function isApplicable(string $entity_type, ?string $bundle = NULL): bool {
     // Statistics are only recorded for node entities.
     return $entity_type == 'node';
   }

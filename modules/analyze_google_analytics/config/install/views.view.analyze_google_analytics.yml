@@ -6,7 +6,7 @@ dependencies:
     - google_analytics_reports
     - user
 _core:
-  default_config_hash: R2hLNjEOg_FSj78CSXik3KJ0uz8zsH6JR-NGPOzNRiI
+  default_config_hash: KRm4wfSHOtVmtvTxYVDGF2Jl_rUwrh33_T48hGjjz08
 id: analyze_google_analytics
 label: 'Analyze Google Analytics'
 module: views
@@ -365,6 +365,104 @@ display:
     display_options:
       title: 'Google Analytics Last 30 Days (Full Report)'
       fields:
+        sessions:
+          id: sessions
+          table: google_analytics
+          field: sessions
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: standard
+          label: Sessions
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+        totalUsers:
+          id: totalUsers
+          table: google_analytics
+          field: totalUsers
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: standard
+          label: 'Total users'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
         screenPageViews:
           id: screenPageViews
           table: google_analytics
@@ -373,7 +471,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: standard
-          label: 'Page Views'
+          label: Views
           exclude: false
           alter:
             alter_text: false
@@ -414,15 +512,15 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-        screenPageViewsPerSession:
-          id: screenPageViewsPerSession
+        sessionsPerUser:
+          id: sessionsPerUser
           table: google_analytics
-          field: screenPageViewsPerSession
+          field: sessionsPerUser
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: standard
-          label: 'Views Per Session'
+          label: 'Sessions per user'
           exclude: false
           alter:
             alter_text: false
@@ -463,15 +561,15 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-        screenPageViewsPerUser:
-          id: screenPageViewsPerUser
+        userEngagementDuration:
+          id: userEngagementDuration
           table: google_analytics
-          field: screenPageViewsPerUser
+          field: userEngagementDuration
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: standard
-          label: 'Views Per User'
+          label: 'User engagement'
           exclude: false
           alter:
             alter_text: false
@@ -512,15 +610,15 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-        city:
-          id: city
+        engagementRate:
+          id: engagementRate
           table: google_analytics
-          field: city
+          field: engagementRate
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: standard
-          label: City
+          label: 'Engagement rate'
           exclude: false
           alter:
             alter_text: false
@@ -561,15 +659,15 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-        bounceRate:
-          id: bounceRate
+        newUsers:
+          id: newUsers
           table: google_analytics
-          field: bounceRate
+          field: newUsers
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: standard
-          label: 'Bounce Rate'
+          label: 'New users'
           exclude: false
           alter:
             alter_text: false
@@ -610,162 +708,15 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-        percentScrolled:
-          id: percentScrolled
+        averageSessionDuration:
+          id: averageSessionDuration
           table: google_analytics
-          field: percentScrolled
+          field: averageSessionDuration
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: standard
-          label: 'Percent Scrolled'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-        landingPage:
-          id: landingPage
-          table: google_analytics
-          field: landingPage
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: standard
-          label: 'Landing Page'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-        unifiedPagePathScreen:
-          id: unifiedPagePathScreen
-          table: google_analytics
-          field: unifiedPagePathScreen
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: standard
-          label: 'Page Path Screen'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-        pageReferrer:
-          id: pageReferrer
-          table: google_analytics
-          field: pageReferrer
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: standard
-          label: Referrer
+          label: 'Average session duration'
           exclude: false
           alter:
             alter_text: false
