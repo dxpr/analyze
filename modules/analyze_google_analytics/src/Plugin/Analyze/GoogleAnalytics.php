@@ -229,6 +229,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
    *   TRUE if Google Analytics Reports is setup.
    */
   private function isGoogleAnalyticsReportsSetup(): bool {
+    // @phpstan-ignore-next-line
     $account = GoogleAnalyticsReportsApiFeed::service();
     $imported = $this->configFactory->get('google_analytics_reports.settings')->get('metadata_last_time');
     return $account && $account->isAuthenticated() && $imported;
