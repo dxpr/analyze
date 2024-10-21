@@ -141,8 +141,8 @@ final class GoogleAnalytics extends AnalyzePluginBase {
         if (strpos($key, '_') === 0 || $key === 'index') {
           continue;
         }
-        // Transform snake_case to human readable.
-        $label = ucwords(str_replace('_', ' ', $key));
+        // Transform every capital letter to a space and the letter.
+        $label = ucwords(strtolower(preg_replace('/(?<!^)[A-Z]/', ' $0', $key)));
         $return['#rows'][] = [
           $label,
           $value,
