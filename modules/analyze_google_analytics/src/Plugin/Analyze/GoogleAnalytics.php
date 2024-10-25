@@ -141,6 +141,25 @@ final class GoogleAnalytics extends AnalyzePluginBase {
         if (strpos($key, '_') === 0 || $key === 'index') {
           continue;
         }
+
+        // If the value has a float precision over 2, we want to format it.
+
+
+        switch ($key) {
+          case 'sessionsPerUser':
+            $value = number_format((float) $value, 2);
+            break;
+
+          case 'averageSessionDuration':
+          case 'userEngagementDuration':
+            $value = number_format((float) $value, 2) . 's';
+            break;
+
+          case 'engagementRate':
+          case 'bounceRate':
+            $value = number_format((float) $value * 100, 2) . '%';
+            break;
+        }
         // Transform every capital letter to a space and the letter.
         $label = ucwords(strtolower(preg_replace('/(?<!^)[A-Z]/', ' $0', $key)));
         $return['#rows'][] = [
