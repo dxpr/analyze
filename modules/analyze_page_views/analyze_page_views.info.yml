@@ -1,0 +1,9 @@
+name: 'Analyze Node Statistics'
+type: module
+description: 'Provides a plugin for analyzing node statistics'
+package: Analyze
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - analyze:analyze
+  - drupal:node
+  - drupal:statistics

@@ -1,39 +1,7 @@
-analyze.analyze:
-  path: '/node/{node}/analyze'
+analyze.analyze_settings:
+  path: '/admin/config/system/analyze-settings'
   defaults:
-    _controller: '\Drupal\analyze\Controller\AnalyzeController::analyze'
-    _title: 'Analyze'
+    _title: 'Analyze settings'
+    _form: 'Drupal\analyze\Form\AnalyzeSettingsForm'
   requirements:
-    _entity_access: 'node.view'
-  options:
-    _admin_route: TRUE
-
-analyze.realtime_seo_full_report:
-  path: '/node/{node}/analyze/realtime-seo'
-  defaults:
-    _controller: '\Drupal\analyze\Controller\AnalyzeController::realtimeSeoFullReport'
-    _title: 'Realtime SEO Full Report'
-  requirements:
-    _entity_access: 'node.view'
-  options:
-    _admin_route: TRUE
-
-analyze.google_analytics_full_report:
-  path: '/node/{node}/analyze/google-analytics'
-  defaults:
-    _controller: '\Drupal\analyze\Controller\AnalyzeController::googleAnalyticsFullReport'
-    _title: 'Google Analytics Full Report'
-  requirements:
-    _entity_access: 'node.view'
-  options:
-    _admin_route: TRUE
-
-analyze.accessibility_full_report:
-  path: '/node/{node}/analyze/accessibility'
-  defaults:
-    _controller: '\Drupal\analyze\Controller\AnalyzeController::accessibilityFullReport'
-    _title: 'Accessibility Full Report'
-  requirements:
-    _entity_access: 'node.view'
-  options:
-    _admin_route: TRUE
+    _permission: 'administer analyze'

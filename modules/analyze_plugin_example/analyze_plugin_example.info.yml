@@ -1,0 +1,8 @@
+name: 'Analyze Plugin Example'
+type: module
+description: 'Example code for providing your own Analyze plugin.'
+package: Example
+core_version_requirement: ^10.3 || ^11
+hidden: true
+dependencies:
+  - analyze:analyze

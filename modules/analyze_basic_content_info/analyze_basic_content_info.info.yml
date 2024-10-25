@@ -1,0 +1,8 @@
+name: 'Analyze Basic Content Info'
+type: module
+description: 'Provides a plugin for analyzing basic content data like word count'
+package: Analyze
+core_version_requirement: ^10.3 || ^11
+
+dependencies:
+  - analyze:analyze

@@ -2,9 +2,14 @@
 
 namespace Drupal\analyze\Controller;
 
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
-use Drupal\node\NodeInterface;
+use Drupal\analyze\AnalyzeInterface;
+use Drupal\analyze\HelperInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller for the Analyze module.
@@ -12,344 +17,173 @@ use Drupal\node\NodeInterface;
 class AnalyzeController extends ControllerBase {
 
   /**
-   * Analyzes a node and returns a render array with various metrics.
+   * Constructs the controller.
    *
-   * @param \Drupal\node\NodeInterface $node
-   *   The node to analyze.
-   *
-   * @return array
-   *   A render array containing the analysis results.
+   * @param \Drupal\analyze\HelperInterface $helper
+   *   The Analyze Helper service.
    */
-  public function analyze(NodeInterface $node) {
-    $build = [
-      '#type' => 'markup',
-      '#markup' => '<h2>Sentiment Analysis</h2>',
-    ];
+  public function __construct(
+    protected readonly HelperInterface $helper,
+  ) {}
 
-    $build['gauge_1'] = [
-      '#theme' => 'analyze_gauge',
-      '#caption' => 'Sentiment Score - General Sentiment',
-      '#range_min_label' => 'Negative',
-      '#range_mid_label' => 'Neutral',
-      '#range_max_label' => 'Positive',
-      '#range_min' => '0',
-    // Example: 20% Positive.
-      '#value' => '0.2',
-      '#display_value' => '20%',
-      '#range_max' => '1',
-    ];
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('analyze.helper')
+    );
+  }
 
-    $build['gauge_2'] = [
-      '#theme' => 'analyze_gauge',
-      '#caption' => 'Sentiment Score - Joy',
-      '#range_min_label' => 'Sad',
-      '#range_mid_label' => 'Neutral',
-      '#range_max_label' => 'Joyful',
-      '#range_min' => '0',
-    // Example: 60% Joyful.
-      '#value' => '0.6',
-      '#display_value' => '60%',
-      '#range_max' => '1',
-    ];
+  /**
+   * Analyzes an entity and returns a render array with various metrics.
+   *
+   * @param string|null $plugin
+   *   A plugin id to load the report for.
+   * @param string|null $entity_type
+   *   An entity type to load the report for.
+   * @param bool $full_report
+   *   Whether to render the full report. FALSE to render the summary.
+   *
+   * @return mixed[]
+   *   A render array containing the analysis results.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  public function analyze(?string $plugin = NULL, ?string $entity_type = NULL, bool $full_report = FALSE): array {
+    if ($plugin) {
+      $plugins = $this->helper->getPlugins([$plugin]);
+    }
+    else {
+      $plugins = $this->helper->getPlugins();
+    }
 
-    $build['gauge_3'] = [
-      '#theme' => 'analyze_gauge',
-      '#caption' => 'Sentiment Score - Anger',
-      '#range_min_label' => 'Calm',
-      '#range_mid_label' => 'Neutral',
-      '#range_max_label' => 'Angry',
-      '#range_min' => '0',
-    // Example: 80% Angry.
-      '#value' => '0.8',
-      '#display_value' => '80%',
-      '#range_max' => '1',
-    ];
+    $entity = $this->helper->getEntity($entity_type);
+    $build = [];
+    $weight = 0;
 
-    $build['sentiment_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide sentiment report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
-    ];
+    foreach ($plugins as $id => $plugin) {
+      // It should be enabled and the user should have access to it.
+      if ($plugin->isEnabled($entity) && $plugin->access($entity)) {
+        if ($plugin_data = $this->validatePluginData($plugin, $entity, $full_report)) {
+          $build[$id . '-title'] = [
+            '#type' => 'html_tag',
+            '#tag' => 'h3',
+            '#value' => $plugin->label(),
+            '#weight' => $weight,
+          ];
+          $weight++;
+          $build[$id] = $plugin_data;
+          $build[$id]['#weight'] = $weight;
+          $weight++;
 
-    $build['basic_header'] = [
-      '#markup' => '<h2>Basic content information</h2>',
-    ];
+          if (!$full_report && $url = $plugin->getFullReportUrl($entity)) {
+            $build[$id . '-link'] = [
+              '#type' => 'link',
+              '#title' => $this->t('View full report of this page'),
+              '#url' => $url,
+              '#attributes' => [
+                'class' => [
+                  'action-link',
+                  Html::cleanCssIdentifier('view-' . $id . '-report'),
+                ],
+              ],
+              '#weight' => $weight,
+            ];
 
-    $basic_table = [
-      '#type' => 'table',
-      '#header' => [['data' => 'Security', 'colspan' => 2, 'class' => ['header']]],
-      '#rows' => [
-        ['data' => ['Word count', 498]],
-        ['data' => ['Image count', 2]],
-      ],
-      '#attributes' => [
-        'class' => ['basic-data-table'],
-        'style' => ['table-layout: fixed;'],
-      ],
-    ];
+            $weight++;
+          }
+          elseif ($full_report) {
+            $build[$id . '-back'] = [
+              '#type' => 'link',
+              '#title' => $this->t('Back to the Summary'),
+              '#url' => Url::fromRoute('entity.' . $entity->getEntityTypeId() . '.analyze', [
+                $entity->getEntityTypeId() => $entity->id(),
+              ]),
+              '#attributes' => [
+                'class' => [
+                  'action-link',
+                  Html::cleanCssIdentifier('view-' . $id . '-back'),
+                  'analyze-back',
+                ],
+              ],
+              '#weight' => $weight,
+            ];
 
-    $build['basic_table'] = $basic_table;
+            $weight++;
+          }
+          // If there are extra links for the summary, add them.
+          if (!$full_report && $links = $plugin->extraSummaryLinks($entity)) {
+            foreach ($links as $key => $link) {
+              $build[$id . '-extra-link-' . $key] = [
+                '#type' => 'link',
+                '#title' => $link['title'],
+                '#url' => $link['url'],
+                '#attributes' => [
+                  'class' => [
+                    'action-link',
+                    Html::cleanCssIdentifier('view-' . $id . '-report'),
+                  ],
+                ],
+                '#weight' => $weight,
+              ];
 
-    $build['security_header'] = [
-      '#markup' => '<h2>Security</h2>',
-    ];
+              $weight++;
+            }
+          }
+        }
+        elseif (!$full_report) {
 
-    $build['gauge_4'] = [
-      '#theme' => 'analyze_gauge',
-      '#caption' => 'PII (Personally Identifiable Information) Detection',
-      '#range_min_label' => 'PII Highly Improbable',
-      '#range_mid_label' => '',
-      '#range_max_label' => 'PII Highly Probable',
-      '#range_min' => '.01',
-      '#value' => '0',
-      '#display_value' => '1%',
-      '#range_max' => '.99',
-    ];
+          // Throw an exception if this is a summary as the plugin is malformed.
+          throw new InvalidPluginDefinitionException($id, 'Plugin does not return an approved render array type for its summary.');
+        }
+      }
+    }
 
-    $build['gauge_5'] = [
-      '#theme' => 'analyze_gauge',
-      '#caption' => 'Malicious Link Detection',
-      '#range_min_label' => 'Malicious Links Highly Improbable',
-      '#range_mid_label' => '',
-      '#range_max_label' => 'Malicious Links Highly Probable',
-      '#range_min' => '.01',
-      '#value' => '0',
-      '#display_value' => '1%',
-      '#range_max' => '.99',
-    ];
-
-    $build['security_table'] = $security_table;
-
-    $build['security_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide security report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
-    ];
-
-    $build['statistics_header'] = [
-      '#markup' => '<h2>Page views</h2>',
-    ];
-
-    $statistics_table = [
-      '#type' => 'table',
-      '#header' => [['data' => 'Page popularity', 'colspan' => 2, 'class' => ['header']]],
-      '#rows' => [
-        ['data' => ['Total page views', 3229]],
-        ['data' => ['Today\'s page views', 29]],
-      ],
-      '#attributes' => [
-        'class' => ['statistics-data-table'],
-        'style' => ['table-layout: fixed;'],
-      ],
-    ];
-
-    $build['statistics_table'] = $statistics_table;
-
-    $build['statistics_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide page views report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
-    ];
-
-    $build['realtime_seo_header'] = [
-      '#markup' => '<h2>Realtime SEO</h2>',
-    ];
-
-    $realtime_seo_table = [
-      '#type' => 'table',
-      '#header' => [['data' => 'Realtime SEO', 'colspan' => 2, 'class' => ['header']]],
-      '#rows' => [
-        ['data' => ['SEO Score', '85%']],
-        ['data' => ['Focus Keyword', '"Drupal 10 Module"']],
-        ['data' => ['Readability', 'Good']],
-      ],
-      '#attributes' => [
-        'class' => ['realtime-seo-data-table'],
-        'style' => ['table-layout: fixed;'],
-      ],
-    ];
-
-    $build['realtime_seo_table'] = $realtime_seo_table;
-    $build['realtime_seo_link'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View full report for this page'),
-      '#url' => Url::fromRoute('analyze.realtime_seo_full_report', ['node' => $node->id()]),
-      '#attributes' => ['class' => ['action-link', 'view-full-report']],
-    ];
-    $build['realtime_seo_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide SEO report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
-    ];
-
-    $build['google_analytics_header'] = [
-      '#markup' => '<h2>Google Analytics Node Reports</h2>',
-    ];
-
-    $google_analytics_table = [
-      '#type' => 'table',
-      '#header' => [['data' => 'Google Analytics Node Reports', 'colspan' => 2, 'class' => ['header']]],
-      '#rows' => [
-        ['data' => ['Page Views', '1234']],
-        ['data' => ['Bounce Rate', '45%']],
-        ['data' => ['Average Time on Page', '2 minutes']],
-      ],
-      '#attributes' => [
-        'class' => ['google-analytics-data-table'],
-        'style' => ['table-layout: fixed;'],
-      ],
-    ];
-
-    $build['google_analytics_table'] = $google_analytics_table;
-    $build['google_analytics_link'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View full report for this page'),
-      '#url' => Url::fromRoute('analyze.google_analytics_full_report', ['node' => $node->id()]),
-      '#attributes' => ['class' => ['action-link', 'view-full-report']],
-    ];
-    $build['google_analytics_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide Google Analytics report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
-    ];
-
-    $build['accessibility_header'] = [
-      '#markup' => '<h2>Editoria11y Accessibility Checker</h2>',
-    ];
-
-    $accessibility_table = [
-      '#type' => 'table',
-      '#header' => [['data' => 'Editoria11y Accessibility Checker', 'colspan' => 2, 'class' => ['header']]],
-      '#rows' => [
-        ['data' => ['Valid HTML', 'Yes']],
-        ['data' => ['Alt Text for Images', '95% complete']],
-        ['data' => ['Headings Structure', 'Proper']],
-      ],
-      '#attributes' => [
-        'class' => ['accessibility-data-table'],
-        'style' => ['table-layout: fixed;'],
-      ],
-    ];
-
-    $build['accessibility_table'] = $accessibility_table;
-    $build['accessibility_link'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View full report for this page'),
-      '#url' => Url::fromRoute('analyze.accessibility_full_report', ['node' => $node->id()]),
-      '#attributes' => ['class' => ['action-link', 'view-full-report']],
-    ];
-    $build['accessibility_report'] = [
-      '#type' => 'link',
-      '#title' => $this->t('View sitewide accessibility report'),
-      '#url' => Url::fromRoute('system.status'),
-      '#attributes' => ['class' => ['action-link', 'view-sitewide-report']],
-    ];
+    // Ensure reports don't get cached for the wrong entities.
+    $build['#cache']['contexts'][] = 'url';
+    $build['#cache']['tags'] = $entity->getCacheTags();
 
     return $build;
   }
 
   /**
-   * Generates a full report for realtime SEO analysis of a node.
+   * Helper to ensure a plugin summary returns an allowed render array.
    *
-   * @param \Drupal\node\NodeInterface $node
-   *   The node to analyze.
+   * @param \Drupal\analyze\AnalyzeInterface $plugin
+   *   The Analyze plugin.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to generate the report for.
+   * @param bool $full_report
+   *   Whether this is the full report or the summary.
    *
-   * @return array
-   *   A render array containing the full realtime SEO report.
+   * @return array<string, mixed>|null
+   *   The validated data, or NULL if it fails.
    */
-  public function realtimeSeoFullReport(NodeInterface $node) {
-    $header = [
-      ['data' => 'Metric', 'class' => ['header']],
-      ['data' => 'Value', 'class' => ['header']],
-    ];
-    $rows = [
-      ['data' => ['SEO Score', '85%']],
-      ['data' => ['Focus Keyword', '"Drupal 10 Module"']],
-      ['data' => ['Readability', 'Good']],
-      ['data' => ['Meta Description', 'Optimal length']],
-      ['data' => ['Internal Links', '5']],
-    ];
+  private function validatePluginData(AnalyzeInterface $plugin, EntityInterface $entity, bool $full_report): ?array {
+    $return = NULL;
 
-    return [
-      '#type' => 'table',
-      '#header' => $header,
-      '#rows' => $rows,
-      '#attributes' => [
-        'class' => ['realtime-seo-data-table'],
-        'style' => ['table-layout: fixed;'],
-      ],
-    ];
-  }
+    if ($full_report) {
 
-  /**
-   * Generates a full report for Google Analytics data of a node.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The node to analyze.
-   *
-   * @return array
-   *   A render array containing the full Google Analytics report.
-   */
-  public function googleAnalyticsFullReport(NodeInterface $node) {
-    $header = [
-      ['data' => 'Metric', 'class' => ['header']],
-      ['data' => 'Value', 'class' => ['header']],
-    ];
-    $rows = [
-      ['data' => ['Page Views', '1234']],
-      ['data' => ['Bounce Rate', '45%']],
-      ['data' => ['Average Time on Page', '2 minutes']],
-      ['data' => ['New Users', '345']],
-      ['data' => ['Returning Users', '789']],
-    ];
+      // The full report can contain any data, so we need no further validation.
+      $return = $plugin->renderFullReport($entity);
+    }
+    else {
+      if ($plugin_data = $plugin->renderSummary($entity)) {
+        if (isset($plugin_data['#theme'])) {
 
-    return [
-      '#type' => 'table',
-      '#header' => $header,
-      '#rows' => $rows,
-      '#attributes' => [
-        'class' => ['google-analytics-data-table'],
-        'style' => ['table-layout: fixed;'],
-      ],
-    ];
-  }
+          // Summaries can only return a gauge or a table so we can enforce a
+          // three item limit on the render array.
+          if ($plugin_data['#theme'] == 'analyze_gauge' || $plugin_data['#theme'] == 'analyze_table') {
+            $return = $plugin_data;
+          }
+        }
+      }
+    }
 
-  /**
-   * Generates a full accessibility report for a node.
-   *
-   * @param \Drupal\node\NodeInterface $node
-   *   The node to analyze.
-   *
-   * @return array
-   *   A render array containing the full accessibility report.
-   */
-  public function accessibilityFullReport(NodeInterface $node) {
-    $header = [
-      ['data' => 'Metric', 'class' => ['header']],
-      ['data' => 'Value', 'class' => ['header']],
-    ];
-    $rows = [
-      ['data' => ['Valid HTML', 'Yes']],
-      ['data' => ['Alt Text for Images', '95% complete']],
-      ['data' => ['Headings Structure', 'Proper']],
-      ['data' => ['ARIA Roles', 'All present']],
-      ['data' => ['Contrast Ratio', 'Pass']],
-    ];
-
-    return [
-      '#type' => 'table',
-      '#header' => $header,
-      '#rows' => $rows,
-      '#attributes' => [
-        'class' => ['accessibility-data-table'],
-        'style' => ['table-layout: fixed;'],
-      ],
-    ];
+    return $return;
   }
 
 }

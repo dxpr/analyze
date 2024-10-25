@@ -1,0 +1,19 @@
+# Schema for the configuration files of the Analyze module.
+analyze.settings:
+  type: config_object
+  label: 'Analyze settings'
+  mapping:
+    status:
+      type: sequence
+      label: Status
+      orderby: key
+      sequence:
+        type: sequence
+        label: Entity status
+        orderby: key
+        sequence:
+          type: sequence
+          label: Plugin status
+          sequence:
+            type: boolean
+            label: Enabled

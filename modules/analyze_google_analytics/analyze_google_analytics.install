@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @file
+ * Contains install and update functions for Google Analytics analyzer module.
+ */
+
+use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Drupal\google_analytics_reports_api\GoogleAnalyticsReportsApiFeed;
+
+/**
+ * Implements hook_install().
+ */
+function analyze_google_analytics_install(): void {
+  // Message if the Google Analytics Reports import has not run.
+  // @phpstan-ignore-next-line
+  $account = GoogleAnalyticsReportsApiFeed::service();
+  $imported = \Drupal::configFactory()->get('google_analytics_reports.settings')->get('metadata_last_time');
+  if (!($account && $account->isAuthenticated() && $imported)) {
+    \Drupal::messenger()->addWarning(t('You both need to configure Google Analytics Reports and let the import run before you can use the Analyze Google Analytics plugin. %click_here for the both configuring and importing Google Analytics Reports.', [
+      '%click_here' => Link::fromTextAndUrl(t('Click here'), Url::fromRoute('google_analytics_reports_api.settings'))->toString(),
+    ]));
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function analyze_google_analytics_uninstall(): void {
+  // Uninstall our views.
+  \Drupal::configFactory()->getEditable('views.view.analyze_google_analytics')->delete();
+}

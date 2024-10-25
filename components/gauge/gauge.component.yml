@@ -1,0 +1,45 @@
+name: Gauge
+props:
+  type: object
+  required:
+    - caption
+    - range_min_label
+    - range_mid_label
+    - range_max_label
+    - range_min
+    - value
+    - display_value
+    - range_max
+  properties:
+    caption:
+      type: string
+      title: Caption
+      description: 'Caption for the gauge chart.'
+    range_min_label:
+      type: string
+      title: 'Min Label'
+      description: 'Minimum label for the chart.'
+    range_mid_label:
+      type: string
+      title: 'Mid Label'
+      description: 'Median label for the chart.'
+    range_max_label:
+      type: string
+      title: 'Max Label'
+      description: 'Maximum label for the chart.'
+    range_min:
+      type: number
+      title: 'Range Min'
+      description: 'Minimum range number for the chart.'
+    value:
+      type: number
+      title: 'Value'
+      description: 'Value to display for the chart.'
+    display_value:
+      type: string
+      title: 'Display Value'
+      description: 'Value to display for the chart.'
+    range_max:
+      type: number
+      title: 'Range Max'
+      description: 'Maximum range for the chart.'

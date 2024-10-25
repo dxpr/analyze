@@ -1,0 +1,17 @@
+<div class="layer-wrapper gin-layer-wrapper">
+    <table class="analyze--table" role="presentation">
+        <thead>
+            <tr>
+                <th colspan="2" class="header">{{ table_title|t }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr class="row-{{ row.index }} d{% if loop.index is divisible by(2) %}even{% else %}odd{% endif %}">
+                    <td class="label">{{ row['label']|t }}</td>
+                    <td class="data">{{ row['data']|t }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
