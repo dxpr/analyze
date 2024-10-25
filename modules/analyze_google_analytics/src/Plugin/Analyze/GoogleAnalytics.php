@@ -142,9 +142,6 @@ final class GoogleAnalytics extends AnalyzePluginBase {
           continue;
         }
 
-        // If the value has a float precision over 2, we want to format it.
-
-
         switch ($key) {
           case 'sessionsPerUser':
             $value = number_format((float) $value, 2);

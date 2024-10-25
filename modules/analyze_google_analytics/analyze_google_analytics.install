@@ -12,7 +12,7 @@ use Drupal\google_analytics_reports_api\GoogleAnalyticsReportsApiFeed;
 /**
  * Implements hook_install().
  */
-function analyze_google_analytics_install() {
+function analyze_google_analytics_install(): void {
   // Message if the Google Analytics Reports import has not run.
   // @phpstan-ignore-next-line
   $account = GoogleAnalyticsReportsApiFeed::service();
