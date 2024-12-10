@@ -152,7 +152,6 @@ final class ContentInfo extends AnalyzePluginBase {
    * @throws \Exception
    */
   private function getHtml(EntityInterface $entity): string {
-
     // Get the current active langcode from the site.
     $langcode = $this->languageManager->getCurrentLanguage()->getId();
 
@@ -160,7 +159,10 @@ final class ContentInfo extends AnalyzePluginBase {
     $view = $this->entityTypeManager->getViewBuilder($entity->getEntityTypeId())->view($entity, 'default', $langcode);
     $rendered = $this->renderer->render($view);
 
-    return $rendered->__toString();
+    // Handle both string and Markup object cases
+    return is_object($rendered) && method_exists($rendered, '__toString') 
+        ? $rendered->__toString() 
+        : (string) $rendered;
   }
 
   /**
