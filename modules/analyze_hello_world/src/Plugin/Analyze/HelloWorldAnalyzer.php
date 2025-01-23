@@ -125,26 +125,51 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
   }
 
   /**
+   * Get configured sentiments.
+   *
+   * @return array
+   *   Array of sentiment configurations.
+   */
+  protected function getConfiguredSentiments(): array {
+    $config = $this->configFactory->get('analyze_hello_world.settings');
+    $sentiments = $config->get('sentiments');
+    
+    if (empty($sentiments)) {
+      // Load defaults from the settings form
+      $form = \Drupal::classResolver()
+        ->getInstanceFromDefinition('\Drupal\analyze_hello_world\Form\SentimentSettingsForm');
+      return $form->getDefaultSentiments();
+    }
+    
+    return $sentiments;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function renderSummary(EntityInterface $entity): array {
     $scores = $this->analyzeSentiment($entity);
+    $sentiments = $this->getConfiguredSentiments();
     
-    // Convert -1 to +1 range to 0 to 1 for gauge
-    $gauge_value = ($scores['sentiment'] + 1) / 2;
+    // For summary, we'll just show the main sentiment gauge if available
+    if (isset($scores['sentiment']) && isset($sentiments['sentiment'])) {
+      // Convert -1 to +1 range to 0 to 1 for gauge
+      $gauge_value = ($scores['sentiment'] + 1) / 2;
+      
+      return [
+        '#theme' => 'analyze_gauge',
+        '#caption' => $this->t('@label', ['@label' => $sentiments['sentiment']['label']]),
+        '#range_min_label' => $this->t('@label', ['@label' => $sentiments['sentiment']['min_label']]),
+        '#range_mid_label' => $this->t('@label', ['@label' => $sentiments['sentiment']['mid_label']]),
+        '#range_max_label' => $this->t('@label', ['@label' => $sentiments['sentiment']['max_label']]),
+        '#range_min' => 0,
+        '#range_max' => 1,
+        '#value' => $gauge_value,
+        '#display_value' => sprintf('%+.1f', $scores['sentiment']),
+      ];
+    }
     
-    // For summary, we'll just show the main sentiment gauge
-    return [
-      '#theme' => 'analyze_gauge',
-      '#caption' => $this->t('Content Sentiment'),
-      '#range_min_label' => $this->t('Negative (-1.0)'),
-      '#range_mid_label' => $this->t('Neutral (0.0)'),
-      '#range_max_label' => $this->t('Positive (+1.0)'),
-      '#range_min' => 0,
-      '#range_max' => 1,
-      '#value' => $gauge_value,
-      '#display_value' => sprintf('%+.1f', $scores['sentiment']),
-    ];
+    return [];
   }
 
   /**
@@ -152,17 +177,9 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
    */
   public function renderFullReport(EntityInterface $entity): array {
     $scores = $this->analyzeSentiment($entity);
+    $sentiments = $this->getConfiguredSentiments();
     
-    // Convert all -1 to +1 ranges to 0 to 1 for gauges
-    $gauge_values = [
-      'sentiment' => ($scores['sentiment'] + 1) / 2,
-      'engagement' => ($scores['engagement'] + 1) / 2,
-      'trust' => ($scores['trust'] + 1) / 2,
-      'objectivity' => ($scores['objectivity'] + 1) / 2,
-      'complexity' => ($scores['complexity'] + 1) / 2,
-    ];
-
-    return [
+    $build = [
       '#type' => 'details',
       '#title' => $this->t('Content Analysis Report'),
       '#open' => TRUE,
@@ -171,93 +188,37 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
         '#attributes' => [
           'class' => ['analyze-full-report'],
         ],
-        'sentiment' => [
-          '#type' => 'container',
-          '#attributes' => [
-            'class' => ['analyze-gauge-wrapper'],
-          ],
-          'gauge' => [
-            '#theme' => 'analyze_gauge',
-            '#caption' => $this->t('Content Sentiment'),
-            '#range_min_label' => $this->t('Negative (-1.0)'),
-            '#range_mid_label' => $this->t('Neutral (0.0)'),
-            '#range_max_label' => $this->t('Positive (+1.0)'),
-            '#range_min' => 0,
-            '#range_max' => 1,
-            '#value' => $gauge_values['sentiment'],
-            '#display_value' => sprintf('%+.1f', $scores['sentiment']),
-          ],
-        ],
-        'engagement' => [
-          '#type' => 'container',
-          '#attributes' => [
-            'class' => ['analyze-gauge-wrapper'],
-          ],
-          'gauge' => [
-            '#theme' => 'analyze_gauge',
-            '#caption' => $this->t('Engagement Level'),
-            '#range_min_label' => $this->t('Passive (-1.0)'),
-            '#range_mid_label' => $this->t('Balanced (0.0)'),
-            '#range_max_label' => $this->t('Engaging (+1.0)'),
-            '#range_min' => 0,
-            '#range_max' => 1,
-            '#value' => $gauge_values['engagement'],
-            '#display_value' => sprintf('%+.1f', $scores['engagement']),
-          ],
-        ],
-        'trust' => [
-          '#type' => 'container',
-          '#attributes' => [
-            'class' => ['analyze-gauge-wrapper'],
-          ],
-          'gauge' => [
-            '#theme' => 'analyze_gauge',
-            '#caption' => $this->t('Trust/Credibility'),
-            '#range_min_label' => $this->t('Promotional (-1.0)'),
-            '#range_mid_label' => $this->t('Neutral (0.0)'),
-            '#range_max_label' => $this->t('Credible (+1.0)'),
-            '#range_min' => 0,
-            '#range_max' => 1,
-            '#value' => $gauge_values['trust'],
-            '#display_value' => sprintf('%+.1f', $scores['trust']),
-          ],
-        ],
-        'objectivity' => [
-          '#type' => 'container',
-          '#attributes' => [
-            'class' => ['analyze-gauge-wrapper'],
-          ],
-          'gauge' => [
-            '#theme' => 'analyze_gauge',
-            '#caption' => $this->t('Objectivity'),
-            '#range_min_label' => $this->t('Subjective (-1.0)'),
-            '#range_mid_label' => $this->t('Balanced (0.0)'),
-            '#range_max_label' => $this->t('Objective (+1.0)'),
-            '#range_min' => 0,
-            '#range_max' => 1,
-            '#value' => $gauge_values['objectivity'],
-            '#display_value' => sprintf('%+.1f', $scores['objectivity']),
-          ],
-        ],
-        'complexity' => [
-          '#type' => 'container',
-          '#attributes' => [
-            'class' => ['analyze-gauge-wrapper'],
-          ],
-          'gauge' => [
-            '#theme' => 'analyze_gauge',
-            '#caption' => $this->t('Complexity'),
-            '#range_min_label' => $this->t('Simple (-1.0)'),
-            '#range_mid_label' => $this->t('Moderate (0.0)'),
-            '#range_max_label' => $this->t('Complex (+1.0)'),
-            '#range_min' => 0,
-            '#range_max' => 1,
-            '#value' => $gauge_values['complexity'],
-            '#display_value' => sprintf('%+.1f', $scores['complexity']),
-          ],
-        ],
       ],
     ];
+
+    foreach ($sentiments as $id => $sentiment) {
+      if (!isset($scores[$id])) {
+        continue;
+      }
+
+      // Convert -1 to +1 range to 0 to 1 for gauge
+      $gauge_value = ($scores[$id] + 1) / 2;
+
+      $build['content'][$id] = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => ['analyze-gauge-wrapper'],
+        ],
+        'gauge' => [
+          '#theme' => 'analyze_gauge',
+          '#caption' => $this->t('@label', ['@label' => $sentiment['label']]),
+          '#range_min_label' => $this->t('@label', ['@label' => $sentiment['min_label']]),
+          '#range_mid_label' => $this->t('@label', ['@label' => $sentiment['mid_label']]),
+          '#range_max_label' => $this->t('@label', ['@label' => $sentiment['max_label']]),
+          '#range_min' => 0,
+          '#range_max' => 1,
+          '#value' => $gauge_value,
+          '#display_value' => sprintf('%+.1f', $scores[$id]),
+        ],
+      ];
+    }
+
+    return $build;
   }
 
   /**
