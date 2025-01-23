@@ -25,4 +25,38 @@ analyze_hello_world.settings:
             label: 'Maximum Label'
           weight:
             type: integer
-            label: 'Weight' 
+            label: 'Weight'
+
+analyze_hello_world.entity_settings:
+  type: config_object
+  label: 'Entity-specific Sentiment Settings'
+  mapping:
+    '*':
+      type: mapping
+      label: 'Entity Type Settings'
+      mapping:
+        '*':
+          type: boolean
+          label: 'Sentiment Enabled'
+
+analyze.entity_settings.*.analyzers.hello_world_analyzer.settings:
+  type: mapping
+  label: 'Sentiment Analyzer Settings'
+  mapping:
+    sentiments:
+      type: sequence
+      label: 'Enabled Sentiments'
+      sequence:
+        type: boolean
+        label: 'Sentiment Enabled'
+
+analyze.plugin_settings.*.*.*:
+  type: mapping
+  label: 'Analyzer Settings'
+  mapping:
+    sentiments:
+      type: sequence
+      label: 'Sentiment Settings'
+      sequence:
+        type: boolean
+        label: 'Sentiment Enabled' 

@@ -25,7 +25,7 @@ class SentimentSettingsForm extends ConfigFormBase {
   }
 
   /**
-   * Get default sentiments.
+   * Gets the default sentiment configurations.
    *
    * @return array
    *   Array of default sentiment configurations.
@@ -33,39 +33,39 @@ class SentimentSettingsForm extends ConfigFormBase {
   public function getDefaultSentiments(): array {
     return [
       'sentiment' => [
-        'id' => 'sentiment',
-        'label' => 'Content Sentiment',
-        'min_label' => 'Negative (-1.0)',
-        'mid_label' => 'Neutral (0.0)',
-        'max_label' => 'Positive (+1.0)',
+        'label' => $this->t('Overall Sentiment'),
+        'min_label' => $this->t('Negative'),
+        'mid_label' => $this->t('Neutral'),
+        'max_label' => $this->t('Positive'),
+        'weight' => 0,
       ],
       'engagement' => [
-        'id' => 'engagement',
-        'label' => 'Engagement Level',
-        'min_label' => 'Passive (-1.0)',
-        'mid_label' => 'Balanced (0.0)',
-        'max_label' => 'Engaging (+1.0)',
+        'label' => $this->t('Engagement Level'),
+        'min_label' => $this->t('Passive'),
+        'mid_label' => $this->t('Balanced'),
+        'max_label' => $this->t('Interactive'),
+        'weight' => 1,
       ],
       'trust' => [
-        'id' => 'trust',
-        'label' => 'Trust/Credibility',
-        'min_label' => 'Promotional (-1.0)',
-        'mid_label' => 'Neutral (0.0)',
-        'max_label' => 'Credible (+1.0)',
+        'label' => $this->t('Trust/Credibility'),
+        'min_label' => $this->t('Promotional'),
+        'mid_label' => $this->t('Balanced'),
+        'max_label' => $this->t('Authoritative'),
+        'weight' => 2,
       ],
       'objectivity' => [
-        'id' => 'objectivity',
-        'label' => 'Objectivity',
-        'min_label' => 'Subjective (-1.0)',
-        'mid_label' => 'Mixed (0.0)',
-        'max_label' => 'Objective (+1.0)',
+        'label' => $this->t('Objectivity'),
+        'min_label' => $this->t('Subjective'),
+        'mid_label' => $this->t('Mixed'),
+        'max_label' => $this->t('Objective'),
+        'weight' => 3,
       ],
       'complexity' => [
-        'id' => 'complexity',
-        'label' => 'Technical Complexity',
-        'min_label' => 'Simple (-1.0)',
-        'mid_label' => 'Moderate (0.0)',
-        'max_label' => 'Complex (+1.0)',
+        'label' => $this->t('Technical Complexity'),
+        'min_label' => $this->t('Basic'),
+        'mid_label' => $this->t('Moderate'),
+        'max_label' => $this->t('Complex'),
+        'weight' => 4,
       ],
     ];
   }
@@ -96,15 +96,11 @@ class SentimentSettingsForm extends ConfigFormBase {
     $form['table']['sentiments'] = [
       '#type' => 'table',
       '#header' => [
-        'id' => $this->t('ID'),
-        'label' => $this->t('Label'),
-        'min_label' => $this->t('Minimum Label (-1.0)'),
-        'mid_label' => $this->t('Middle Label (0.0)'),
-        'max_label' => $this->t('Maximum Label (+1.0)'),
-        'weight' => $this->t('Weight'),
-        'operations' => $this->t('Operations'),
+        $this->t('Sentiment'),
+        $this->t('Labels'),
+        $this->t('Weight'),
+        $this->t('Operations'),
       ],
-      '#empty' => $this->t('No sentiments configured yet. Click the "Add sentiment" button above to get started.'),
       '#tabledrag' => [
         [
           'action' => 'order',
@@ -125,61 +121,41 @@ class SentimentSettingsForm extends ConfigFormBase {
         '#attributes' => [
           'class' => ['draggable'],
         ],
-        'id' => [
-          '#plain_text' => $id,
-        ],
         'label' => [
           '#type' => 'textfield',
           '#title' => $this->t('Label'),
           '#title_display' => 'invisible',
           '#default_value' => $sentiment['label'],
           '#required' => TRUE,
-          '#placeholder' => $this->t('Enter sentiment name'),
         ],
-        'min_label' => [
-          '#type' => 'textfield',
-          '#title' => $this->t('Minimum Label'),
-          '#title_display' => 'invisible',
-          '#default_value' => $sentiment['min_label'],
-          '#required' => TRUE,
-          '#placeholder' => $this->t('Label for -1.0'),
-        ],
-        'mid_label' => [
-          '#type' => 'textfield',
-          '#title' => $this->t('Middle Label'),
-          '#title_display' => 'invisible',
-          '#default_value' => $sentiment['mid_label'],
-          '#required' => TRUE,
-          '#placeholder' => $this->t('Label for 0.0'),
-        ],
-        'max_label' => [
-          '#type' => 'textfield',
-          '#title' => $this->t('Maximum Label'),
-          '#title_display' => 'invisible',
-          '#default_value' => $sentiment['max_label'],
-          '#required' => TRUE,
-          '#placeholder' => $this->t('Label for +1.0'),
+        'labels' => [
+          '#type' => 'details',
+          '#title' => $this->t('Range Labels'),
+          'min_label' => [
+            '#type' => 'textfield',
+            '#title' => $this->t('Minimum'),
+            '#default_value' => $sentiment['min_label'],
+            '#required' => TRUE,
+          ],
+          'mid_label' => [
+            '#type' => 'textfield',
+            '#title' => $this->t('Middle'),
+            '#default_value' => $sentiment['mid_label'],
+            '#required' => TRUE,
+          ],
+          'max_label' => [
+            '#type' => 'textfield',
+            '#title' => $this->t('Maximum'),
+            '#default_value' => $sentiment['max_label'],
+            '#required' => TRUE,
+          ],
         ],
         'weight' => [
           '#type' => 'weight',
           '#title' => $this->t('Weight'),
           '#title_display' => 'invisible',
-          '#default_value' => $sentiment['weight'] ?? 0,
+          '#default_value' => $sentiment['weight'],
           '#attributes' => ['class' => ['sentiment-weight']],
-          '#delta' => 50,
-        ],
-        'operations' => [
-          '#type' => 'operations',
-          '#links' => [
-            'delete' => [
-              'title' => $this->t('Delete'),
-              'url' => \Drupal\Core\Url::fromRoute('analyze_hello_world.delete_sentiment', ['sentiment_id' => $id]),
-              'attributes' => [
-                'class' => ['button', 'button--danger', 'button--small'],
-                'aria-label' => $this->t('Delete @sentiment', ['@sentiment' => $sentiment['label']]),
-              ],
-            ],
-          ],
         ],
       ];
     }
@@ -208,21 +184,21 @@ class SentimentSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $config = $this->configFactory->getEditable('analyze_hello_world.settings');
-    $sentiments = $form_state->getValue('sentiments');
-    
-    // Update existing sentiments
-    foreach ($sentiments as $id => $sentiment) {
-      $sentiments[$id]['id'] = $id;
-      $sentiments[$id]['weight'] = (int) $sentiment['weight'];
+    $sentiments = [];
+    foreach ($form_state->getValue('sentiments') as $id => $values) {
+      $sentiments[$id] = [
+        'label' => $values['label'],
+        'min_label' => $values['labels']['min_label'],
+        'mid_label' => $values['labels']['mid_label'],
+        'max_label' => $values['labels']['max_label'],
+        'weight' => $values['weight'],
+      ];
     }
-    
-    // Sort by weight before saving
-    uasort($sentiments, function ($a, $b) {
-      return $a['weight'] <=> $b['weight'];
-    });
-    
-    $config->set('sentiments', $sentiments)->save();
+
+    $this->config('analyze_hello_world.settings')
+      ->set('sentiments', $sentiments)
+      ->save();
+
     parent::submitForm($form, $form_state);
   }
 
