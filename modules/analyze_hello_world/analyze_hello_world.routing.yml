@@ -1,0 +1,23 @@
+analyze_hello_world.settings:
+  path: '/admin/config/analyze/hello-world'
+  defaults:
+    _form: '\Drupal\analyze_hello_world\Form\SentimentSettingsForm'
+    _title: 'Sentiment Analysis Settings'
+  requirements:
+    _permission: 'administer site configuration'
+
+analyze_hello_world.add_sentiment:
+  path: '/admin/config/analyze/hello-world/add'
+  defaults:
+    _form: '\Drupal\analyze_hello_world\Form\AddSentimentForm'
+    _title: 'Add Sentiment'
+  requirements:
+    _permission: 'administer site configuration'
+
+analyze_hello_world.delete_sentiment:
+  path: '/admin/config/analyze/hello-world/{sentiment_id}/delete'
+  defaults:
+    _form: '\Drupal\analyze_hello_world\Form\DeleteSentimentForm'
+    _title: 'Delete Sentiment'
+  requirements:
+    _permission: 'administer site configuration' 
