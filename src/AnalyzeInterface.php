@@ -107,4 +107,25 @@ interface AnalyzeInterface {
    */
   public function extraSummaryLinks(EntityInterface $entity): array;
 
+  /**
+   * Gets the configurable settings for this analyzer.
+   *
+   * @return array
+   *   An array defining the configurable settings, with structure:
+   *   [
+   *     'group_key' => [
+   *       'type' => 'fieldset',
+   *       'title' => 'Group Title',
+   *       'settings' => [
+   *         'setting_key' => [
+   *           'type' => 'checkbox',
+   *           'title' => 'Setting Title',
+   *           'default_value' => TRUE,
+   *         ],
+   *       ],
+   *     ],
+   *   ]
+   */
+  public function getConfigurableSettings(): array;
+
 }

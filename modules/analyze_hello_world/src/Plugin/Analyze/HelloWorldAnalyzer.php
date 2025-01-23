@@ -21,7 +21,7 @@ use Drupal\ai\Service\PromptJsonDecoder\PromptJsonDecoderInterface;
  *
  * @Analyze(
  *   id = "hello_world_analyzer",
- *   label = @Translation("Content Sentiment Analyzer"),
+ *   label = @Translation("Sentiment Analysis"),
  *   description = @Translation("Analyzes the sentiment of content using AI.")
  * )
  */
@@ -37,9 +37,9 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
   /**
    * The config factory.
    *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   * @var \Drupal\Core\Config\ConfigFactoryInterface|null
    */
-  protected $configFactory;
+  protected ?ConfigFactoryInterface $configFactory;
 
   /**
    * The messenger service.
@@ -90,7 +90,7 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
     $helper,
     $currentUser,
     AiProviderPluginManager $aiProvider,
-    ConfigFactoryInterface $config_factory,
+    ?ConfigFactoryInterface $config_factory,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected RendererInterface $renderer,
     protected LanguageManagerInterface $languageManager,
@@ -147,64 +147,179 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function renderSummary(EntityInterface $entity): array {
-    $scores = $this->analyzeSentiment($entity);
+  public function getEntityTypeSettingsForm(string $entity_type_id, ?string $bundle = NULL): array {
+    // Only use parent implementation which will use getConfigurableSettings()
+    return parent::getEntityTypeSettingsForm($entity_type_id, $bundle);
+  }
+
+  /**
+   * Gets the enabled sentiments for an entity type and bundle.
+   *
+   * @param string $entity_type_id
+   *   The entity type ID.
+   * @param string|null $bundle
+   *   The bundle ID.
+   *
+   * @return array
+   *   Array of enabled sentiment IDs.
+   */
+  protected function getEnabledSentiments(string $entity_type_id, ?string $bundle = NULL): array {
+    if (!$this->isEnabledForEntityType($entity_type_id, $bundle)) {
+      return [];
+    }
+
+    // Get settings from plugin_settings config
+    $plugin_settings_config = $this->getConfigFactory()->get('analyze.plugin_settings');
+    $key = sprintf('%s.%s.%s', $entity_type_id, $bundle, $this->getPluginId());
+    $settings = $plugin_settings_config->get($key) ?? [];
+    
+    // Get all available sentiments
     $sentiments = $this->getConfiguredSentiments();
     
-    // For summary, we'll just show the main sentiment gauge if available
-    if (isset($scores['sentiment']) && isset($sentiments['sentiment'])) {
+    $enabled = [];
+    foreach ($sentiments as $id => $sentiment) {
+      // If no settings exist yet, enable all sentiments by default
+      if (!isset($settings['sentiments'])) {
+        $enabled[$id] = $sentiment;
+      }
+      // Otherwise check if explicitly enabled in settings
+      elseif (isset($settings['sentiments'][$id]) && $settings['sentiments'][$id]) {
+        $enabled[$id] = $sentiment;
+      }
+    }
+
+    // Sort enabled sentiments by weight
+    uasort($enabled, function ($a, $b) {
+      return ($a['weight'] ?? 0) <=> ($b['weight'] ?? 0);
+    });
+
+    $this->messenger->addStatus('Debug: Plugin settings: ' . print_r($settings, TRUE));
+    $this->messenger->addStatus('Debug: Available sentiments: ' . print_r($sentiments, TRUE));
+    $this->messenger->addStatus('Debug: Enabled sentiments: ' . print_r($enabled, TRUE));
+
+    return $enabled;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function renderSummary(EntityInterface $entity): array {
+    // First check if the plugin itself is enabled for this entity
+    $status_config = $this->getConfigFactory()->get('analyze.settings');
+    $status = $status_config->get('status') ?? [];
+    $entity_type = $entity->getEntityTypeId();
+    $bundle = $entity->bundle();
+    
+    if (!isset($status[$entity_type][$bundle][$this->getPluginId()])) {
+      return [
+        '#theme' => 'analyze_table',
+        '#table_title' => $this->t('Sentiment Analysis'),
+        '#rows' => [
+          [
+            'label' => $this->t('Status'),
+            'data' => $this->t('Plugin not enabled for this content type'),
+          ],
+        ],
+      ];
+    }
+
+    $enabled_sentiments = $this->getEnabledSentiments($entity->getEntityTypeId(), $entity->bundle());
+    if (empty($enabled_sentiments)) {
+      return [
+        '#theme' => 'analyze_table',
+        '#table_title' => $this->t('Sentiment Analysis'),
+        '#rows' => [
+          [
+            'label' => $this->t('Status'),
+            'data' => $this->t('No sentiments enabled'),
+          ],
+        ],
+      ];
+    }
+
+    $scores = $this->analyzeSentiment($entity);
+    
+    // For summary, we'll just show the first enabled sentiment gauge if available
+    $sentiment = reset($enabled_sentiments);
+    $id = key($enabled_sentiments);
+    
+    if (isset($scores[$id])) {
       // Convert -1 to +1 range to 0 to 1 for gauge
-      $gauge_value = ($scores['sentiment'] + 1) / 2;
+      $gauge_value = ($scores[$id] + 1) / 2;
       
       return [
         '#theme' => 'analyze_gauge',
-        '#caption' => $this->t('@label', ['@label' => $sentiments['sentiment']['label']]),
-        '#range_min_label' => $this->t('@label', ['@label' => $sentiments['sentiment']['min_label']]),
-        '#range_mid_label' => $this->t('@label', ['@label' => $sentiments['sentiment']['mid_label']]),
-        '#range_max_label' => $this->t('@label', ['@label' => $sentiments['sentiment']['max_label']]),
+        '#caption' => $this->t('@label', ['@label' => $sentiment['label']]),
+        '#range_min_label' => $this->t('@label', ['@label' => $sentiment['min_label']]),
+        '#range_mid_label' => $this->t('@label', ['@label' => $sentiment['mid_label']]),
+        '#range_max_label' => $this->t('@label', ['@label' => $sentiment['max_label']]),
         '#range_min' => 0,
         '#range_max' => 1,
         '#value' => $gauge_value,
-        '#display_value' => sprintf('%+.1f', $scores['sentiment']),
+        '#display_value' => sprintf('%+.1f', $scores[$id]),
       ];
     }
     
-    return [];
+    // If no scores available, show a table with a message
+    return [
+      '#theme' => 'analyze_table',
+      '#table_title' => $this->t('Sentiment Analysis'),
+      '#rows' => [
+        [
+          'label' => $this->t('Status'),
+          'data' => $this->t('No sentiment scores available'),
+        ],
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function renderFullReport(EntityInterface $entity): array {
+    // First check if the plugin itself is enabled for this entity
+    $status_config = $this->getConfigFactory()->get('analyze.settings');
+    $status = $status_config->get('status') ?? [];
+    $entity_type = $entity->getEntityTypeId();
+    $bundle = $entity->bundle();
+    
+    $this->messenger->addStatus(sprintf('Debug: Checking plugin status for %s.%s.%s', $entity_type, $bundle, $this->getPluginId()));
+    $this->messenger->addStatus('Debug: Status config: ' . print_r($status, TRUE));
+    
+    if (!isset($status[$entity_type][$bundle][$this->getPluginId()])) {
+      $this->messenger->addStatus('Debug: Plugin not enabled for this entity type/bundle');
+      return [];
+    }
+
+    $enabled_sentiments = $this->getEnabledSentiments($entity->getEntityTypeId(), $entity->bundle());
+    if (empty($enabled_sentiments)) {
+      $this->messenger->addStatus('Debug: No enabled sentiments found');
+      return [];
+    }
+
+    $this->messenger->addStatus('Debug: Enabled sentiments: ' . print_r($enabled_sentiments, TRUE));
     $scores = $this->analyzeSentiment($entity);
-    $sentiments = $this->getConfiguredSentiments();
+    $this->messenger->addStatus('Debug: Sentiment scores: ' . print_r($scores, TRUE));
     
     $build = [
-      '#type' => 'details',
-      '#title' => $this->t('Content Analysis Report'),
-      '#open' => TRUE,
-      'content' => [
-        '#type' => 'container',
-        '#attributes' => [
-          'class' => ['analyze-full-report'],
-        ],
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['analyze-sentiment-report'],
       ],
     ];
 
-    foreach ($sentiments as $id => $sentiment) {
-      if (!isset($scores[$id])) {
-        continue;
-      }
+    $build['title'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'h2',
+      '#value' => $this->t('Sentiment Analysis'),
+    ];
 
-      // Convert -1 to +1 range to 0 to 1 for gauge
-      $gauge_value = ($scores[$id] + 1) / 2;
-
-      $build['content'][$id] = [
-        '#type' => 'container',
-        '#attributes' => [
-          'class' => ['analyze-gauge-wrapper'],
-        ],
-        'gauge' => [
+    foreach ($enabled_sentiments as $id => $sentiment) {
+      if (isset($scores[$id])) {
+        // Convert -1 to +1 range to 0 to 1 for gauge
+        $gauge_value = ($scores[$id] + 1) / 2;
+        
+        $build[$id] = [
           '#theme' => 'analyze_gauge',
           '#caption' => $this->t('@label', ['@label' => $sentiment['label']]),
           '#range_min_label' => $this->t('@label', ['@label' => $sentiment['min_label']]),
@@ -214,10 +329,15 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
           '#range_max' => 1,
           '#value' => $gauge_value,
           '#display_value' => sprintf('%+.1f', $scores[$id]),
-        ],
-      ];
+        ];
+      }
     }
-
+    
+    if (count($build) <= 1) {
+      $this->messenger->addStatus('Debug: No gauges generated');
+      return [];
+    }
+    
     return $build;
   }
 
@@ -233,17 +353,16 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
    * @throws \Exception
    */
   private function getHtml(EntityInterface $entity): string {
-    // Get the current active langcode from the site.
-    $langcode = $this->languageManager->getCurrentLanguage()->getId();
-
-    // Get the rendered entity view in default mode.
-    $view = $this->entityTypeManager->getViewBuilder($entity->getEntityTypeId())->view($entity, 'default', $langcode);
-    $rendered = $this->renderer->render($view);
-
-    // Handle both string and Markup object cases
-    return is_object($rendered) && method_exists($rendered, '__toString') 
-        ? $rendered->__toString() 
-        : (string) $rendered;
+    $content = strip_tags($entity->get('body')->value ?? '');
+    $content = str_replace('&nbsp;', ' ', $content);
+    $content = trim($content);
+    
+    if (empty($content)) {
+      $this->messenger->addWarning('Debug: No content available for analysis');
+      return '';
+    }
+    
+    return $content;
   }
 
   /**
@@ -257,61 +376,27 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
    */
   protected function analyzeSentiment(EntityInterface $entity): array {
     try {
-      // Check if we have any chat providers available
-      if (!$this->aiProvider->hasProvidersForOperationType('chat', TRUE)) {
-        $this->messenger->addWarning('Debug: No chat providers available');
-        return [
-          'sentiment' => 0.0,
-          'engagement' => 0.0,
-          'trust' => 0.0,
-          'objectivity' => 0.0,
-          'complexity' => 0.0,
-        ];
+      // Get the content to analyze
+      $content = $this->getHtml($entity);
+      $this->messenger->addStatus('Debug: Content to analyze: ' . $content);
+
+      // Get the AI provider
+      $ai_provider = $this->getAiProvider();
+      if (!$ai_provider) {
+        $this->messenger->addError('Debug: No AI provider available');
+        return [];
       }
 
-      // Get the default provider for chat
-      $defaults = $this->aiProvider->getDefaultProviderForOperationType('chat');
-      if (empty($defaults['provider_id']) || empty($defaults['model_id'])) {
-        $this->messenger->addWarning('Debug: No default provider configured. Provider ID: ' . ($defaults['provider_id'] ?? 'none') . ', Model ID: ' . ($defaults['model_id'] ?? 'none'));
-        return [
-          'sentiment' => 0.0,
-          'engagement' => 0.0,
-          'trust' => 0.0,
-          'objectivity' => 0.0,
-          'complexity' => 0.0,
-        ];
+      // Get the default model
+      $defaults = $this->getDefaultModel();
+      if (!$defaults) {
+        $this->messenger->addError('Debug: No default model configured');
+        return [];
       }
 
-      // Initialize AI provider
-      $ai_provider = $this->aiProvider->createInstance($defaults['provider_id']);
-
-      // Get content
-      $content = strip_tags($this->getHtml($entity));
-      $content = str_replace('&nbsp;', ' ', $content);
-      $content = trim($content);
-
-      if (empty($content)) {
-        $this->messenger->addWarning('Debug: No content available for analysis');
-        return [
-          'sentiment' => 0.0,
-          'engagement' => 0.0,
-          'trust' => 0.0,
-          'objectivity' => 0.0,
-          'complexity' => 0.0,
-        ];
-      }
-
-      $this->messenger->addStatus('Debug: Content to analyze: ' . substr($content, 0, 100) . '...');
-
-      // Configure provider with low temperature for more consistent results
-      $config = [
-        'temperature' => 0.2,
-      ];
-      $ai_provider->setConfiguration($config);
-
-      // Create chat message with explicit JSON request
+      // Build the prompt
       $prompt = $content;
-      $prompt .= "\n\nAnalyze this content and provide scores. Respond with a simple JSON object containing only the required scores:\n{\"sentiment\": number, \"engagement\": number, \"trust\": number, \"objectivity\": number, \"complexity\": number}";
+      $prompt .= "\n\nAnalyze this content and provide scores. Respond with a simple JSON object containing only the required scores:\n{\"temperature\": number, \"engagement\": number, \"trust\": number, \"objectivity\": number, \"complexity\": number}";
       
       $chat_array = [
         new ChatMessage('user', $prompt),
@@ -334,14 +419,15 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
       
       // All scores should be directly in the decoded array
       return array_filter([
-        'sentiment' => $decoded['sentiment'] ?? NULL,
+        'temperature' => $decoded['temperature'] ?? NULL,
         'engagement' => $decoded['engagement'] ?? NULL,
         'trust' => $decoded['trust'] ?? NULL,
         'objectivity' => $decoded['objectivity'] ?? NULL,
         'complexity' => $decoded['complexity'] ?? NULL,
-      ], function($value) { return $value !== NULL; });
+      ]);
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->messenger->addError('Debug: Error analyzing sentiment: ' . $e->getMessage());
       return [];
     }
@@ -373,6 +459,117 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
    */
   public function extraSummaryLinks(EntityInterface $entity): array {
     return [];
+  }
+
+  /**
+   * Gets the public settings for this analyzer.
+   *
+   * @param string $entity_type_id
+   *   The entity type ID.
+   * @param string|null $bundle
+   *   The bundle ID.
+   *
+   * @return array
+   *   The settings array.
+   */
+  public function getSettings(string $entity_type_id, ?string $bundle = NULL): array {
+    return $this->getEntityTypeSettings($entity_type_id, $bundle);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function saveSettings(string $entity_type_id, ?string $bundle, array $settings): void {
+    $config = \Drupal::configFactory()->getEditable('analyze.settings');
+    $current = $config->get('status') ?? [];
+
+    // Save enabled state
+    if (isset($settings['enabled'])) {
+      $current[$entity_type_id][$bundle][$this->getPluginId()] = $settings['enabled'];
+      $config->set('status', $current)->save();
+    }
+
+    // Save sentiment settings if present
+    if (isset($settings['sentiments'])) {
+      $detailed_config = \Drupal::configFactory()->getEditable('analyze.plugin_settings');
+      $key = sprintf('%s.%s.%s', $entity_type_id, $bundle, $this->getPluginId());
+      $detailed_config->set($key, ['sentiments' => $settings['sentiments']])->save();
+    }
+  }
+
+  /**
+   * Gets the default settings structure.
+   *
+   * @return array
+   *   The default settings structure.
+   */
+  public function getDefaultSettings(): array {
+    $sentiments = $this->getConfiguredSentiments();
+    $default_sentiments = [];
+    
+    foreach ($sentiments as $id => $sentiment) {
+      $default_sentiments[$id] = TRUE;
+    }
+    
+    return [
+      'enabled' => TRUE,
+      'settings' => [
+        'sentiments' => $default_sentiments,
+      ],
+    ];
+  }
+
+  public function getConfigurableSettings(): array {
+    $sentiments = $this->getConfiguredSentiments();
+    $settings = [];
+    
+    foreach ($sentiments as $id => $sentiment) {
+      $settings[$id] = [
+        'type' => 'checkbox',
+        'title' => $sentiment['label'],
+        'default_value' => TRUE,
+      ];
+    }
+    
+    return [
+      'sentiments' => [
+        'type' => 'fieldset',
+        'title' => $this->t('Sentiment'),
+        'description' => $this->t('Select which sentiment metrics to analyze.'),
+        'settings' => $settings,
+      ],
+    ];
+  }
+
+  private function getAiProvider() {
+    // Check if we have any chat providers available
+    if (!$this->aiProvider->hasProvidersForOperationType('chat', TRUE)) {
+      $this->messenger->addWarning('Debug: No chat providers available');
+      return NULL;
+    }
+
+    // Get the default provider for chat
+    $defaults = $this->getDefaultModel();
+    if (empty($defaults['provider_id'])) {
+      return NULL;
+    }
+
+    // Initialize AI provider
+    $ai_provider = $this->aiProvider->createInstance($defaults['provider_id']);
+    
+    // Configure provider with low temperature for more consistent results
+    $ai_provider->setConfiguration(['temperature' => 0.2]);
+    
+    return $ai_provider;
+  }
+
+  private function getDefaultModel() {
+    $defaults = $this->aiProvider->getDefaultProviderForOperationType('chat');
+    if (empty($defaults['provider_id']) || empty($defaults['model_id'])) {
+      $this->messenger->addWarning('Debug: No default provider configured. Provider ID: ' . ($defaults['provider_id'] ?? 'none') . ', Model ID: ' . ($defaults['model_id'] ?? 'none'));
+      return NULL;
+    }
+    return $defaults;
   }
 
 } 

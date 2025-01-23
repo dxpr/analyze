@@ -1,5 +1,5 @@
 analyze_hello_world.settings:
-  path: '/admin/config/analyze/hello-world'
+  path: '/admin/config/analyze/sentiment'
   defaults:
     _form: '\Drupal\analyze_hello_world\Form\SentimentSettingsForm'
     _title: 'Sentiment Analysis Settings'

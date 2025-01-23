@@ -17,3 +17,29 @@ analyze.settings:
           sequence:
             type: boolean
             label: Enabled
+
+analyze.entity_settings:
+  type: config_object
+  label: 'Entity-specific Analyzer Settings'
+  mapping:
+    '*':
+      type: mapping
+      label: 'Entity Type Settings'
+      mapping:
+        '*':
+          type: mapping
+          label: 'Bundle Settings'
+          mapping:
+            analyzers:
+              type: sequence
+              label: 'Analyzer Settings'
+              sequence:
+                type: mapping
+                mapping:
+                  enabled:
+                    type: boolean
+                    label: 'Analyzer Enabled'
+                  settings:
+                    type: mapping
+                    label: 'Analyzer-specific Settings'
+                    nullable: true

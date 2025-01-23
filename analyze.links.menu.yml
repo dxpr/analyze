@@ -1,6 +1,6 @@
 analyze.analyze_settings:
-  title: Analyze settings
-  description: Enable or disable plugins for Analyze
-  parent: system.admin_config_system
+  title: 'Content Analysis'
+  description: 'Configure which content analysis tools are enabled for different content types'
+  parent: system.admin_config_content
   route_name: analyze.analyze_settings
   weight: 10
