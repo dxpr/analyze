@@ -15,6 +15,7 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\ai\Service\PromptJsonDecoder\PromptJsonDecoderInterface;
+use Drupal\Core\Link;
 
 /**
  * A sentiment analyzer that uses AI to analyze content sentiment.
@@ -264,8 +265,14 @@ final class AiSentimentAnalyzer extends AnalyzePluginBase {
         '#rows' => [
           [
             'label' => 'Status',
-            'data' => 'Unable to analyze sentiment. The content may be too short or need revision.',
+            'data' => $this->t('No chat AI provider is configured for sentiment analysis. Please configure one in the %ai_settings_link.', [
+              '%ai_settings_link' => Link::createFromRoute($this->t('AI settings'), 'ai.settings_form')
+                  ->toString(),
+            ]),
           ],
+        ],
+        '#attached' => [
+          'library' => ['core/drupal.dialog.ajax'],
         ],
       ];
     }
@@ -391,6 +398,10 @@ final class AiSentimentAnalyzer extends AnalyzePluginBase {
       // Get the AI provider
       $ai_provider = $this->getAiProvider();
       if (!$ai_provider) {
+        $this->messenger->addError($this->t('No chat AI provider is configured for sentiment analysis. Please configure one in the %ai_settings_link.', [
+          '%ai_settings_link' => Link::createFromRoute($this->t('AI settings'), 'ai.settings_form')
+              ->toString(),
+        ]));
         return [];
       }
 
