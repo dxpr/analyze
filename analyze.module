@@ -198,10 +198,6 @@ function analyze_add_settings_form_submit(array &$form, FormStateInterface $form
   $messenger = \Drupal::messenger();
   
   if ($values = $form_state->cleanValues()->getValue('analyze')) {
-    $messenger->addStatus(t('Debug: Form values received: @values', [
-      '@values' => print_r($values, TRUE),
-    ]));
-    
     $entity_type = $form_state->get('analyze.entity_type');
     $bundle = $form_state->get('analyze.bundle');
     
@@ -221,25 +217,15 @@ function analyze_add_settings_form_submit(array &$form, FormStateInterface $form
     $status[$entity_type][$bundle] = [];
     
     foreach ($values as $plugin_id => $settings) {
-      $messenger->addStatus(t('Debug: Processing @plugin: @settings', [
-        '@plugin' => $plugin_id,
-        '@settings' => print_r($settings, TRUE),
-      ]));
-      
       $key = "$entity_type.$bundle.$plugin_id";
       
       if (!empty($settings['enabled'])) {
         // Add to status if enabled
         $status[$entity_type][$bundle][$plugin_id] = TRUE;
-        $messenger->addStatus(t('Debug: Enabled @plugin', ['@plugin' => $plugin_id]));
         
         // Save settings if present
         if (isset($settings['sentiments'])) {
           $settings_config->set($key, ['sentiments' => $settings['sentiments']]);
-          $messenger->addStatus(t('Debug: Saved settings for @plugin at @key', [
-            '@plugin' => $plugin_id,
-            '@key' => $key,
-          ]));
         }
       } else {
         // When a plugin is disabled, remove it from all bundles of this entity type
@@ -248,19 +234,12 @@ function analyze_add_settings_form_submit(array &$form, FormStateInterface $form
         }
         // Clear settings when disabled
         $settings_config->clear($key);
-        $messenger->addStatus(t('Debug: Disabled and cleared settings for @plugin', [
-          '@plugin' => $plugin_id,
-        ]));
       }
     }
     
     // Save both configs
     $status_config->set('status', $status)->save();
     $settings_config->save();
-    
-    $messenger->addStatus(t('Debug: Final status config: @config', [
-      '@config' => print_r($status, TRUE),
-    ]));
   }
 }
 
