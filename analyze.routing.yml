@@ -1,7 +1,7 @@
 analyze.analyze_settings:
-  path: '/admin/config/system/analyze-settings'
+  path: '/admin/config/content/analyze-settings'
   defaults:
-    _title: 'Analyze settings'
+    _title: 'Content Analysis'
     _form: 'Drupal\analyze\Form\AnalyzeSettingsForm'
   requirements:
     _permission: 'administer analyze'
