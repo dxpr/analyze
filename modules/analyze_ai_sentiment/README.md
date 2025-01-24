@@ -1,6 +1,6 @@
-# Analyze Hello World
+# Analyze AI Sentiment
 
-A simple hello world submodule for the Analyze module that demonstrates basic AI chat functionality.
+A simple AI Sentiment submodule for the Analyze module that demonstrates basic AI chat functionality.
 
 ## Features
 
@@ -16,5 +16,5 @@ A simple hello world submodule for the Analyze module that demonstrates basic AI
 1. Install as you would normally install a contributed Drupal module
 2. Enable the module through the Drupal admin interface or using drush:
    ```
-   drush en analyze_hello_world
+   drush en analyze_ai_sentiment
    ``` 

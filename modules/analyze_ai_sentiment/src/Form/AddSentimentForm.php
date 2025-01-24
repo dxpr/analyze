@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\analyze_hello_world\Form;
+namespace Drupal\analyze_ai_sentiment\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -42,7 +42,7 @@ class AddSentimentForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'analyze_hello_world_add_sentiment';
+    return 'analyze_ai_sentiment_add_sentiment';
   }
 
   /**
@@ -55,7 +55,7 @@ class AddSentimentForm extends FormBase {
    *   TRUE if the sentiment exists, FALSE otherwise.
    */
   public function sentimentExists($id) {
-    $config = $this->configFactory->get('analyze_hello_world.settings');
+    $config = $this->configFactory->get('analyze_ai_sentiment.settings');
     $sentiments = $config->get('sentiments') ?: [];
     return isset($sentiments[$id]);
   }
@@ -140,7 +140,7 @@ class AddSentimentForm extends FormBase {
     $form['actions']['cancel'] = [
       '#type' => 'link',
       '#title' => $this->t('Cancel'),
-      '#url' => \Drupal\Core\Url::fromRoute('analyze_hello_world.settings'),
+      '#url' => \Drupal\Core\Url::fromRoute('analyze_ai_sentiment.settings'),
       '#attributes' => [
         'class' => ['button', 'dialog-cancel'],
         'role' => 'button',
@@ -154,7 +154,7 @@ class AddSentimentForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $config = $this->configFactory->getEditable('analyze_hello_world.settings');
+    $config = $this->configFactory->getEditable('analyze_ai_sentiment.settings');
     $sentiments = $config->get('sentiments') ?: [];
     
     // Get the maximum weight and add 1
@@ -175,7 +175,7 @@ class AddSentimentForm extends FormBase {
     
     $config->set('sentiments', $sentiments)->save();
     $this->messenger()->addStatus($this->t('Added new sentiment %label.', ['%label' => $values['label']]));
-    $form_state->setRedirectUrl(\Drupal\Core\Url::fromRoute('analyze_hello_world.settings'));
+    $form_state->setRedirectUrl(\Drupal\Core\Url::fromRoute('analyze_ai_sentiment.settings'));
   }
 
 } 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\analyze_hello_world\Plugin\Analyze;
+namespace Drupal\analyze_ai_sentiment\Plugin\Analyze;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
@@ -20,12 +20,12 @@ use Drupal\ai\Service\PromptJsonDecoder\PromptJsonDecoderInterface;
  * A sentiment analyzer that uses AI to analyze content sentiment.
  *
  * @Analyze(
- *   id = "hello_world_analyzer",
+ *   id = "ai_sentiment_analyzer",
  *   label = @Translation("Sentiment Analysis"),
  *   description = @Translation("Analyzes the sentiment of content using AI.")
  * )
  */
-final class HelloWorldAnalyzer extends AnalyzePluginBase {
+final class AiSentimentAnalyzer extends AnalyzePluginBase {
 
   /**
    * The AI provider manager.
@@ -131,13 +131,13 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
    *   Array of sentiment configurations.
    */
   protected function getConfiguredSentiments(): array {
-    $config = $this->configFactory->get('analyze_hello_world.settings');
+    $config = $this->configFactory->get('analyze_ai_sentiment.settings');
     $sentiments = $config->get('sentiments');
     
     if (empty($sentiments)) {
       // Load defaults from the settings form
       $form = \Drupal::classResolver()
-        ->getInstanceFromDefinition('\Drupal\analyze_hello_world\Form\SentimentSettingsForm');
+        ->getInstanceFromDefinition('\Drupal\analyze_ai_sentiment\Form\SentimentSettingsForm');
       return $form->getDefaultSentiments();
     }
     

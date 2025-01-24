@@ -1,4 +1,4 @@
-analyze_hello_world.settings:
+analyze_ai_sentiment.settings:
   type: config_object
   label: 'Sentiment Analysis Settings'
   mapping:
@@ -27,7 +27,7 @@ analyze_hello_world.settings:
             type: integer
             label: 'Weight'
 
-analyze_hello_world.entity_settings:
+analyze_ai_sentiment.entity_settings:
   type: config_object
   label: 'Entity-specific Sentiment Settings'
   mapping:
@@ -39,7 +39,7 @@ analyze_hello_world.entity_settings:
           type: boolean
           label: 'Sentiment Enabled'
 
-analyze.entity_settings.*.analyzers.hello_world_analyzer.settings:
+analyze.entity_settings.*.analyzers.ai_sentiment_analyzer.settings:
   type: mapping
   label: 'Sentiment Analyzer Settings'
   mapping:

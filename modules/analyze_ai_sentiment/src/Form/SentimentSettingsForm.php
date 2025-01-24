@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\analyze_hello_world\Form;
+namespace Drupal\analyze_ai_sentiment\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -14,14 +14,14 @@ class SentimentSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'analyze_hello_world_settings';
+    return 'analyze_ai_sentiment_settings';
   }
 
   /**
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['analyze_hello_world.settings'];
+    return ['analyze_ai_sentiment.settings'];
   }
 
   /**
@@ -74,7 +74,7 @@ class SentimentSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('analyze_hello_world.settings');
+    $config = $this->config('analyze_ai_sentiment.settings');
     $sentiments = $config->get('sentiments') ?: $this->getDefaultSentiments();
 
     $form['description'] = [
@@ -162,7 +162,7 @@ class SentimentSettingsForm extends ConfigFormBase {
           '#links' => [
             'delete' => [
               'title' => $this->t('Delete'),
-              'url' => \Drupal\Core\Url::fromRoute('analyze_hello_world.delete_sentiment', ['sentiment_id' => $id]),
+              'url' => \Drupal\Core\Url::fromRoute('analyze_ai_sentiment.delete_sentiment', ['sentiment_id' => $id]),
               'attributes' => [
                 'class' => ['button', 'button--danger', 'button--small'],
               ],
@@ -207,7 +207,7 @@ class SentimentSettingsForm extends ConfigFormBase {
       ];
     }
 
-    $this->config('analyze_hello_world.settings')
+    $this->config('analyze_ai_sentiment.settings')
       ->set('sentiments', $sentiments)
       ->save();
 

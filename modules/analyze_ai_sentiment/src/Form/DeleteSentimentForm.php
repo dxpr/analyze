@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\analyze_hello_world\Form;
+namespace Drupal\analyze_ai_sentiment\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -50,7 +50,7 @@ class DeleteSentimentForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'analyze_hello_world_delete_sentiment';
+    return 'analyze_ai_sentiment_delete_sentiment';
   }
 
   /**
@@ -70,7 +70,7 @@ class DeleteSentimentForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    $config = $this->configFactory->get('analyze_hello_world.settings');
+    $config = $this->configFactory->get('analyze_ai_sentiment.settings');
     $sentiments = $config->get('sentiments');
     $sentiment = $sentiments[$this->sentimentId] ?? NULL;
 
@@ -104,14 +104,14 @@ class DeleteSentimentForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return new Url('analyze_hello_world.settings');
+    return new Url('analyze_ai_sentiment.settings');
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $config = $this->configFactory->getEditable('analyze_hello_world.settings');
+    $config = $this->configFactory->getEditable('analyze_ai_sentiment.settings');
     $sentiments = $config->get('sentiments');
 
     if (isset($sentiments[$this->sentimentId])) {

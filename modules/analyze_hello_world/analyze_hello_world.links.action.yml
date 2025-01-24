@@ -1,5 +1,0 @@
-analyze_hello_world.add_sentiment:
-  route_name: analyze_hello_world.add_sentiment
-  title: 'Add sentiment'
-  appears_on:
-    - analyze_hello_world.settings 

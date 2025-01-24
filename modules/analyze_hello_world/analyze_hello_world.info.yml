@@ -1,9 +1,0 @@
-name: 'Analyze Hello World'
-type: module
-description: 'A simple hello world submodule for Analyze that responds to AI chat queries.'
-package: Analyze
-core_version_requirement: ^10
-dependencies:
-  - analyze:analyze
-  - ai:ai
-configure: analyze_hello_world.settings 
