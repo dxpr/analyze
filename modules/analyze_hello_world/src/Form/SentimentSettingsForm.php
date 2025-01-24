@@ -157,6 +157,18 @@ class SentimentSettingsForm extends ConfigFormBase {
           '#default_value' => $sentiment['weight'],
           '#attributes' => ['class' => ['sentiment-weight']],
         ],
+        'operations' => [
+          '#type' => 'operations',
+          '#links' => [
+            'delete' => [
+              'title' => $this->t('Delete'),
+              'url' => \Drupal\Core\Url::fromRoute('analyze_hello_world.delete_sentiment', ['sentiment_id' => $id]),
+              'attributes' => [
+                'class' => ['button', 'button--danger', 'button--small'],
+              ],
+            ],
+          ],
+        ],
       ];
     }
 
