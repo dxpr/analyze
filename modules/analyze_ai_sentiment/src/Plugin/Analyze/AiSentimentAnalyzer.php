@@ -425,7 +425,7 @@ final class AiSentimentAnalyzer extends AnalyzePluginBase {
       $metrics = implode("\n", $sentiment_descriptions);
       
       $prompt = <<<EOT
-<task>Analyze the sentiment of the following text.</task>
+<task>Analyze the following text.</task>
 <text>
 $content
 </text>
