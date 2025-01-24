@@ -1,0 +1,9 @@
+name: 'Analyze Brand Voice'
+type: module
+description: 'Analyzes content for brand voice consistency using AI.'
+package: Analyze
+core_version_requirement: ^10
+configure: analyze.settings
+dependencies:
+  - analyze:analyze
+  - ai:ai 
