@@ -193,7 +193,7 @@ final class GoogleAnalytics extends AnalyzePluginBase {
    * {@inheritdoc}
    */
   public function isEnabled(EntityInterface $entity): bool {
-    // Check both the parent enabled state AND Google Analytics setup
+    // Check both the parent enabled state AND Google Analytics setup.
     return parent::isEnabled($entity) && $this->isGoogleAnalyticsReportsSetup();
   }
 

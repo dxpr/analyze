@@ -159,9 +159,9 @@ final class ContentInfo extends AnalyzePluginBase {
     $view = $this->entityTypeManager->getViewBuilder($entity->getEntityTypeId())->view($entity, 'default', $langcode);
     $rendered = $this->renderer->render($view);
 
-    // Handle both string and Markup object cases
-    return is_object($rendered) && method_exists($rendered, '__toString') 
-        ? $rendered->__toString() 
+    // Handle both string and Markup object cases.
+    return is_object($rendered) && method_exists($rendered, '__toString')
+        ? $rendered->__toString()
         : (string) $rendered;
   }
 

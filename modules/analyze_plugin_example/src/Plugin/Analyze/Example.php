@@ -79,7 +79,7 @@ final class Example extends AnalyzePluginBase {
    * {@inheritdoc}
    */
   public function isApplicable(string $entity_type, ?string $bundle = NULL): bool {
-    // Example: Only enable for article nodes
+    // Example: Only enable for article nodes.
     if ($entity_type == 'node' && $bundle == 'article') {
       return TRUE;
     }
@@ -91,13 +91,6 @@ final class Example extends AnalyzePluginBase {
    */
   public function access(EntityInterface $entity): bool {
     return $this->currentUser->hasPermission('access content');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getFullReportUrl(EntityInterface $entity): ?Url {
-    return parent::getFullReportUrl($entity);
   }
 
   /**

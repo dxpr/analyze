@@ -174,15 +174,15 @@ function analyze_add_settings_form(array &$form, string $entity_type, ?string $b
   $plugin_manager = \Drupal::service('plugin.manager.analyze');
 
   foreach ($definitions as $plugin_id => $definition) {
-    // Get the plugin instance
+    // Get the plugin instance.
     $plugin = $plugin_manager->createInstance($plugin_id);
-    // Get the plugin's settings form
+    // Get the plugin's settings form.
     $plugin_form = $plugin->getEntityTypeSettingsForm($entity_type, $bundle);
-    // Add the plugin's form directly to the analyze fieldset
+    // Add the plugin's form directly to the analyze fieldset.
     $form['analyze'][$plugin_id] = $plugin_form;
   }
 
-  // Add submit handler to both possible locations
+  // Add submit handler to both possible locations.
   if (isset($form['actions']['submit']['#submit'])) {
     $form['actions']['submit']['#submit'][] = 'analyze_add_settings_form_submit';
   }
@@ -196,48 +196,49 @@ function analyze_add_settings_form(array &$form, string $entity_type, ?string $b
  */
 function analyze_add_settings_form_submit(array &$form, FormStateInterface $form_state): void {
   $messenger = \Drupal::messenger();
-  
+
   if ($values = $form_state->cleanValues()->getValue('analyze')) {
     $entity_type = $form_state->get('analyze.entity_type');
     $bundle = $form_state->get('analyze.bundle');
-    
-    // Get both config objects
+
+    // Get both config objects.
     $status_config = \Drupal::configFactory()->getEditable('analyze.settings');
     $settings_config = \Drupal::configFactory()->getEditable('analyze.plugin_settings');
-    
-    // Get current status config
+
+    // Get current status config.
     $status = $status_config->get('status') ?? [];
-    
-    // Initialize the entity type if not set
+
+    // Initialize the entity type if not set.
     if (!isset($status[$entity_type])) {
       $status[$entity_type] = [];
     }
-    
-    // Reset the bundle's settings completely
+
+    // Reset the bundle's settings completely.
     $status[$entity_type][$bundle] = [];
-    
+
     foreach ($values as $plugin_id => $settings) {
       $key = "$entity_type.$bundle.$plugin_id";
-      
+
       if (!empty($settings['enabled'])) {
-        // Add to status if enabled
+        // Add to status if enabled.
         $status[$entity_type][$bundle][$plugin_id] = TRUE;
-        
-        // Save settings if present
+
+        // Save settings if present.
         if (isset($settings['sentiments'])) {
           $settings_config->set($key, ['sentiments' => $settings['sentiments']]);
         }
-      } else {
-        // When a plugin is disabled, remove it from all bundles of this entity type
+      }
+      else {
+        // When a plugin is disabled, remove it from all bundles of this type.
         foreach ($status[$entity_type] as $bundle_id => &$bundle_settings) {
           unset($bundle_settings[$plugin_id]);
         }
-        // Clear settings when disabled
+        // Clear settings when disabled.
         $settings_config->clear($key);
       }
     }
-    
-    // Save both configs
+
+    // Save both configs.
     $status_config->set('status', $status)->save();
     $settings_config->save();
   }
