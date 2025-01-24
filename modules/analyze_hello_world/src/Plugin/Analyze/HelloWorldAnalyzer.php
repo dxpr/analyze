@@ -396,7 +396,34 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
 
       // Build the prompt
       $prompt = $content;
-      $prompt .= "\n\nAnalyze this content and provide scores. Respond with a simple JSON object containing only the required scores:\n{\"temperature\": number, \"engagement\": number, \"trust\": number, \"objectivity\": number, \"complexity\": number}";
+      
+      // Get enabled sentiments for this entity type/bundle
+      $enabled_sentiments = $this->getEnabledSentiments($entity->getEntityTypeId(), $entity->bundle());
+      
+      // Build sentiment descriptions with their ranges
+      $sentiment_descriptions = [];
+      foreach ($enabled_sentiments as $id => $sentiment) {
+        $sentiment_descriptions[] = sprintf(
+          "- %s: Score from -1.0 (%s) to +1.0 (%s), with 0.0 being %s",
+          $sentiment['label'],
+          $sentiment['min_label'],
+          $sentiment['max_label'],
+          $sentiment['mid_label']
+        );
+      }
+      
+      // Build dynamic JSON structure based on enabled sentiments
+      $json_keys = array_map(function($id, $sentiment) {
+        return '"' . $id . '": number';
+      }, array_keys($enabled_sentiments), $enabled_sentiments);
+      
+      $json_template = '{' . implode(', ', $json_keys) . '}';
+      
+      $prompt .= "\n\nAnalyze this content and provide scores for the following metrics:\n";
+      $prompt .= implode("\n", $sentiment_descriptions);
+      $prompt .= "\n\nRespond with a simple JSON object containing only the required scores:\n" . $json_template;
+      
+      $this->messenger->addStatus('Debug: Complete prompt: ' . $prompt);
       
       $chat_array = [
         new ChatMessage('user', $prompt),
@@ -417,14 +444,17 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
         return [];
       }
       
-      // All scores should be directly in the decoded array
-      return array_filter([
-        'temperature' => $decoded['temperature'] ?? NULL,
-        'engagement' => $decoded['engagement'] ?? NULL,
-        'trust' => $decoded['trust'] ?? NULL,
-        'objectivity' => $decoded['objectivity'] ?? NULL,
-        'complexity' => $decoded['complexity'] ?? NULL,
-      ]);
+      // Validate and normalize scores to ensure they're within -1 to +1 range
+      $scores = [];
+      foreach ($enabled_sentiments as $id => $sentiment) {
+        if (isset($decoded[$id])) {
+          $score = (float) $decoded[$id];
+          // Clamp score to -1 to +1 range
+          $scores[$id] = max(-1.0, min(1.0, $score));
+        }
+      }
+      
+      return $scores;
 
     }
     catch (\Exception $e) {
