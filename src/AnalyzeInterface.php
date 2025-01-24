@@ -110,21 +110,8 @@ interface AnalyzeInterface {
   /**
    * Gets the configurable settings for this analyzer.
    *
-   * @return array
-   *   An array defining the configurable settings, with structure:
-   *   [
-   *     'group_key' => [
-   *       'type' => 'fieldset',
-   *       'title' => 'Group Title',
-   *       'settings' => [
-   *         'setting_key' => [
-   *           'type' => 'checkbox',
-   *           'title' => 'Setting Title',
-   *           'default_value' => TRUE,
-   *         ],
-   *       ],
-   *     ],
-   *   ]
+   * @return array<string, array{type: string, title: string, description?: string, settings?: array<string, array{type: string, title: string, default_value: mixed}>}>
+   *   An array defining the configurable settings.
    */
   public function getConfigurableSettings(): array;
 

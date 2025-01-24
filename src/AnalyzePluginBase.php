@@ -161,7 +161,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    * @param string|null $bundle
    *   The bundle ID.
    *
-   * @return array
+   * @return array<string, mixed>
    *   The settings for this analyzer on the given entity type and bundle.
    */
   protected function getEntityTypeSettings(string $entity_type_id, ?string $bundle = NULL): array {
@@ -206,7 +206,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    * @param string|null $bundle
    *   The bundle ID.
    *
-   * @return array
+   * @return array<string, mixed>
    *   A form array to be included in the entity type's analyze settings.
    */
   public function getEntityTypeSettingsForm(string $entity_type_id, ?string $bundle = NULL): array {
@@ -261,7 +261,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
   /**
    * Gets the configurable settings for this analyzer.
    *
-   * @return array
+   * @return array<string, array{type: string, title: string, description?: string, settings?: array<string, array{type: string, title: string, default_value: mixed}>}>
    *   The configurable settings structure.
    */
   public function getConfigurableSettings(): array {
@@ -273,7 +273,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    *
    * @param string $entity_type_id
    *   The entity type ID.
-   * @param array $settings
+   * @param array<string, mixed> $settings
    *   The settings to save.
    * @param string|null $bundle
    *   The bundle ID.
@@ -298,7 +298,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    *   The entity type ID.
    * @param string|null $bundle
    *   The bundle ID.
-   * @param array $settings
+   * @param array<string, mixed> $settings
    *   The settings to save.
    */
   public function saveSettings(string $entity_type_id, ?string $bundle, array $settings): void {
