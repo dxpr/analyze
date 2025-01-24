@@ -55,9 +55,9 @@ final class GoogleAnalytics extends AnalyzePluginBase {
     AccountProxyInterface $currentUser,
     protected AliasManagerInterface $aliasManager,
     protected EntityTypeManagerInterface $entityTypeManager,
-    protected ConfigFactoryInterface $configFactory,
+    ConfigFactoryInterface $configFactory,
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper, $currentUser);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper, $currentUser, $configFactory);
   }
 
   /**
