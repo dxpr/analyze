@@ -195,7 +195,6 @@ function analyze_add_settings_form(array &$form, string $entity_type, ?string $b
  * Store the Analyze settings, if they have been set.
  */
 function analyze_add_settings_form_submit(array &$form, FormStateInterface $form_state): void {
-  $messenger = \Drupal::messenger();
 
   if ($values = $form_state->cleanValues()->getValue('analyze')) {
     $entity_type = $form_state->get('analyze.entity_type');
@@ -230,7 +229,7 @@ function analyze_add_settings_form_submit(array &$form, FormStateInterface $form
       }
       else {
         // When a plugin is disabled, remove it from all bundles of this type.
-        foreach ($status[$entity_type] as $bundle_id => &$bundle_settings) {
+        foreach ($status[$entity_type] as &$bundle_settings) {
           unset($bundle_settings[$plugin_id]);
         }
         // Clear settings when disabled.
