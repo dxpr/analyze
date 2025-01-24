@@ -167,18 +167,18 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
   protected function getEntityTypeSettings(string $entity_type_id, ?string $bundle = NULL): array {
     $config = $this->getConfigFactory()->get('analyze.entity_settings');
     $settings = [];
-    
-    // Get entity type level settings
+
+    // Get entity type level settings.
     $type_settings = $config->get("$entity_type_id.analyzers." . $this->getPluginId()) ?: [];
     $settings = $type_settings;
-    
-    // Get bundle level settings if specified
+
+    // Get bundle level settings if specified.
     if ($bundle !== NULL) {
       $bundle_settings = $config->get("$entity_type_id.$bundle.analyzers." . $this->getPluginId()) ?: [];
-      // Merge bundle settings over type settings, preserving defaults
+      // Merge bundle settings over type settings, preserving defaults.
       $settings = array_replace_recursive($settings, $bundle_settings);
     }
-    
+
     return $settings;
   }
 
@@ -199,7 +199,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
   }
 
   /**
-   * Gets the settings form for this analyzer for a specific entity type and bundle.
+   * Gets analyzer settings form for a specific entity type and bundle.
    *
    * @param string $entity_type_id
    *   The entity type ID.
@@ -213,12 +213,12 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
     $settings = $this->getEntityTypeSettings($entity_type_id, $bundle);
     $plugin_id = $this->getPluginId();
 
-    // Get the enabled state from the status config
+    // Get the enabled state from the status config.
     $status_config = $this->getConfigFactory()->get('analyze.settings');
     $status = $status_config->get('status') ?? [];
     $is_enabled = isset($status[$entity_type_id][$bundle][$plugin_id]);
 
-    // Get the plugin settings from plugin_settings config
+    // Get the plugin settings from plugin_settings config.
     $plugin_settings_config = $this->getConfigFactory()->get('analyze.plugin_settings');
     $key = sprintf('%s.%s.%s', $entity_type_id, $bundle, $plugin_id);
     $plugin_settings = $plugin_settings_config->get($key) ?? [];
@@ -232,7 +232,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
       ],
     ];
 
-    // Add configurable settings if defined
+    // Add configurable settings if defined.
     $configurable_settings = $this->getConfigurableSettings();
     foreach ($configurable_settings as $group_key => $group) {
       $form[$group_key] = [
@@ -281,14 +281,14 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    */
   protected function saveEntityTypeSettings(string $entity_type_id, array $settings, ?string $bundle = NULL): void {
     $config = $this->getConfigFactory()->getEditable('analyze.entity_settings');
-    
+
     if ($bundle !== NULL) {
       $config->set("$entity_type_id.$bundle.analyzers." . $this->getPluginId(), $settings);
     }
     else {
       $config->set("$entity_type_id.analyzers." . $this->getPluginId(), $settings);
     }
-    
+
     $config->save();
   }
 
@@ -306,13 +306,13 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
     $config = \Drupal::configFactory()->getEditable('analyze.settings');
     $current = $config->get('status') ?? [];
 
-    // Save enabled state
+    // Save enabled state.
     if (isset($settings['enabled'])) {
       $current[$entity_type_id][$bundle][$this->getPluginId()] = $settings['enabled'];
       $config->set('status', $current)->save();
     }
 
-    // Save detailed settings if present
+    // Save detailed settings if present.
     if (isset($settings['settings'])) {
       $detailed_config = \Drupal::configFactory()->getEditable('analyze.plugin_settings');
       $key = sprintf('%s.%s.%s', $entity_type_id, $bundle, $this->getPluginId());
