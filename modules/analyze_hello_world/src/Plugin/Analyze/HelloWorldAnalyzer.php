@@ -193,10 +193,6 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
       return ($a['weight'] ?? 0) <=> ($b['weight'] ?? 0);
     });
 
-    $this->messenger->addStatus('Debug: Plugin settings: ' . print_r($settings, TRUE));
-    $this->messenger->addStatus('Debug: Available sentiments: ' . print_r($sentiments, TRUE));
-    $this->messenger->addStatus('Debug: Enabled sentiments: ' . print_r($enabled, TRUE));
-
     return $enabled;
   }
 
@@ -213,11 +209,11 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
     if (!isset($status[$entity_type][$bundle][$this->getPluginId()])) {
       return [
         '#theme' => 'analyze_table',
-        '#table_title' => $this->t('Sentiment Analysis'),
+        '#table_title' => 'Sentiment Analysis',
         '#rows' => [
           [
-            'label' => $this->t('Status'),
-            'data' => $this->t('Plugin not enabled for this content type'),
+            'label' => 'Status',
+            'data' => 'Sentiment analysis is not enabled for this content type.',
           ],
         ],
       ];
@@ -227,11 +223,11 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
     if (empty($enabled_sentiments)) {
       return [
         '#theme' => 'analyze_table',
-        '#table_title' => $this->t('Sentiment Analysis'),
+        '#table_title' => 'Sentiment Analysis',
         '#rows' => [
           [
-            'label' => $this->t('Status'),
-            'data' => $this->t('No sentiments enabled'),
+            'label' => 'Status',
+            'data' => 'No sentiment metrics are currently enabled.',
           ],
         ],
       ];
@@ -260,14 +256,27 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
       ];
     }
     
-    // If no scores available, show a table with a message
+    // If no scores available but everything is configured correctly, show a helpful message
+    if (!empty($content = $this->getHtml($entity))) {
+      return [
+        '#theme' => 'analyze_table',
+        '#table_title' => 'Sentiment Analysis',
+        '#rows' => [
+          [
+            'label' => 'Status',
+            'data' => 'Unable to analyze sentiment. The content may be too short or need revision.',
+          ],
+        ],
+      ];
+    }
+    
     return [
       '#theme' => 'analyze_table',
-      '#table_title' => $this->t('Sentiment Analysis'),
+      '#table_title' => 'Sentiment Analysis',
       '#rows' => [
         [
-          'label' => $this->t('Status'),
-          'data' => $this->t('No sentiment scores available'),
+          'label' => 'Status',
+          'data' => 'No content available for analysis.',
         ],
       ],
     ];
@@ -283,23 +292,16 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
     $entity_type = $entity->getEntityTypeId();
     $bundle = $entity->bundle();
     
-    $this->messenger->addStatus(sprintf('Debug: Checking plugin status for %s.%s.%s', $entity_type, $bundle, $this->getPluginId()));
-    $this->messenger->addStatus('Debug: Status config: ' . print_r($status, TRUE));
-    
     if (!isset($status[$entity_type][$bundle][$this->getPluginId()])) {
-      $this->messenger->addStatus('Debug: Plugin not enabled for this entity type/bundle');
       return [];
     }
 
     $enabled_sentiments = $this->getEnabledSentiments($entity->getEntityTypeId(), $entity->bundle());
     if (empty($enabled_sentiments)) {
-      $this->messenger->addStatus('Debug: No enabled sentiments found');
       return [];
     }
 
-    $this->messenger->addStatus('Debug: Enabled sentiments: ' . print_r($enabled_sentiments, TRUE));
     $scores = $this->analyzeSentiment($entity);
-    $this->messenger->addStatus('Debug: Sentiment scores: ' . print_r($scores, TRUE));
     
     $build = [
       '#type' => 'container',
@@ -334,7 +336,6 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
     }
     
     if (count($build) <= 1) {
-      $this->messenger->addStatus('Debug: No gauges generated');
       return [];
     }
     
@@ -349,8 +350,6 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
    *
    * @return string
    *   A HTML string of rendered content.
-   *
-   * @throws \Exception
    */
   private function getHtml(EntityInterface $entity): string {
     // Get the current active langcode from the site
@@ -372,11 +371,6 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
     $content = preg_replace('/\s+/', ' ', $content);
     $content = trim($content);
     
-    if (empty($content)) {
-      $this->messenger->addWarning('Debug: No content available for analysis');
-      return '';
-    }
-    
     return $content;
   }
 
@@ -393,24 +387,20 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
     try {
       // Get the content to analyze
       $content = $this->getHtml($entity);
-      $this->messenger->addStatus('Debug: Content to analyze: ' . $content);
 
       // Get the AI provider
       $ai_provider = $this->getAiProvider();
       if (!$ai_provider) {
-        $this->messenger->addError('Debug: No AI provider available');
         return [];
       }
 
       // Get the default model
       $defaults = $this->getDefaultModel();
       if (!$defaults) {
-        $this->messenger->addError('Debug: No default model configured');
         return [];
       }
 
       // Build the prompt
-      // Get enabled sentiments for this entity type/bundle
       $enabled_sentiments = $this->getEnabledSentiments($entity->getEntityTypeId(), $entity->bundle());
       
       // Build sentiment descriptions with their ranges
@@ -449,8 +439,6 @@ $metrics
 $json_template</output_format>
 EOT;
       
-      $this->messenger->addStatus('Debug: Complete prompt: <pre>' . htmlspecialchars($prompt) . '</pre>');
-      
       $chat_array = [
         new ChatMessage('user', $prompt),
       ];
@@ -459,14 +447,12 @@ EOT;
       $messages = new ChatInput($chat_array);
       $message = $ai_provider->chat($messages, $defaults['model_id'])->getNormalized();
       $raw_response = $message->getText();
-      $this->messenger->addStatus('Debug: Raw AI response: ' . $raw_response);
       
       // Use the injected PromptJsonDecoder service
       $decoded = $this->promptJsonDecoder->decode($message);
       
       // If we couldn't decode the JSON at all
       if (!is_array($decoded)) {
-        $this->messenger->addError('Debug: Could not decode JSON response');
         return [];
       }
       
@@ -484,7 +470,6 @@ EOT;
 
     }
     catch (\Exception $e) {
-      $this->messenger->addError('Debug: Error analyzing sentiment: ' . $e->getMessage());
       return [];
     }
   }
@@ -600,7 +585,6 @@ EOT;
   private function getAiProvider() {
     // Check if we have any chat providers available
     if (!$this->aiProvider->hasProvidersForOperationType('chat', TRUE)) {
-      $this->messenger->addWarning('Debug: No chat providers available');
       return NULL;
     }
 
@@ -622,7 +606,6 @@ EOT;
   private function getDefaultModel() {
     $defaults = $this->aiProvider->getDefaultProviderForOperationType('chat');
     if (empty($defaults['provider_id']) || empty($defaults['model_id'])) {
-      $this->messenger->addWarning('Debug: No default provider configured. Provider ID: ' . ($defaults['provider_id'] ?? 'none') . ', Model ID: ' . ($defaults['model_id'] ?? 'none'));
       return NULL;
     }
     return $defaults;
