@@ -353,8 +353,23 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
    * @throws \Exception
    */
   private function getHtml(EntityInterface $entity): string {
-    $content = strip_tags($entity->get('body')->value ?? '');
+    // Get the current active langcode from the site
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
+
+    // Get the rendered entity view in default mode
+    $view = $this->entityTypeManager->getViewBuilder($entity->getEntityTypeId())->view($entity, 'default', $langcode);
+    $rendered = $this->renderer->render($view);
+
+    // Convert to string and strip HTML for sentiment analysis
+    $content = is_object($rendered) && method_exists($rendered, '__toString')
+      ? $rendered->__toString()
+      : (string) $rendered;
+      
+    // Clean up the content for sentiment analysis
+    $content = strip_tags($content);
     $content = str_replace('&nbsp;', ' ', $content);
+    // Replace multiple whitespace characters (spaces, tabs, newlines) with a single space
+    $content = preg_replace('/\s+/', ' ', $content);
     $content = trim($content);
     
     if (empty($content)) {
@@ -395,8 +410,6 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
       }
 
       // Build the prompt
-      $prompt = $content;
-      
       // Get enabled sentiments for this entity type/bundle
       $enabled_sentiments = $this->getEnabledSentiments($entity->getEntityTypeId(), $entity->bundle());
       
@@ -418,12 +431,25 @@ final class HelloWorldAnalyzer extends AnalyzePluginBase {
       }, array_keys($enabled_sentiments), $enabled_sentiments);
       
       $json_template = '{' . implode(', ', $json_keys) . '}';
+
+      $metrics = implode("\n", $sentiment_descriptions);
       
-      $prompt .= "\n\nAnalyze this content and provide scores for the following metrics:\n";
-      $prompt .= implode("\n", $sentiment_descriptions);
-      $prompt .= "\n\nRespond with a simple JSON object containing only the required scores:\n" . $json_template;
+      $prompt = <<<EOT
+<task>Analyze the sentiment of the following text.</task>
+<text>
+$content
+</text>
+
+<metrics>
+$metrics
+</metrics>
+
+<instructions>Provide precise scores between -1.0 and +1.0 using any decimal values that best represent the sentiment.</instructions>
+<output_format>Respond with a simple JSON object containing only the required scores:
+$json_template</output_format>
+EOT;
       
-      $this->messenger->addStatus('Debug: Complete prompt: ' . $prompt);
+      $this->messenger->addStatus('Debug: Complete prompt: <pre>' . htmlspecialchars($prompt) . '</pre>');
       
       $chat_array = [
         new ChatMessage('user', $prompt),
