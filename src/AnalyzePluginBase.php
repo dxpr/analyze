@@ -210,7 +210,6 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    *   A form array to be included in the entity type's analyze settings.
    */
   public function getEntityTypeSettingsForm(string $entity_type_id, ?string $bundle = NULL): array {
-    $settings = $this->getEntityTypeSettings($entity_type_id, $bundle);
     $plugin_id = $this->getPluginId();
 
     // Get the enabled state from the status config.

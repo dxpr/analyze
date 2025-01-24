@@ -32,7 +32,6 @@ final class Example extends AnalyzePluginBase {
    * of data should be restricted to the plugin's full report page.
    */
   public function renderSummary(EntityInterface $entity): array {
-    $data = $this->getData($entity);
 
     return [
       '#theme' => 'analyze_table',
@@ -102,23 +101,6 @@ final class Example extends AnalyzePluginBase {
         'title' => $this->t('Global Report'),
         'url' => Url::fromUri('https://example.com/global-report'),
       ],
-    ];
-  }
-
-  /**
-   * Sample method to retrieve data.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The data being analyzed.
-   *
-   * @return array<string, string>
-   *   The label/values pairs of the analyze data.
-   */
-  private function getData(EntityInterface $entity): array {
-    return [
-      'Label One' => $entity->id(),
-      'Label Two' => 'Data',
-      'Label Three' => 'Data',
     ];
   }
 
