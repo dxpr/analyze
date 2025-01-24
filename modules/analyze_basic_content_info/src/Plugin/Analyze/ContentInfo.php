@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @Analyze(
  *   id = "content_info",
- *   label = @Translation("Basic Content Entity Reports"),
+ *   label = @Translation("Basic Content Info"),
  *   description = @Translation("Provides basic statistics about content for Analyzer.")
  * )
  */
