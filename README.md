@@ -120,6 +120,67 @@ The Analyze module is designed to work with other modules that provide specific
 content analysis features, such as SEO analysis tools, accessibility checkers,
 and sentiment analysis libraries.
 
+### Developer Implementation Guide
+
+To create your own Analyze plugin, follow these steps:
+
+1. Create a new module with the following structure:
+```
+my_module/
+  ├── src/
+  │   └── Plugin/
+  │       └── Analyze/
+  │           └── MyAnalyzer.php
+  └── my_module.info.yml
+```
+
+2. Define your module dependencies in `my_module.info.yml`:
+```yaml
+dependencies:
+  - analyze:analyze
+```
+
+3. Create your Analyzer plugin class that extends `AnalyzePluginBase`. At minimum, you must:
+   - Implement the `@Analyze` annotation
+   - Override the `renderSummary()` method
+   - Override the `renderFullReport()` method if you want a detailed view
+
+Example plugin structure:
+```php
+/**
+ * @Analyze(
+ *   id = "my_analyzer",
+ *   label = @Translation("My Analyzer"),
+ *   description = @Translation("Description of what this analyzer does")
+ * )
+ */
+final class MyAnalyzer extends AnalyzePluginBase {
+  public function renderSummary(EntityInterface $entity): array {
+    // Return either:
+    // - analyze_table with max 3 rows
+    // - analyze_gauge component
+    return [
+      '#theme' => 'analyze_table',
+      '#table_title' => 'My Analysis',
+      '#row_one' => [
+        'label' => 'Metric 1',
+        'data' => 'Value 1',
+      ],
+      // ... up to 3 rows
+    ];
+  }
+}
+```
+
+4. Optional methods you can override:
+   - `getFullReportUrl()` - Customize or disable the full report URL
+   - `isEnabled()` - Control when the analyzer is available
+   - `isApplicable()` - Define which entity types/bundles can use this analyzer
+   - `access()` - Set permission requirements
+   - `extraSummaryLinks()` - Add additional links to the summary page
+
+See the `analyze_plugin_example` module in the codebase for a complete working example.
+
 ### Community Documentation
 
 @todo
