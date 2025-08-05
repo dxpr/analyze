@@ -1,0 +1,167 @@
+<h2>Overview</h2>
+
+<p>The Analyze module provides an API framework to add content-related information to Drupal entities with canonical URLs. It serves as a foundation for other modules to build on, displaying analysis data within an "Analyze" tab on entities. This unifies diverse UI structures and promotes better user experience and accessibility across analysis tools.</p>
+
+<h3>Features</h3>
+
+<ul>
+  <li>Adds an "Analyze" tab to entities with canonical URLs.</li>
+  <li>Offers an API for modules to display analysis data.</li>
+  <li>Includes a linear gauge component for spectrum-based data visualization.</li>
+</ul>
+
+<h3>Modules Implementing Analyze</h3>
+
+<table>
+  <caption>
+    Modules marked with an asterisk (*) are included in the Analyze project
+  </caption>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Key Metrics</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><h5>Analyze Basic Content Info*</td>
+      <td>Provides fundamental content metrics.</td>
+      <td>Word count, Image count</td>
+    </tr>
+    <tr>
+      <td><h5>Analyze Google Analytics*</td>
+      <td>Integrates Google Analytics data into content analysis.</td>
+      <td>Page views, Views per user, Bounce rate</td>
+    </tr>
+    <tr>
+      <td><h5>Analyze Node Statistics*</td>
+      <td>Provides basic traffic statistics using Drupal's Statistics module.</td>
+      <td>Total page views, Today's views</td>
+    </tr>
+    <tr>
+      <td><h5>Analyze Plugin Example*</td>
+      <td>A developer reference for creating custom analyzers and reports.</td>
+      <td>Custom metrics, Gauge, Table components</td>
+    </tr>
+    <tr>
+      <td><h5><a href="https://www.drupal.org/project/analyze_ai_brand_voice">AI Brand Voice Analysis</a></td>
+      <td>Analyzes content for brand voice consistency.</td>
+      <td>Brand voice alignment score</td>
+    </tr>
+    <tr>
+      <td><h5><a href="https://www.drupal.org/project/analyze_ai_sentiment">AI Sentiment Analysis</a></td>
+      <td>Analyzes the sentiment of content using AI models.</td>
+      <td>Trust, Objectivity, Audience targeting, Reading level</td>
+    </tr>
+    <tr>
+      <td><h5><a href="https://www.drupal.org/project/analyze_ai_content_marketing_audit">AI Content Marketing Audit</a></td>
+      <td>Evaluates content against marketing best practices.</td>
+      <td>Usability, Knowledge level, Actionability, Business value</td>
+    </tr>
+    <tr>
+      <td><h5><a href="https://www.drupal.org/project/analyze_ai_content_security_audit">AI Content Security Audit</a></td>
+      <td>Identifies potential security risks in content.</td>
+      <td>PII disclosure, Credentials exposure, Risk scores</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Problem Addressed</h3>
+
+<p>Content analysis modules, such as <a href="https://www.drupal.org/project/yoast_seo">Realtime SEO</a>, <a href="https://www.drupal.org/project/ga_node_reports">Google Analytics Node Reports</a>, and <a href="https://www.drupal.org/project/editoria11y">Editoria11y</a>, often feature inconsistent UI designs. The <a href="https://www.drupal.org/project/statistics">Statistics</a> module, formerly in core, lacks an accessible UI. These discrepancies make it difficult for content editors to use these tools effectively.</p>
+
+<p>The Analyze module unifies these tools within the "Analyze" tab. Concise reports appear on the main tab, while more detailed reports are accessible via secondary tabs.</p>
+
+<h3>User Experience</h3>
+
+<ol>
+  <li>Up to three key metrics are shown on the main "Analyze" tab using tables and gauges.</li>
+  <li>Full reports can be displayed in secondary tabs or sitewide dashboards.</li>
+  <li>This ensures critical data is accessible, with deeper insights available when needed.</li>
+</ol>
+
+<h3>Setup</h3>
+
+<p>After enabling the module on the <strong>Extend</strong> page as usual:</p>
+
+<ol>
+  <li>Navigate to <strong>Configuration > System > Analyze Settings</strong>.</li>
+  <li>Enable desired analysis features for specific content types by toggling the available options (e.g., Basic Content, Google Analytics, Node Statistics).</li>
+  <li>Once configured, the "Analyze" tab will appear on entity pages, displaying metrics and reports.</li>
+</ol>
+
+<p>For example:</p>
+<ul>
+  <li>The main "Analyze" tab displays concise information, such as word count or page views.</li>
+  <li>More detailed reports, like Google Analytics summaries, are available on secondary tabs or linked to sitewide dashboards.</li>
+</ul>
+
+Example configuration:
+<img src="https://www.drupal.org/files/project-images/analyze-module-config.png" alt="Example configuration for Analyze module on nodes and social post custom entities" />
+
+<h3>Creating a custom plugin to display information</h3>
+
+<h4>1. File Structure</h4>
+<code>
+my_module/
+├── my_module.info.yml
+├── src/
+│   └── Plugin/
+│       └── Analyze/
+│           └── MyAnalyzer.php
+</code>
+
+<h4>2. Example Plugin</h4>
+<p>See the <a href="https://git.drupalcode.org/project/analyze/-/blob/1.0.x/modules/analyze_plugin_example/src/Plugin/Analyze/Example.php">full example</a> for details. Here's a basic structure:</p>
+
+<?php
+
+namespace Drupal\my_module\Plugin\Analyze;
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\analyze\AnalyzePluginBase;
+
+/**
+ * @Analyze(
+ *   id = "my_analyzer",
+ *   label = @Translation("My Analyzer"),
+ *   description = @Translation("Provides custom analysis functionality.")
+ * )
+ */
+final class MyAnalyzer extends AnalyzePluginBase {
+
+  public function renderSummary(EntityInterface $entity): array {
+    return [
+      '#theme' => 'analyze_table',
+      '#table_title' => 'My Analysis',
+      '#row_one' => ['label' => 'Metric One', 'data' => 'Value 1'],
+      '#row_two' => ['label' => 'Metric Two', 'data' => 'Value 2'],
+    ];
+  }
+
+  public function renderFullReport(EntityInterface $entity): array {
+    return [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Full Analysis'),
+      'gauge' => [
+        '#theme' => 'analyze_gauge',
+        '#caption' => 'Performance Score',
+        '#range_min_label' => 'Poor',
+        '#range_max_label' => 'Excellent',
+        '#value' => 75,
+        '#display_value' => '75%',
+      ],
+    ];
+  }
+}
+
+?>
+
+<h4>3. Display Components</h4>
+<ul>
+  <li><code>analyze_table</code> for key metrics.</li>
+  <li><code>analyze_gauge</code> for spectrum-based data.</li>
+</ul>
+
+<p>Developers can integrate these components to display their analysis on the "Analyze" tab. Configuration and UI are implemented by extending modules.</p>
