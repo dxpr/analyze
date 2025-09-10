@@ -140,7 +140,8 @@ dependencies:
   - analyze:analyze
 ```
 
-3. Create your Analyzer plugin class that extends `AnalyzePluginBase`. At minimum, you must:
+3. Create your Analyzer plugin class that extends `AnalyzePluginBase`.
+   At minimum, you must:
    - Implement the `@Analyze` annotation
    - Override the `renderSummary()` method
    - Override the `renderFullReport()` method if you want a detailed view
@@ -179,7 +180,8 @@ final class MyAnalyzer extends AnalyzePluginBase {
    - `access()` - Set permission requirements
    - `extraSummaryLinks()` - Add additional links to the summary page
 
-See the `analyze_plugin_example` module in the codebase for a complete working example.
+See the `analyze_plugin_example` module in the codebase for a complete
+working example.
 
 ### Community Documentation
 
