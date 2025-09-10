@@ -133,9 +133,7 @@ final class ContentInfo extends AnalyzePluginBase {
     $matches = [];
     preg_match_all('/<img/', $render, $matches);
 
-    if (isset($matches[0])) {
-      $return = count($matches[0]);
-    }
+    $return = count($matches[0]);
 
     return $return;
   }
@@ -160,9 +158,7 @@ final class ContentInfo extends AnalyzePluginBase {
     $rendered = $this->renderer->render($view);
 
     // Handle both string and Markup object cases.
-    return is_object($rendered) && method_exists($rendered, '__toString')
-        ? $rendered->__toString()
-        : (string) $rendered;
+    return (string) $rendered;
   }
 
   /**
