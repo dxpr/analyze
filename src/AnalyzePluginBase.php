@@ -53,6 +53,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    * @phpstan-param array<string, mixed> $configuration
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
+    // @phpstan-ignore-next-line - This is intended to be called by subclasses
     return new static(
       $configuration,
       $plugin_id,
@@ -71,7 +72,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    */
   protected function getConfigFactory(): ConfigFactoryInterface {
     if (!$this->configFactory) {
-      $this->configFactory = \Drupal::service('config.factory');
+      throw new \RuntimeException('Config factory not injected. Please ensure the plugin is created using dependency injection.');
     }
     return $this->configFactory;
   }
@@ -302,7 +303,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    *   The settings to save.
    */
   public function saveSettings(string $entity_type_id, ?string $bundle, array $settings): void {
-    $config = \Drupal::configFactory()->getEditable('analyze.settings');
+    $config = $this->getConfigFactory()->getEditable('analyze.settings');
     $current = $config->get('status') ?? [];
 
     // Save enabled state.
@@ -313,7 +314,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
 
     // Save detailed settings if present.
     if (isset($settings['settings'])) {
-      $detailed_config = \Drupal::configFactory()->getEditable('analyze.plugin_settings');
+      $detailed_config = $this->getConfigFactory()->getEditable('analyze.plugin_settings');
       $key = sprintf('%s.%s.%s', $entity_type_id, $bundle, $this->getPluginId());
       $detailed_config->set($key, $settings['settings'])->save();
     }
