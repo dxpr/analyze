@@ -33,7 +33,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    *   Analyze helper service.
    * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
    *   The current user.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface|null $configFactory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
    *   The config factory.
    */
   public function __construct(
@@ -42,7 +42,7 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
     $plugin_definition,
     protected HelperInterface $helper,
     protected AccountProxyInterface $currentUser,
-    protected ?ConfigFactoryInterface $configFactory = NULL,
+    protected ConfigFactoryInterface $configFactory,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
@@ -71,9 +71,6 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
    *   The config factory.
    */
   protected function getConfigFactory(): ConfigFactoryInterface {
-    if (!$this->configFactory) {
-      throw new \RuntimeException('Config factory not injected. Please ensure the plugin is created using dependency injection.');
-    }
     return $this->configFactory;
   }
 
