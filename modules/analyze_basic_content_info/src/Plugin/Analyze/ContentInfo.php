@@ -12,6 +12,7 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
 use Drupal\analyze\AnalyzePluginBase;
 use Drupal\analyze\HelperInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -44,6 +45,8 @@ final class ContentInfo extends AnalyzePluginBase {
    *   The renderer service.
    * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
    *   The language manager service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory.
    */
   public function __construct(
     array $configuration,
@@ -51,11 +54,12 @@ final class ContentInfo extends AnalyzePluginBase {
     $plugin_definition,
     HelperInterface $helper,
     AccountProxyInterface $currentUser,
+    ConfigFactoryInterface $configFactory,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected RendererInterface $renderer,
     protected LanguageManagerInterface $languageManager,
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper, $currentUser);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper, $currentUser, $configFactory);
   }
 
   /**
@@ -68,6 +72,7 @@ final class ContentInfo extends AnalyzePluginBase {
       $plugin_definition,
       $container->get('analyze.helper'),
       $container->get('current_user'),
+      $container->get('config.factory'),
       $container->get('entity_type.manager'),
       $container->get('renderer'),
       $container->get('language_manager'),

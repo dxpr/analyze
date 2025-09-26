@@ -9,6 +9,7 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
 use Drupal\analyze\AnalyzePluginBase;
 use Drupal\analyze\HelperInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\statistics\NodeStatisticsDatabaseStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -36,6 +37,8 @@ final class NodeViews extends AnalyzePluginBase {
    *   Analyze helper service.
    * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
    *   The current user.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory.
    * @param \Drupal\statistics\NodeStatisticsDatabaseStorage $nodeStatisticsDatabaseStorage
    *   Statistics service.
    */
@@ -45,9 +48,10 @@ final class NodeViews extends AnalyzePluginBase {
     $plugin_definition,
     HelperInterface $helper,
     AccountProxyInterface $currentUser,
+    ConfigFactoryInterface $configFactory,
     protected NodeStatisticsDatabaseStorage $nodeStatisticsDatabaseStorage,
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper, $currentUser);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $helper, $currentUser, $configFactory);
   }
 
   /**
@@ -60,6 +64,7 @@ final class NodeViews extends AnalyzePluginBase {
       $plugin_definition,
       $container->get('analyze.helper'),
       $container->get('current_user'),
+      $container->get('config.factory'),
       $container->get('statistics.storage.node')
     );
   }
