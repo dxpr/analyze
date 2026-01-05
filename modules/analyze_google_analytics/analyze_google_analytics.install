@@ -31,3 +31,20 @@ function analyze_google_analytics_uninstall(): void {
   // Uninstall our views.
   \Drupal::configFactory()->getEditable('views.view.analyze_google_analytics')->delete();
 }
+
+/**
+ * Update view: standardize submit button text.
+ */
+function analyze_google_analytics_update_8001() {
+  $config_factory = \Drupal::configFactory();
+  $config = $config_factory->getEditable('views.view.analyze_google_analytics');
+
+  if ($config->isNew()) {
+    return t('View not found.');
+  }
+
+  $config->set('display.default.display_options.exposed_form.options.submit_button', 'Apply filters');
+  $config->save();
+
+  return t('Updated submit button text to "Apply filters".');
+}
