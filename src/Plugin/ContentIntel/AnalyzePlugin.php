@@ -188,7 +188,52 @@ class AnalyzePlugin extends ContentIntelPluginBase {
   protected function extractDataFromRenderArray(array $render_array, string $plugin_id): array {
     $data = [];
 
-    // Look for common patterns in analyze plugin render arrays.
+    // Handle analyze_table theme.
+    if (isset($render_array['#theme']) && $render_array['#theme'] === 'analyze_table') {
+      if (!empty($render_array['#table_title'])) {
+        $data['title'] = (string) $render_array['#table_title'];
+      }
+      if (!empty($render_array['#rows']) && is_array($render_array['#rows'])) {
+        foreach ($render_array['#rows'] as $row) {
+          if (isset($row['label']) && isset($row['data'])) {
+            $key = $this->normalizeKey((string) $row['label']);
+            $data[$key] = $row['data'];
+          }
+        }
+      }
+      return $data;
+    }
+
+    // Handle analyze_gauge theme.
+    if (isset($render_array['#theme']) && $render_array['#theme'] === 'analyze_gauge') {
+      if (!empty($render_array['#caption'])) {
+        $data['caption'] = (string) $render_array['#caption'];
+      }
+      if (isset($render_array['#value'])) {
+        $data['value'] = $render_array['#value'];
+      }
+      if (!empty($render_array['#display_value'])) {
+        $data['display_value'] = (string) $render_array['#display_value'];
+      }
+      if (!empty($render_array['#range_min_label'])) {
+        $data['range_min_label'] = (string) $render_array['#range_min_label'];
+      }
+      if (!empty($render_array['#range_mid_label'])) {
+        $data['range_mid_label'] = (string) $render_array['#range_mid_label'];
+      }
+      if (!empty($render_array['#range_max_label'])) {
+        $data['range_max_label'] = (string) $render_array['#range_max_label'];
+      }
+      if (isset($render_array['#range_min'])) {
+        $data['range_min'] = $render_array['#range_min'];
+      }
+      if (isset($render_array['#range_max'])) {
+        $data['range_max'] = $render_array['#range_max'];
+      }
+      return $data;
+    }
+
+    // Look for common patterns in other render arrays.
     foreach ($render_array as $key => $value) {
       // Skip Drupal internal keys.
       if (str_starts_with($key, '#')) {
@@ -224,6 +269,19 @@ class AnalyzePlugin extends ContentIntelPluginBase {
     }
 
     return $data;
+  }
+
+  /**
+   * Normalizes a label to a machine key.
+   *
+   * @param string $label
+   *   The human-readable label.
+   *
+   * @return string
+   *   A normalized key.
+   */
+  protected function normalizeKey(string $label): string {
+    return strtolower(str_replace([' ', '-'], '_', trim($label)));
   }
 
 }
