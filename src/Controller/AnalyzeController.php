@@ -29,7 +29,8 @@ class AnalyzeController extends ControllerBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): static {
+    // @phpstan-ignore-next-line - This is a final class, safe to use new static()
     return new static(
       $container->get('analyze.helper')
     );

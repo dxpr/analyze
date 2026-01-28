@@ -7,6 +7,7 @@ namespace Drupal\analyze;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
+use Drupal\Core\Plugin\Factory\ContainerFactory;
 use Drupal\analyze\Annotation\Analyze;
 
 /**
@@ -23,6 +24,7 @@ final class AnalyzePluginManager extends DefaultPluginManager {
     parent::__construct('Plugin/Analyze', $namespaces, $module_handler, AnalyzeInterface::class, Analyze::class);
     $this->alterInfo('analyze_info');
     $this->setCacheBackend($cache_backend, 'analyze_plugins');
+    $this->factory = new ContainerFactory($this, AnalyzeInterface::class);
   }
 
 }

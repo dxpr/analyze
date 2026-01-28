@@ -107,6 +107,10 @@ function analyze_local_tasks_alter(array &$local_tasks): void {
  * Implements hook_form_alter().
  *
  * @phpstan-param array<string, mixed> $form
+ * @phpstan-param \Drupal\Core\Form\FormStateInterface $form_state
+ * @phpstan-param string $form_id
+ *
+ * @param-out array<string, mixed> $form
  */
 function analyze_form_alter(array &$form, FormStateInterface $form_state, string $form_id): void {
   if ($form_id !== 'analyze_analyze_settings') {
@@ -144,12 +148,14 @@ function analyze_form_alter(array &$form, FormStateInterface $form_state, string
 /**
  * Helper to add Analyze settings to a form.
  *
- * @param mixed[] $form
- *   The form.
+ * @param array<string, mixed> $form
+ *   The form array.
  * @param string $entity_type
  *   The entity type the settings are for.
  * @param string|null $bundle
  *   The bundle the settings are for.
+ *
+ * @param-out array<string, mixed> $form
  */
 function analyze_add_settings_form(array &$form, string $entity_type, ?string $bundle = NULL): void {
   // If the user doesn't have the permission.
