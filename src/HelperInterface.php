@@ -66,4 +66,17 @@ interface HelperInterface {
    */
   public function getEntityDefinitions(): array;
 
+  /**
+   * Helper to return all applicable definitions based on an entity.
+   *
+   * @param string $entity_type
+   *   The entity type.
+   * @param string|null $bundle
+   *   The bundle.
+   *
+   * @return array<string, array<string, mixed>>
+   *   An array of plugin definitions that are applicable.
+   */
+  public function getApplicableDefinitions(string $entity_type, ?string $bundle = NULL): array;
+
 }

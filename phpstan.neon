@@ -1,0 +1,9 @@
+parameters:
+    paths:
+        - src
+    level: 5
+    # Treat PHPDoc types as less certain to avoid false positives.
+    treatPhpDocTypesAsCertain: false
+    # Exclude optional module integration plugins.
+    excludePaths:
+        - src/Plugin/ContentIntel/*
