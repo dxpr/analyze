@@ -26,6 +26,11 @@ parameters:
         - web/modules/contrib/analyze
     # Set the analysis level (0-9)
     level: 5
+    # Treat PHPDoc types as less certain to avoid false positives.
+    treatPhpDocTypesAsCertain: false
+    # Exclude optional module integration plugins.
+    excludePaths:
+        - web/modules/contrib/analyze/src/Plugin/ContentIntel/*
 EOF
 
 mkdir -p web/modules/contrib/
