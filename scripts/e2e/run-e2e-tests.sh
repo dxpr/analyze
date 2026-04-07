@@ -3,7 +3,7 @@
 # E2E test runner for Analyze module Drush commands.
 # Creates a fresh Drupal install, enables the module, and runs tests.
 #
-set -euo pipefail
+set -uo pipefail
 
 MODULE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 FILTER="${1:-}"
@@ -12,13 +12,16 @@ echo "=== Analyze E2E Test Runner ==="
 echo "Module: $MODULE_DIR"
 
 # Install GD if not available (needed by Drupal).
-GD_ENABLED=$(php -i 2>/dev/null | grep 'GD Support' | awk '{ print $4 }')
+GD_ENABLED=$(php -i 2>/dev/null | grep 'GD Support' | awk '{ print $4 }' || echo '')
 if [ "$GD_ENABLED" != 'enabled' ]; then
-  apk update > /dev/null 2>&1 && \
-  apk add --quiet libpng libpng-dev libjpeg-turbo-dev \
-    libwebp-dev zlib-dev libxpm-dev gd > /dev/null 2>&1 && \
+  echo "Installing GD extension..."
+  apk update > /dev/null 2>&1
+  apk add libpng libpng-dev libjpeg-turbo-dev \
+    libwebp-dev zlib-dev libxpm-dev gd > /dev/null 2>&1
   docker-php-ext-install gd > /dev/null 2>&1 || true
 fi
+
+set -e
 
 # Create fresh Drupal install in a clean temp directory.
 SITE_DIR=$(mktemp -d)
@@ -27,9 +30,10 @@ trap "rm -rf $SITE_DIR" EXIT
 export HOME="$SITE_DIR"
 export COMPOSER_HOME="$SITE_DIR/.composer"
 
+echo "Creating Drupal project..."
 cd "$SITE_DIR"
 composer create-project drupal/recommended-project:11.x-dev site \
-  --no-interaction --quiet
+  --no-interaction
 cd "$SITE_DIR/site"
 
 # Symlink module.
