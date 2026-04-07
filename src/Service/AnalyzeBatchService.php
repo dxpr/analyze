@@ -244,13 +244,18 @@ final class AnalyzeBatchService {
       $context['results']['errors'] = [];
     }
 
-    $analyzers = [];
+    // Build analyzer instances.
+    $all_analyzers = [];
     foreach ($analyzer_ids as $analyzer_id) {
       $plugin = $this->analyzePluginManager->createInstance($analyzer_id);
       if ($plugin instanceof BatchableAnalyzerInterface) {
-        $analyzers[$analyzer_id] = $plugin;
+        $all_analyzers[$analyzer_id] = $plugin;
       }
     }
+
+    // Build bundle → enabled analyzer map for correct matrix enforcement.
+    $config = $this->configFactory->get('analyze.settings');
+    $status_config = $config->get('status') ?? [];
 
     foreach ($entities as $entity_data) {
       $entity = $this->entityTypeManager
@@ -261,12 +266,23 @@ final class AnalyzeBatchService {
         continue;
       }
 
+      // Only run analyzers that are enabled for this entity's bundle.
+      $enabled = $status_config[$entity_data['entity_type']][$entity_data['bundle']] ?? [];
+      $analyzers = array_intersect_key($all_analyzers, $enabled);
+
+      if (empty($analyzers)) {
+        continue;
+      }
+
       $entity_succeeded = TRUE;
       foreach ($analyzers as $analyzer_id => $analyzer) {
         try {
-          $this->runWithBackoff(
+          $result = $this->runWithBackoff(
             fn() => $analyzer->processEntity($entity, $force_refresh),
           );
+          if ($result === FALSE) {
+            $entity_succeeded = FALSE;
+          }
         }
         catch (\Exception $e) {
           $entity_succeeded = FALSE;
@@ -320,15 +336,17 @@ final class AnalyzeBatchService {
    * @param int $max_retries
    *   Maximum number of retries.
    *
+   * @return bool
+   *   The return value from the callable.
+   *
    * @throws \Exception
    *   If all retries are exhausted or a non-rate-limit exception occurs.
    */
-  private function runWithBackoff(callable $fn, int $max_retries = 3): void {
+  private function runWithBackoff(callable $fn, int $max_retries = 3): bool {
     $delay = 2;
     for ($attempt = 0; $attempt <= $max_retries; $attempt++) {
       try {
-        $fn();
-        return;
+        return (bool) $fn();
       }
       catch (\Exception $e) {
         if (!$this->isRateLimitException($e) || $attempt === $max_retries) {
@@ -338,6 +356,7 @@ final class AnalyzeBatchService {
         $delay *= 2;
       }
     }
+    return FALSE;
   }
 
   /**
@@ -347,7 +366,6 @@ final class AnalyzeBatchService {
    */
   private function isRateLimitException(\Exception $e): bool {
     // String-based check avoids a hard dependency on drupal/ai.
-    // @phpstan-ignore-next-line Class may not exist if drupal/ai is not installed.
     return is_a($e, 'Drupal\ai\Exception\AiRateLimitException');
   }
 
