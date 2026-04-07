@@ -210,7 +210,7 @@ drush analyze:batch --limit=50 --force
 
 | Command | Alias | Description |
 |---------|-------|-------------|
-| `analyze:batch` | `ab` | Run batch analysis (`--analyzers`, `--types`, `--limit`, `--force`, `--list`) |
+| `analyze:batch` | `ab` | Run batch analysis (`--analyzers`, `--types`, `--limit`, `--force`, `--list`, `--status`) |
 | `analyze:setup-ai` | `analyze-sa` | Install AI skill files (`--host`, `--check`) |
 
 ### AI Coding Assistant Integration
@@ -244,7 +244,8 @@ Copilot, Cursor, and other tools supporting the
 ### For Analyzer Developers
 
 To make your analyzer plugin batch-capable, implement
-`\Drupal\analyze\BatchableAnalyzerInterface`:
+`\Drupal\analyze\BatchableAnalyzerInterface`. The interface has
+three methods:
 
 ```php
 use Drupal\analyze\BatchableAnalyzerInterface;
@@ -252,6 +253,20 @@ use Drupal\analyze\BatchableAnalyzerInterface;
 class MyAnalyzer extends AnalyzePluginBase
   implements BatchableAnalyzerInterface {
 
+  /**
+   * Run analysis on a single entity.
+   *
+   * Call your analysis logic directly — do NOT delegate through
+   * renderSummary() as it builds throwaway render arrays and
+   * swallows exceptions the batch system needs to see.
+   *
+   * If your analyzer calls AI APIs, let AiRateLimitException
+   * propagate (don't catch it) — the batch system handles
+   * retry with exponential backoff.
+   *
+   * Return TRUE only when analysis succeeded and results were
+   * saved. Return FALSE when skipped or failed.
+   */
   public function processEntity(
     EntityInterface $entity,
     bool $force_refresh = FALSE,
@@ -259,10 +274,20 @@ class MyAnalyzer extends AnalyzePluginBase
     if (!$force_refresh && $this->hasResults($entity)) {
       return FALSE;
     }
-    // Your analysis logic here.
+    if ($force_refresh) {
+      $this->storage->deleteScores($entity);
+    }
+    $scores = $this->runAnalysis($entity);
+    if (empty($scores)) {
+      return FALSE;
+    }
+    $this->storage->saveScores($entity, $scores);
     return TRUE;
   }
 
+  /**
+   * Check if results exist. May validate content/config hashes.
+   */
   public function hasResults(
     EntityInterface $entity,
   ): bool {
@@ -271,8 +296,33 @@ class MyAnalyzer extends AnalyzePluginBase
     );
   }
 
+  /**
+   * Fast DB count of entities with stored results.
+   *
+   * Used by --status for instant coverage reporting.
+   * Must NOT load or render entities.
+   */
+  public function countAnalyzedEntities(
+    string $entity_type_id,
+    string $bundle,
+  ): int {
+    return $this->storage
+      ->countAnalyzedEntities($entity_type_id, $bundle);
+  }
+
 }
 ```
+
+**Key rules:**
+- `processEntity()` must return FALSE on failure — the batch
+  system uses this for honest success/failure reporting.
+- Do NOT catch `AiRateLimitException` — the batch system retries
+  with exponential backoff (2s, 4s, 8s).
+- Use `$this->renderer->renderPlain()` (not `render()`) if you
+  need to render entities — `render()` throws in CLI/Drush.
+- `countAnalyzedEntities()` must be a fast DB query — no entity
+  loading. Query your results table with a JOIN to
+  `node_field_data` for bundle filtering.
 
 ### Community Documentation
 
