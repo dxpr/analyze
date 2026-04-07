@@ -199,12 +199,18 @@ more analyzers, choose entity types, and start the batch.
 #### Drush Commands
 
 ```bash
-drush analyze:batch                                         # Run all batch-capable analyzers
-drush analyze:batch --analyzers=sentiments,brand_voice      # Run specific analyzers
-drush analyze:batch --types=node:article                    # Filter by entity bundle
-drush analyze:batch --limit=100                             # Limit entities processed
-drush analyze:batch --force                                 # Re-analyze even if results exist
-drush analyze:batch --list                                  # List available batch analyzers
+# Run all batch-capable analyzers
+drush analyze:batch
+# Run specific analyzers
+drush analyze:batch --analyzers=sentiments,brand_voice
+# Filter by entity bundle
+drush analyze:batch --types=node:article
+# Limit entities processed
+drush analyze:batch --limit=100
+# Re-analyze even if results exist
+drush analyze:batch --force
+# List available batch analyzers
+drush analyze:batch --list
 ```
 
 #### For Analyzer Developers
