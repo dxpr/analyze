@@ -11,13 +11,26 @@ FILTER="${1:-}"
 echo "=== Analyze E2E Test Runner ==="
 echo "Module: $MODULE_DIR"
 
-# Create fresh Drupal install.
+# Install GD if not available (needed by Drupal).
+GD_ENABLED=$(php -i 2>/dev/null | grep 'GD Support' | awk '{ print $4 }')
+if [ "$GD_ENABLED" != 'enabled' ]; then
+  apk update > /dev/null 2>&1 && \
+  apk add --quiet libpng libpng-dev libjpeg-turbo-dev \
+    libwebp-dev zlib-dev libxpm-dev gd > /dev/null 2>&1 && \
+  docker-php-ext-install gd > /dev/null 2>&1 || true
+fi
+
+# Create fresh Drupal install in a clean temp directory.
 SITE_DIR=$(mktemp -d)
 trap "rm -rf $SITE_DIR" EXIT
 
+export HOME="$SITE_DIR"
+export COMPOSER_HOME="$SITE_DIR/.composer"
+
 cd "$SITE_DIR"
-composer create-project drupal/recommended-project:11.x-dev . \
+composer create-project drupal/recommended-project:11.x-dev site \
   --no-interaction --quiet
+cd "$SITE_DIR/site"
 
 # Symlink module.
 mkdir -p web/modules/contrib
@@ -33,7 +46,7 @@ composer require drush/drush --quiet --no-interaction
   --site-mail="test@example.com" \
   --yes --quiet
 
-DRUSH="$SITE_DIR/vendor/bin/drush"
+DRUSH="$SITE_DIR/site/vendor/bin/drush"
 
 # Enable module and rebuild.
 $DRUSH en analyze --yes --quiet
