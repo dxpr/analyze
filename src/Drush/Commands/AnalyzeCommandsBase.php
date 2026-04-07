@@ -120,23 +120,6 @@ abstract class AnalyzeCommandsBase extends DrushCommands {
   }
 
   /**
-   * Get the module path for the analyze module.
-   *
-   * @return string|null
-   *   The module path, or NULL if not found.
-   */
-  protected function getModulePath(): ?string {
-    try {
-      // @phpstan-ignore-next-line
-      return \Drupal::service('extension.list.module')
-        ->getPath('analyze');
-    }
-    catch (\Exception $e) {
-      return NULL;
-    }
-  }
-
-  /**
    * Get the project root directory.
    *
    * Walks up from DRUPAL_ROOT looking for composer.json.
