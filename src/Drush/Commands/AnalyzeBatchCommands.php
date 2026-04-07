@@ -42,13 +42,15 @@ final class AnalyzeBatchCommands extends DrushCommands {
   #[CLI\Usage(name: 'analyze:batch --analyzers=sentiments,brand_voice', description: 'Run specific analyzers')]
   #[CLI\Usage(name: 'analyze:batch --types=node:article --limit=50 --force', description: 'Force analyze up to 50 articles')]
   #[CLI\Usage(name: 'analyze:batch --list', description: 'List available batch-capable analyzers')]
-  public function batch(array $options = [
-    'analyzers' => '',
-    'types' => '',
-    'limit' => 0,
-    'force' => FALSE,
-    'list' => FALSE,
-  ]): void {
+  public function batch(
+    array $options = [
+      'analyzers' => '',
+      'types' => '',
+      'limit' => 0,
+      'force' => FALSE,
+      'list' => FALSE,
+    ],
+  ): void {
     $available = $this->batchService->getBatchableAnalyzers();
 
     if (empty($available)) {
