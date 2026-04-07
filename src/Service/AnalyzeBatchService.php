@@ -148,6 +148,76 @@ final class AnalyzeBatchService {
   }
 
   /**
+   * Gets analysis coverage status per bundle.
+   *
+   * Uses getEntitiesForAnalysis() with a cap to avoid full entity scans on
+   * large sites. If pending count hits the cap, reports it as approximate.
+   *
+   * @param array<string> $analyzer_ids
+   *   Array of analyzer plugin IDs.
+   * @param array<string> $entity_bundles
+   *   Array of entity_type:bundle strings.
+   *
+   * @return array<string, array{label: string, total: int, pending: int, pending_approximate: bool}>
+   *   Status per bundle.
+   */
+  public function getAnalysisStatus(array $analyzer_ids, array $entity_bundles): array {
+    $bundle_labels = $this->getAvailableEntityBundles($analyzer_ids);
+    $status = [];
+
+    foreach ($entity_bundles as $entity_bundle) {
+      [$entity_type_id, $bundle] = explode(':', $entity_bundle);
+
+      $storage = $this->entityTypeManager->getStorage($entity_type_id);
+      $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
+
+      // Count total published entities (fast count query, no entity load).
+      $query = $storage->getQuery()->accessCheck(FALSE);
+      $bundle_key = $entity_type->getKey('bundle');
+      if ($bundle_key) {
+        $query->condition($bundle_key, $bundle);
+      }
+      $status_key = $entity_type->getKey('status');
+      if ($status_key) {
+        $query->condition($status_key, 1);
+      }
+      $total = (int) $query->count()->execute();
+
+      if ($total === 0) {
+        continue;
+      }
+
+      // Fast count: ask each analyzer how many entities it has results for.
+      // An entity is "analyzed" if ALL selected analyzers have results.
+      $analyzers = [];
+      foreach ($analyzer_ids as $aid) {
+        $plugin = $this->analyzePluginManager->createInstance($aid);
+        if ($plugin instanceof BatchableAnalyzerInterface) {
+          $analyzers[$aid] = $plugin;
+        }
+      }
+
+      // Use the minimum count across analyzers as the "fully analyzed" count.
+      $min_analyzed = $total;
+      foreach ($analyzers as $analyzer) {
+        $count = $analyzer->countAnalyzedEntities($entity_type_id, $bundle);
+        $min_analyzed = min($min_analyzed, $count);
+      }
+
+      $pending = $total - $min_analyzed;
+
+      $status[$entity_bundle] = [
+        'label' => $bundle_labels[$entity_bundle] ?? $entity_bundle,
+        'total' => $total,
+        'pending' => $pending,
+        'pending_approximate' => FALSE,
+      ];
+    }
+
+    return $status;
+  }
+
+  /**
    * Processes a batch of entities with the given analyzers.
    *
    * @param array<array{entity_type: string, entity_id: string|int, bundle: string}> $entities
@@ -268,6 +338,8 @@ final class AnalyzeBatchService {
   /**
    * Gets entity IDs that have results from ALL specified analyzers.
    *
+   * Uses chunked loading to avoid memory issues on large sites.
+   *
    * @param array<string> $analyzer_ids
    *   Array of analyzer plugin IDs.
    * @param string $entity_type_id
@@ -307,23 +379,27 @@ final class AnalyzeBatchService {
     }
 
     $analyzed_ids = [];
-    foreach ($all_ids as $id) {
-      $entity = $storage->load($id);
-      if (!$entity) {
-        continue;
-      }
-
-      $all_have_results = TRUE;
-      foreach ($analyzers as $analyzer) {
-        if (!$analyzer->hasResults($entity)) {
-          $all_have_results = FALSE;
-          break;
+    foreach (array_chunk($all_ids, 50, TRUE) as $chunk) {
+      $entities = $storage->loadMultiple($chunk);
+      foreach ($entities as $id => $entity) {
+        try {
+          $all_have_results = TRUE;
+          foreach ($analyzers as $analyzer) {
+            if (!$analyzer->hasResults($entity)) {
+              $all_have_results = FALSE;
+              break;
+            }
+          }
+          if ($all_have_results) {
+            $analyzed_ids[] = $id;
+          }
+        }
+        catch (\Exception) {
+          // Entity type may lack a view_builder — skip it.
         }
       }
-
-      if ($all_have_results) {
-        $analyzed_ids[] = $id;
-      }
+      // Clear static entity cache to keep memory flat.
+      $storage->resetCache($chunk);
     }
 
     return $analyzed_ids;

@@ -39,6 +39,7 @@ interface BatchableAnalyzerInterface {
    * Check whether analysis results already exist for an entity.
    *
    * Used to skip already-analyzed entities when force_refresh is FALSE.
+   * This may validate content/config hashes and can be slow.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to check.
@@ -47,5 +48,21 @@ interface BatchableAnalyzerInterface {
    *   TRUE if results exist for this entity.
    */
   public function hasResults(EntityInterface $entity): bool;
+
+  /**
+   * Count entities that have any stored results for a given bundle.
+   *
+   * Fast DB-level count, does not load or render entities.
+   * Does not validate content hashes — counts any row.
+   *
+   * @param string $entity_type_id
+   *   The entity type ID.
+   * @param string $bundle
+   *   The bundle machine name.
+   *
+   * @return int
+   *   Number of entities with at least one result row.
+   */
+  public function countAnalyzedEntities(string $entity_type_id, string $bundle): int;
 
 }
