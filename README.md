@@ -308,7 +308,7 @@ fast `--status` coverage reporting. The default returns 0.
   system uses this for honest success/failure reporting.
 - Do NOT catch `AiRateLimitException` — the batch system retries
   with exponential backoff (2s, 4s, 8s).
-- Use `$this->renderer->renderPlain()` (not `render()`) if you
+- Use `$this->renderer->renderInIsolation()` (not `render()`) if you
   need to render entities — `render()` throws in CLI/Drush.
 
 ### Community Documentation

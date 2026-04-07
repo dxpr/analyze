@@ -9,7 +9,6 @@ use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\ai\Exception\AiRateLimitException;
 use Drupal\analyze\AnalyzePluginManager;
 use Drupal\analyze\BatchableAnalyzerInterface;
 
@@ -200,7 +199,12 @@ final class AnalyzeBatchService {
       // Use the minimum count across analyzers as the "fully analyzed" count.
       $min_analyzed = $total;
       foreach ($analyzers as $analyzer) {
-        $count = $analyzer->countAnalyzedEntities($entity_type_id, $bundle);
+        if (method_exists($analyzer, 'countAnalyzedEntities')) {
+          $count = $analyzer->countAnalyzedEntities($entity_type_id, $bundle);
+        }
+        else {
+          $count = 0;
+        }
         $min_analyzed = min($min_analyzed, $count);
       }
 
@@ -264,24 +268,25 @@ final class AnalyzeBatchService {
             fn() => $analyzer->processEntity($entity, $force_refresh),
           );
         }
-        catch (AiRateLimitException $e) {
-          $context['results']['rate_limited']++;
-          $entity_succeeded = FALSE;
-          $context['results']['errors'][] = $this->t('Rate limited on @type @id (@analyzer): @msg', [
-            '@type' => $entity_data['entity_type'],
-            '@id' => $entity_data['entity_id'],
-            '@analyzer' => $analyzer_id,
-            '@msg' => $e->getMessage(),
-          ])->render();
-        }
         catch (\Exception $e) {
           $entity_succeeded = FALSE;
-          $context['results']['errors'][] = $this->t('Error on @type @id (@analyzer): @msg', [
-            '@type' => $entity_data['entity_type'],
-            '@id' => $entity_data['entity_id'],
-            '@analyzer' => $analyzer_id,
-            '@msg' => $e->getMessage(),
-          ])->render();
+          if ($this->isRateLimitException($e)) {
+            $context['results']['rate_limited']++;
+            $context['results']['errors'][] = $this->t('Rate limited on @type @id (@analyzer): @msg', [
+              '@type' => $entity_data['entity_type'],
+              '@id' => $entity_data['entity_id'],
+              '@analyzer' => $analyzer_id,
+              '@msg' => $e->getMessage(),
+            ])->render();
+          }
+          else {
+            $context['results']['errors'][] = $this->t('Error on @type @id (@analyzer): @msg', [
+              '@type' => $entity_data['entity_type'],
+              '@id' => $entity_data['entity_id'],
+              '@analyzer' => $analyzer_id,
+              '@msg' => $e->getMessage(),
+            ])->render();
+          }
         }
       }
 
@@ -315,8 +320,8 @@ final class AnalyzeBatchService {
    * @param int $max_retries
    *   Maximum number of retries.
    *
-   * @throws \Drupal\ai\Exception\AiRateLimitException
-   *   If all retries are exhausted.
+   * @throws \Exception
+   *   If all retries are exhausted or a non-rate-limit exception occurs.
    */
   private function runWithBackoff(callable $fn, int $max_retries = 3): void {
     $delay = 2;
@@ -325,14 +330,24 @@ final class AnalyzeBatchService {
         $fn();
         return;
       }
-      catch (AiRateLimitException $e) {
-        if ($attempt === $max_retries) {
+      catch (\Exception $e) {
+        if (!$this->isRateLimitException($e) || $attempt === $max_retries) {
           throw $e;
         }
         sleep($delay);
         $delay *= 2;
       }
     }
+  }
+
+  /**
+   * Check if an exception is an AI rate limit exception.
+   *
+   * Uses class name check to avoid a hard dependency on drupal/ai.
+   */
+  private function isRateLimitException(\Exception $e): bool {
+    return get_class($e) === 'Drupal\ai\Exception\AiRateLimitException'
+      || is_subclass_of($e, 'Drupal\ai\Exception\AiRateLimitException');
   }
 
   /**
