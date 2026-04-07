@@ -346,8 +346,9 @@ final class AnalyzeBatchService {
    * Uses class name check to avoid a hard dependency on drupal/ai.
    */
   private function isRateLimitException(\Exception $e): bool {
-    return get_class($e) === 'Drupal\ai\Exception\AiRateLimitException'
-      || is_subclass_of($e, 'Drupal\ai\Exception\AiRateLimitException');
+    // String-based check avoids a hard dependency on drupal/ai.
+    // @phpstan-ignore-next-line Class may not exist if drupal/ai is not installed.
+    return is_a($e, 'Drupal\ai\Exception\AiRateLimitException');
   }
 
   /**
