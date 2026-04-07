@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\ai\Exception\AiRateLimitException;
 use Drupal\analyze\AnalyzePluginManager;
 use Drupal\analyze\BatchableAnalyzerInterface;
 
@@ -164,6 +165,8 @@ final class AnalyzeBatchService {
     if (!isset($context['sandbox']['total_entities'])) {
       $context['sandbox']['total_entities'] = $total_entities;
       $context['results']['processed'] = 0;
+      $context['results']['failed'] = 0;
+      $context['results']['rate_limited'] = 0;
       $context['results']['errors'] = [];
     }
 
@@ -176,37 +179,89 @@ final class AnalyzeBatchService {
     }
 
     foreach ($entities as $entity_data) {
-      try {
-        $entity = $this->entityTypeManager
-          ->getStorage($entity_data['entity_type'])
-          ->load($entity_data['entity_id']);
+      $entity = $this->entityTypeManager
+        ->getStorage($entity_data['entity_type'])
+        ->load($entity_data['entity_id']);
 
-        if ($entity) {
-          foreach ($analyzers as $analyzer) {
-            $analyzer->processEntity($entity, $force_refresh);
-          }
-          $context['results']['processed']++;
+      if (!$entity) {
+        continue;
+      }
+
+      $entity_succeeded = TRUE;
+      foreach ($analyzers as $analyzer_id => $analyzer) {
+        try {
+          $this->runWithBackoff(
+            fn() => $analyzer->processEntity($entity, $force_refresh),
+          );
+        }
+        catch (AiRateLimitException $e) {
+          $context['results']['rate_limited']++;
+          $entity_succeeded = FALSE;
+          $context['results']['errors'][] = $this->t('Rate limited on @type @id (@analyzer): @msg', [
+            '@type' => $entity_data['entity_type'],
+            '@id' => $entity_data['entity_id'],
+            '@analyzer' => $analyzer_id,
+            '@msg' => $e->getMessage(),
+          ])->render();
+        }
+        catch (\Exception $e) {
+          $entity_succeeded = FALSE;
+          $context['results']['errors'][] = $this->t('Error on @type @id (@analyzer): @msg', [
+            '@type' => $entity_data['entity_type'],
+            '@id' => $entity_data['entity_id'],
+            '@analyzer' => $analyzer_id,
+            '@msg' => $e->getMessage(),
+          ])->render();
         }
       }
-      catch (\Exception $e) {
-        $context['results']['errors'][] = $this->t('Error processing @type @id: @message', [
-          '@type' => $entity_data['entity_type'],
-          '@id' => $entity_data['entity_id'],
-          '@message' => $e->getMessage(),
-        ])->render();
+
+      if ($entity_succeeded) {
+        $context['results']['processed']++;
+      }
+      else {
+        $context['results']['failed']++;
       }
     }
 
+    $done = $context['results']['processed'] + $context['results']['failed'];
     $context['message'] = $this->t('Processed @current of @max entities...', [
-      '@current' => $context['results']['processed'],
+      '@current' => $done,
       '@max' => $context['sandbox']['total_entities'],
     ])->render();
 
     if ($context['sandbox']['total_entities'] > 0) {
-      $context['finished'] = $context['results']['processed'] / $context['sandbox']['total_entities'];
+      $context['finished'] = $done / $context['sandbox']['total_entities'];
     }
     else {
       $context['finished'] = 1;
+    }
+  }
+
+  /**
+   * Runs a callable with exponential backoff on rate limit exceptions.
+   *
+   * @param callable $fn
+   *   The callable to execute.
+   * @param int $max_retries
+   *   Maximum number of retries.
+   *
+   * @throws \Drupal\ai\Exception\AiRateLimitException
+   *   If all retries are exhausted.
+   */
+  private function runWithBackoff(callable $fn, int $max_retries = 3): void {
+    $delay = 2;
+    for ($attempt = 0; $attempt <= $max_retries; $attempt++) {
+      try {
+        $fn();
+        return;
+      }
+      catch (AiRateLimitException $e) {
+        if ($attempt === $max_retries) {
+          throw $e;
+        }
+        sleep($delay);
+        $delay *= 2;
+      }
     }
   }
 

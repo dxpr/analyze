@@ -115,6 +115,8 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
     ]));
 
     $processed = 0;
+    $failed = 0;
+    $rate_limited = 0;
     $errors = [];
 
     foreach (array_chunk($entities, 5) as $chunk) {
@@ -122,6 +124,8 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
         'sandbox' => ['total_entities' => $total],
         'results' => [
           'processed' => $processed,
+          'failed' => $failed,
+          'rate_limited' => $rate_limited,
           'errors' => $errors,
         ],
       ];
@@ -135,10 +139,13 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
       );
 
       $processed = $context['results']['processed'];
+      $failed = $context['results']['failed'];
+      $rate_limited = $context['results']['rate_limited'];
       $errors = $context['results']['errors'];
 
+      $done = $processed + $failed;
       $this->logger()->notice(dt('Processed @current/@total entities.', [
-        '@current' => $processed,
+        '@current' => $done,
         '@total' => $total,
       ]));
     }
@@ -149,10 +156,23 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
       }
     }
 
-    $this->logger()->success(dt('Batch analysis complete. Processed @count entities with @analyzers.', [
-      '@count' => $processed,
+    $summary = dt('Batch complete: @ok succeeded, @fail failed out of @total with @analyzers.', [
+      '@ok' => $processed,
+      '@fail' => $failed,
+      '@total' => $total,
       '@analyzers' => $analyzer_names,
-    ]));
+    ]);
+
+    if ($rate_limited > 0) {
+      $summary .= ' ' . dt('(@rl rate-limited after retries)', ['@rl' => $rate_limited]);
+    }
+
+    if ($failed > 0) {
+      $this->logger()->warning($summary);
+    }
+    else {
+      $this->logger()->success($summary);
+    }
   }
 
 }
