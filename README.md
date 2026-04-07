@@ -183,6 +183,134 @@ final class MyAnalyzer extends AnalyzePluginBase {
 See the `analyze_plugin_example` module in the codebase for a complete
 working example.
 
+### Drush CLI (`analyze:*` namespace)
+
+All Analyze batch operations are available via Drush for AI
+agent and CLI workflows.
+
+**Quick start:**
+
+```bash
+# List available batch-capable analyzers
+drush analyze:batch --list
+
+# Run all analyzers on all enabled content types
+drush analyze:batch
+
+# Run specific analyzers on articles
+drush analyze:batch \
+  --analyzers=analyze_ai_sentiments_analyzer \
+  --types=node:article
+
+# Force re-analysis of first 50 entities
+drush analyze:batch --limit=50 --force
+```
+
+**Commands:**
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `analyze:batch` | `ab` | Run batch analysis (`--analyzers`, `--types`, `--limit`, `--force`, `--list`, `--status`) |
+| `analyze:setup-ai` | `analyze-sa` | Install AI skill files (`--host`, `--check`) |
+
+### AI Coding Assistant Integration
+
+The Analyze module includes a built-in
+[Agent Skills](https://agentskills.io) file that teaches AI
+coding assistants how to run content analysis through natural
+language. Run `drush analyze:setup-ai` to enable, then ask
+naturally:
+
+```
+"Run sentiment analysis on all articles"
+"Analyze brand voice consistency across the site"
+"Check all pages for broken links"
+"List available analyzers and which content types they cover"
+"Re-analyze the last 50 published nodes with all analyzers"
+```
+
+**Quick setup:**
+
+```bash
+drush analyze:setup-ai             # All tools
+drush analyze:setup-ai --host=claude   # Claude Code only
+drush analyze:setup-ai --host=agents   # Codex/Gemini/Copilot/Cursor
+```
+
+Compatible with Claude Code, Codex CLI, Gemini CLI, GitHub
+Copilot, Cursor, and other tools supporting the
+[Agent Skills standard](https://agentskills.io/specification).
+
+### For Analyzer Developers
+
+To make your analyzer plugin batch-capable, implement
+`\Drupal\analyze\BatchableAnalyzerInterface`. The interface has
+three methods:
+
+```php
+use Drupal\analyze\BatchableAnalyzerInterface;
+
+class MyAnalyzer extends AnalyzePluginBase
+  implements BatchableAnalyzerInterface {
+
+  /**
+   * Run analysis on a single entity.
+   *
+   * Call your analysis logic directly — do NOT delegate through
+   * renderSummary() as it builds throwaway render arrays and
+   * swallows exceptions the batch system needs to see.
+   *
+   * If your analyzer calls AI APIs, let AiRateLimitException
+   * propagate (don't catch it) — the batch system handles
+   * retry with exponential backoff.
+   *
+   * Return TRUE only when analysis succeeded and results were
+   * saved. Return FALSE when skipped or failed.
+   */
+  public function processEntity(
+    EntityInterface $entity,
+    bool $force_refresh = FALSE,
+  ): bool {
+    if (!$force_refresh && $this->hasResults($entity)) {
+      return FALSE;
+    }
+    if ($force_refresh) {
+      $this->storage->deleteScores($entity);
+    }
+    $scores = $this->runAnalysis($entity);
+    if (empty($scores)) {
+      return FALSE;
+    }
+    $this->storage->saveScores($entity, $scores);
+    return TRUE;
+  }
+
+  /**
+   * Check if results exist. May validate content/config hashes.
+   */
+  public function hasResults(
+    EntityInterface $entity,
+  ): bool {
+    return !empty(
+      $this->storage->getScores($entity)
+    );
+  }
+
+}
+```
+
+**Optional:** If your analyzer persists results to a DB table,
+override `countAnalyzedEntities()` from `AnalyzePluginBase` for
+fast `--status` coverage reporting. The default returns 0.
+
+**Key rules:**
+- `processEntity()` must return FALSE on failure — the batch
+  system uses this for honest success/failure reporting.
+- Do NOT catch `AiRateLimitException` — the batch system retries
+  with exponential backoff (2s, 4s, 8s).
+- Use `$this->renderer->renderInIsolation()` (not `render()`) if you
+  need to render entities — `render()` throws in CLI/Drush.
+
 ### Community Documentation
 
 @todo

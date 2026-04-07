@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the Analyze module.
+ */
+
+/**
+ * Implements hook_requirements().
+ *
+ * @phpstan-param string $phase
+ *
+ * @phpstan-return array<string, array<string, mixed>>
+ */
+function analyze_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  try {
+    /** @var \Drupal\Core\Extension\ModuleExtensionList $module_list */
+    $module_list = \Drupal::service('extension.list.module');
+    $module_path = $module_list->getPath('analyze');
+    $module_root = DRUPAL_ROOT . '/' . $module_path;
+
+    // Walk up from DRUPAL_ROOT to find project root (composer.json).
+    $project_root = DRUPAL_ROOT;
+    for ($i = 0; $i < 5; $i++) {
+      if (file_exists($project_root . '/composer.json')) {
+        break;
+      }
+      $project_root = dirname($project_root);
+    }
+
+    $skill_files = [
+      '.claude/skills/analyze/SKILL.md',
+      '.agents/skills/analyze/SKILL.md',
+      '.agents/skills/analyze/agents/openai.yaml',
+    ];
+
+    foreach ($skill_files as $relative) {
+      $source = $module_root . '/' . $relative;
+      $dest = $project_root . '/' . $relative;
+
+      if (file_exists($source) && file_exists($dest)
+        && is_readable($source) && is_readable($dest)
+        && md5_file($source) !== md5_file($dest)) {
+        $requirements['analyze_skill_files'] = [
+          'title' => t('Analyze AI Skill Files'),
+          'description' => t('The installed AI skill files are outdated. Run <code>drush analyze:setup-ai</code> to update.'),
+          'severity' => REQUIREMENT_WARNING,
+        ];
+        break;
+      }
+    }
+  }
+  catch (\Exception $e) {
+    // Silent on any error.
+  }
+
+  return $requirements;
+}

@@ -5,22 +5,32 @@ on: pull_request
 jobs:
 
   drupal-lint:
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-4
     timeout-minutes: 60
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
 
     - name: Lint Drupal
       run: |
         docker compose run --rm drupal-lint
 
   drupal-check:
-    runs-on: ubuntu-latest
+    runs-on: ubicloud-standard-4
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
 
     - name: Drupal Deprecations and Analysis Check
       run: |
         docker compose run --rm drupal-check
       env:
         DRUPAL_RECOMMENDED_PROJECT: ${{ secrets.DRUPAL_RECOMMENDED_PROJECT }}
+
+  drush-e2e:
+    runs-on: ubicloud-standard-4
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Run Drush E2E tests
+      run: |
+        docker compose --profile test run --rm e2e-test

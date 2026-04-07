@@ -18,11 +18,14 @@ echo "TARGET_DRUPAL_CORE_VERSION: $TARGET_DRUPAL_CORE_VERSION"
 composer config --global allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
 composer global require drupal/coder --dev
-composer global require phpcompatibility/php-compatibility --dev
 
 export PATH="$PATH:$COMPOSER_HOME/vendor/bin"
 
 composer global require dealerdirect/phpcodesniffer-composer-installer --dev
+
+# Install PHPCompatibility dev branch for squizlabs/php_codesniffer v4 support.
+# The stable releases only support phpcs v3, which conflicts with drupal/coder 9.
+composer global require phpcompatibility/php-compatibility:dev-develop --dev
 
 composer global show -P
 phpcs -i

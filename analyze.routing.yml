@@ -5,3 +5,11 @@ analyze.analyze_settings:
     _form: 'Drupal\analyze\Form\AnalyzeSettingsForm'
   requirements:
     _permission: 'administer analyze'
+
+analyze.batch:
+  path: '/admin/config/content/analyze-batch'
+  defaults:
+    _title: 'Batch Analysis'
+    _form: 'Drupal\analyze\Form\AnalyzeBatchForm'
+  requirements:
+    _permission: 'administer analyze'

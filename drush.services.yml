@@ -1,0 +1,13 @@
+services:
+  analyze.drush.batch_commands:
+    class: Drupal\analyze\Drush\Commands\AnalyzeBatchCommands
+    arguments:
+      - '@analyze.batch_service'
+    tags:
+      - { name: drush.command }
+  analyze.drush.setup_commands:
+    class: Drupal\analyze\Drush\Commands\AnalyzeSetupCommands
+    arguments:
+      - '@extension.list.module'
+    tags:
+      - { name: drush.command }

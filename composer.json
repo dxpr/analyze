@@ -7,6 +7,7 @@
     "minimum-stability": "dev",
     "require": {},
     "suggest": {
-      "drupal/statistics": "Replacement for the deprecated core Statistics module, required for the Node Views module."
+      "drupal/statistics": "Replacement for the deprecated core Statistics module, required for the Node Views module.",
+      "drush/drush": "Required for the analyze:batch Drush command."
     }
 }
