@@ -221,18 +221,23 @@ To make your analyzer plugin batch-capable, implement
 ```php
 use Drupal\analyze\BatchableAnalyzerInterface;
 
-class MyAnalyzer extends AnalyzePluginBase implements BatchableAnalyzerInterface {
+class MyAnalyzer extends AnalyzePluginBase
+  implements BatchableAnalyzerInterface {
 
-  public function processEntity(EntityInterface $entity, bool $force_refresh = FALSE): bool {
+  public function processEntity(
+    EntityInterface $entity,
+    bool $force_refresh = FALSE,
+  ): bool {
     if (!$force_refresh && $this->hasResults($entity)) {
       return FALSE;
     }
-    // Your analysis logic here. Store results your own way.
+    // Your analysis logic here.
     return TRUE;
   }
 
-  public function hasResults(EntityInterface $entity): bool {
-    // Check if results already exist for this entity.
+  public function hasResults(
+    EntityInterface $entity,
+  ): bool {
     return !empty($this->storage->getScores($entity));
   }
 
