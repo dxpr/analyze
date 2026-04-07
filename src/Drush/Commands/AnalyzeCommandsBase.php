@@ -43,6 +43,26 @@ abstract class AnalyzeCommandsBase extends DrushCommands {
   }
 
   /**
+   * Switch back to the original user after elevated operations.
+   */
+  protected function switchBack(): void {
+    // @phpstan-ignore-next-line
+    if (!\Drupal::hasContainer()) {
+      return;
+    }
+
+    try {
+      /** @var \Drupal\Core\Session\AccountSwitcherInterface $switcher */
+      // @phpstan-ignore-next-line
+      $switcher = \Drupal::service('account_switcher');
+      $switcher->switchBack();
+    }
+    catch (\Exception $e) {
+      // Silently fail if services aren't available yet.
+    }
+  }
+
+  /**
    * Format data as YAML string.
    *
    * @param array<string, mixed> $data

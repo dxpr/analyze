@@ -58,6 +58,7 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
 
     if (empty($available)) {
       $this->logger()->warning(dt('No analyzers support batch processing. Install modules that implement BatchableAnalyzerInterface.'));
+      $this->switchBack();
       return;
     }
 
@@ -69,6 +70,7 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
           '@label' => $label,
         ]));
       }
+      $this->switchBack();
       return;
     }
 
@@ -82,6 +84,7 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
         $this->logger()->error(dt('Unknown analyzer "@id". Use --list to see available analyzers.', [
           '@id' => $id,
         ]));
+        $this->switchBack();
         return;
       }
     }
@@ -92,12 +95,14 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
 
     if (empty($types)) {
       $this->logger()->warning(dt('No content types have the selected analyzers enabled. Enable analyzers at /admin/config/content/analyze-settings first.'));
+      $this->switchBack();
       return;
     }
 
     // --status: show coverage and exit.
     if ($options['status']) {
       $this->showStatus($analyzer_ids, $types, $available);
+      $this->switchBack();
       return;
     }
 
@@ -113,6 +118,7 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
 
     if (empty($entities)) {
       $this->logger()->success(dt('All entities are up to date. Nothing to process.'));
+      $this->switchBack();
       return;
     }
 
@@ -128,6 +134,7 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
 
     if (!$this->io()->confirm(dt('Continue?'), TRUE)) {
       $this->logger()->notice(dt('Cancelled.'));
+      $this->switchBack();
       return;
     }
 
@@ -202,6 +209,8 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
     else {
       $this->logger()->success($summary);
     }
+
+    $this->switchBack();
   }
 
   /**

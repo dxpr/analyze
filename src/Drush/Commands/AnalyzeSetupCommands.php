@@ -190,11 +190,24 @@ final class AnalyzeSetupCommands extends AnalyzeCommandsBase {
 
       $destDir = dirname($dest);
       if (!is_dir($destDir)) {
-        mkdir($destDir, 0755, TRUE);
+        if (!@mkdir($destDir, 0755, TRUE)) {
+          $results[] = sprintf(
+            'Error: failed to create directory %s',
+            $destDir,
+          );
+          continue;
+        }
       }
 
       $action = file_exists($dest) ? 'updated' : 'installed';
-      copy($source, $dest);
+      if (!@copy($source, $dest)) {
+        $results[] = sprintf(
+          'Error: failed to copy %s to %s',
+          $relative,
+          $dest,
+        );
+        continue;
+      }
       $results[] = sprintf(
         '%s %s at %s',
         basename($relative),
