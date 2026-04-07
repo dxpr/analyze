@@ -18,11 +18,14 @@ echo "TARGET_DRUPAL_CORE_VERSION: $TARGET_DRUPAL_CORE_VERSION"
 composer config --global allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
 composer global require drupal/coder --dev
-composer global require phpcompatibility/php-compatibility --dev
 
 export PATH="$PATH:$COMPOSER_HOME/vendor/bin"
 
 composer global require dealerdirect/phpcodesniffer-composer-installer --dev
+
+# Install PHPCompatibility with all dependencies to resolve version conflicts
+# between phpcompatibility/php-compatibility and squizlabs/php_codesniffer v4.
+composer global require phpcompatibility/php-compatibility --dev -W
 
 composer global show -P
 phpcs -i
