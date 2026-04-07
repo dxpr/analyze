@@ -152,6 +152,25 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
   }
 
   /**
+   * Count entities that have stored results for a given bundle.
+   *
+   * Override this in analyzers that persist results to a DB table.
+   * The default returns 0 (unknown), which is correct for analyzers
+   * that fetch data on-demand from external APIs without local storage.
+   *
+   * @param string $entity_type_id
+   *   The entity type ID.
+   * @param string $bundle
+   *   The bundle machine name.
+   *
+   * @return int
+   *   Number of entities with results, or 0 if not tracked.
+   */
+  public function countAnalyzedEntities(string $entity_type_id, string $bundle): int {
+    return 0;
+  }
+
+  /**
    * Gets the entity-specific settings for this analyzer.
    *
    * @param string $entity_type_id

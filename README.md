@@ -296,22 +296,12 @@ class MyAnalyzer extends AnalyzePluginBase
     );
   }
 
-  /**
-   * Fast DB count of entities with stored results.
-   *
-   * Used by --status for instant coverage reporting.
-   * Must NOT load or render entities.
-   */
-  public function countAnalyzedEntities(
-    string $entity_type_id,
-    string $bundle,
-  ): int {
-    return $this->storage
-      ->countAnalyzedEntities($entity_type_id, $bundle);
-  }
-
 }
 ```
+
+**Optional:** If your analyzer persists results to a DB table,
+override `countAnalyzedEntities()` from `AnalyzePluginBase` for
+fast `--status` coverage reporting. The default returns 0.
 
 **Key rules:**
 - `processEntity()` must return FALSE on failure — the batch
@@ -320,9 +310,6 @@ class MyAnalyzer extends AnalyzePluginBase
   with exponential backoff (2s, 4s, 8s).
 - Use `$this->renderer->renderPlain()` (not `render()`) if you
   need to render entities — `render()` throws in CLI/Drush.
-- `countAnalyzedEntities()` must be a fast DB query — no entity
-  loading. Query your results table with a JOIN to
-  `node_field_data` for bundle filtering.
 
 ### Community Documentation
 
