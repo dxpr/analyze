@@ -24,3 +24,13 @@ jobs:
         docker compose run --rm drupal-check
       env:
         DRUPAL_RECOMMENDED_PROJECT: ${{ secrets.DRUPAL_RECOMMENDED_PROJECT }}
+
+  drush-e2e:
+    runs-on: ubicloud-standard-4
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Run Drush E2E tests
+      run: |
+        docker compose --profile test run --rm e2e-test

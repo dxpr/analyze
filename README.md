@@ -183,20 +183,18 @@ final class MyAnalyzer extends AnalyzePluginBase {
 See the `analyze_plugin_example` module in the codebase for a complete
 working example.
 
-### Batch Processing
+### CLI & AI Agent Support
 
-The Analyze module provides centralized batch processing infrastructure.
-Analyzer plugins can opt-in to batch processing by implementing
-`BatchableAnalyzerInterface`. This enables both admin UI and Drush CLI
-batch operations, including running multiple analyzers in a single batch.
+The Analyze module provides full CLI parity with the admin UI.
+Every batch operation available in the browser is available via
+Drush, and AI skill files enable agents to drive content
+analysis workflows autonomously.
 
-#### Admin UI
+#### Batch Processing
 
-Navigate to **Administration > Configuration > Content > Batch Analysis**
-(`/admin/config/content/analyze-batch`) to run batch analysis. Select one or
-more analyzers, choose entity types, and start the batch.
-
-#### Drush Commands
+Run batch analysis from the admin UI at
+**Administration > Configuration > Content > Batch Analysis**
+(`/admin/config/content/analyze-batch`), or via Drush:
 
 ```bash
 # Run all batch-capable analyzers
@@ -205,13 +203,28 @@ drush analyze:batch
 drush analyze:batch --analyzers=sentiments,brand_voice
 # Filter by entity bundle
 drush analyze:batch --types=node:article
-# Limit entities processed
-drush analyze:batch --limit=100
-# Re-analyze even if results exist
-drush analyze:batch --force
+# Limit and force re-analysis
+drush analyze:batch --limit=100 --force
 # List available batch analyzers
 drush analyze:batch --list
 ```
+
+#### AI Agent Integration
+
+Install skill files for your AI coding agent:
+
+```bash
+# Install for all supported agents
+drush analyze:setup-ai
+# Install for Claude Code only
+drush analyze:setup-ai --host=claude
+# Check if files are up to date
+drush analyze:setup-ai --check
+```
+
+This copies skill files to your project root for Claude Code
+(`.claude/skills/analyze/`) and other agents
+(`.agents/skills/analyze/`).
 
 #### For Analyzer Developers
 
@@ -238,7 +251,9 @@ class MyAnalyzer extends AnalyzePluginBase
   public function hasResults(
     EntityInterface $entity,
   ): bool {
-    return !empty($this->storage->getScores($entity));
+    return !empty(
+      $this->storage->getScores($entity)
+    );
   }
 
 }

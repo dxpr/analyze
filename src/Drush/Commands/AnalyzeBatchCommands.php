@@ -6,13 +6,12 @@ namespace Drupal\analyze\Drush\Commands;
 
 use Drupal\analyze\Service\AnalyzeBatchService;
 use Drush\Attributes as CLI;
-use Drush\Commands\DrushCommands;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Centralized Drush commands for batch analysis.
  */
-final class AnalyzeBatchCommands extends DrushCommands {
+final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
 
   public function __construct(
     private readonly AnalyzeBatchService $batchService,
@@ -51,6 +50,7 @@ final class AnalyzeBatchCommands extends DrushCommands {
       'list' => FALSE,
     ],
   ): void {
+    $this->switchToAdmin();
     $available = $this->batchService->getBatchableAnalyzers();
 
     if (empty($available)) {
@@ -120,10 +120,19 @@ final class AnalyzeBatchCommands extends DrushCommands {
     foreach (array_chunk($entities, 5) as $chunk) {
       $context = [
         'sandbox' => ['total_entities' => $total],
-        'results' => ['processed' => $processed, 'errors' => $errors],
+        'results' => [
+          'processed' => $processed,
+          'errors' => $errors,
+        ],
       ];
 
-      $this->batchService->processBatch($chunk, $analyzer_ids, $force, $total, $context);
+      $this->batchService->processBatch(
+        $chunk,
+        $analyzer_ids,
+        $force,
+        $total,
+        $context
+      );
 
       $processed = $context['results']['processed'];
       $errors = $context['results']['errors'];

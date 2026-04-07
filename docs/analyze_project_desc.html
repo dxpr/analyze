@@ -80,12 +80,22 @@
   <li>Open any content entity and click the Analyze tab — your data is there</li>
 </ol>
 
-<h2>Batch Processing</h2>
-<p>Run any combination of analyzers across all content from the admin UI or the command line. Analyzer plugins opt-in to batch support by implementing <code>BatchableAnalyzerInterface</code>.</p>
+<h2>CLI &amp; AI Agent Support</h2>
+<p>Every batch operation available in the admin UI is
+available via Drush CLI. AI agents can drive content analysis
+workflows autonomously using bundled skill files.</p>
 
 <ul>
-  <li><strong>Centralized Admin UI</strong> — Select analyzers and content types at <em>Configuration &gt; Content &gt; Batch Analysis</em>, run them together in a single batch</li>
-  <li><strong>Drush CLI</strong> — <code>drush analyze:batch --analyzers=sentiments,brand_voice --types=node:article</code>. Filter by analyzer, content type, and entity count. Ideal for cron jobs and CI/CD pipelines</li>
+  <li><strong>Centralized Batch Processing</strong> — Run any
+  combination of analyzers across all content from the admin
+  UI or
+  <code>drush analyze:batch</code></li>
+  <li><strong>AI Skill Files</strong> — Bundled skill files
+  for Claude Code and other AI agents enable autonomous
+  content analysis workflows</li>
+  <li><strong>E2E Test Suite</strong> — Shell-based
+  end-to-end tests ensure CLI commands work correctly across
+  Drupal versions</li>
 </ul>
 
 <h2>For Developers: Build Your Own Analyzer</h2>
