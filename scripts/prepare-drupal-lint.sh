@@ -23,9 +23,9 @@ export PATH="$PATH:$COMPOSER_HOME/vendor/bin"
 
 composer global require dealerdirect/phpcodesniffer-composer-installer --dev
 
-# Install PHPCompatibility with all dependencies to resolve version conflicts
-# between phpcompatibility/php-compatibility and squizlabs/php_codesniffer v4.
-composer global require phpcompatibility/php-compatibility --dev -W
+# Install PHPCompatibility dev branch for squizlabs/php_codesniffer v4 support.
+# The stable releases only support phpcs v3, which conflicts with drupal/coder 9.
+composer global require phpcompatibility/php-compatibility:dev-develop --dev
 
 composer global show -P
 phpcs -i
