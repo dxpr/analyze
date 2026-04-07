@@ -183,50 +183,65 @@ final class MyAnalyzer extends AnalyzePluginBase {
 See the `analyze_plugin_example` module in the codebase for a complete
 working example.
 
-### CLI & AI Agent Support
+### Drush CLI (`analyze:*` namespace)
 
-The Analyze module provides full CLI parity with the admin UI.
-Every batch operation available in the browser is available via
-Drush, and AI skill files enable agents to drive content
-analysis workflows autonomously.
+All Analyze batch operations are available via Drush for AI
+agent and CLI workflows.
 
-#### Batch Processing
-
-Run batch analysis from the admin UI at
-**Administration > Configuration > Content > Batch Analysis**
-(`/admin/config/content/analyze-batch`), or via Drush:
+**Quick start:**
 
 ```bash
-# Run all batch-capable analyzers
-drush analyze:batch
-# Run specific analyzers
-drush analyze:batch --analyzers=sentiments,brand_voice
-# Filter by entity bundle
-drush analyze:batch --types=node:article
-# Limit and force re-analysis
-drush analyze:batch --limit=100 --force
-# List available batch analyzers
+# List available batch-capable analyzers
 drush analyze:batch --list
+
+# Run all analyzers on all enabled content types
+drush analyze:batch
+
+# Run specific analyzers on articles
+drush analyze:batch \
+  --analyzers=analyze_ai_sentiments_analyzer \
+  --types=node:article
+
+# Force re-analysis of first 50 entities
+drush analyze:batch --limit=50 --force
 ```
 
-#### AI Agent Integration
+**Commands:**
 
-Install skill files for your AI coding agent:
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `analyze:batch` | `ab` | Run batch analysis (`--analyzers`, `--types`, `--limit`, `--force`, `--list`) |
+| `analyze:setup-ai` | `analyze-sa` | Install AI skill files (`--host`, `--check`) |
+
+### AI Coding Assistant Integration
+
+The Analyze module includes a built-in
+[Agent Skills](https://agentskills.io) file that teaches AI
+coding assistants how to run content analysis through natural
+language. Run `drush analyze:setup-ai` to enable, then ask
+naturally:
+
+```
+"Run sentiment analysis on all articles"
+"Analyze brand voice consistency across the site"
+"Check all pages for broken links"
+"List available analyzers and which content types they cover"
+"Re-analyze the last 50 published nodes with all analyzers"
+```
+
+**Quick setup:**
 
 ```bash
-# Install for all supported agents
-drush analyze:setup-ai
-# Install for Claude Code only
-drush analyze:setup-ai --host=claude
-# Check if files are up to date
-drush analyze:setup-ai --check
+drush analyze:setup-ai             # All tools
+drush analyze:setup-ai --host=claude   # Claude Code only
+drush analyze:setup-ai --host=agents   # Codex/Gemini/Copilot/Cursor
 ```
 
-This copies skill files to your project root for Claude Code
-(`.claude/skills/analyze/`) and other agents
-(`.agents/skills/analyze/`).
+Compatible with Claude Code, Codex CLI, Gemini CLI, GitHub
+Copilot, Cursor, and other tools supporting the
+[Agent Skills standard](https://agentskills.io/specification).
 
-#### For Analyzer Developers
+### For Analyzer Developers
 
 To make your analyzer plugin batch-capable, implement
 `\Drupal\analyze\BatchableAnalyzerInterface`:

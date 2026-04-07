@@ -80,23 +80,41 @@
   <li>Open any content entity and click the Analyze tab — your data is there</li>
 </ol>
 
-<h2>CLI &amp; AI Agent Support</h2>
-<p>Every batch operation available in the admin UI is
-available via Drush CLI. AI agents can drive content analysis
-workflows autonomously using bundled skill files.</p>
+<h2>Drush CLI &amp; AI Agent Support</h2>
 
 <ul>
   <li><strong>Centralized Batch Processing</strong> — Run any
   combination of analyzers across all content from the admin
-  UI or
-  <code>drush analyze:batch</code></li>
-  <li><strong>AI Skill Files</strong> — Bundled skill files
-  for Claude Code and other AI agents enable autonomous
-  content analysis workflows</li>
-  <li><strong>E2E Test Suite</strong> — Shell-based
-  end-to-end tests ensure CLI commands work correctly across
-  Drupal versions</li>
+  UI or <code>drush analyze:batch</code>. Filter by analyzer,
+  content type, and entity count.</li>
+  <li><strong>AI Agent Integration</strong> — Supports the
+  <a href="https://agentskills.io">Agent Skills</a> standard
+  for AI coding assistants (Claude Code, Codex, Gemini CLI,
+  Copilot, Cursor). Run
+  <code>drush analyze:setup-ai</code> to install skill
+  files.</li>
 </ul>
+
+<h3>AI Coding Assistant Integration</h3>
+
+<p>The Analyze module includes a built-in
+<a href="https://agentskills.io/specification">Agent
+Skills</a> file that teaches AI coding assistants how to run
+content analysis through natural language. Run
+<code>drush analyze:setup-ai</code> to enable, then ask
+naturally:</p>
+<ul>
+  <li>"Run sentiment analysis on all articles"</li>
+  <li>"Analyze brand voice consistency across the site"</li>
+  <li>"Check all pages for broken links"</li>
+  <li>"List available analyzers and which content types they
+  cover"</li>
+  <li>"Re-analyze the last 50 published nodes with all
+  analyzers"</li>
+</ul>
+<p>Compatible with Claude Code, Codex CLI, Gemini CLI, GitHub
+Copilot, Cursor, and other tools supporting the
+standard.</p>
 
 <h2>For Developers: Build Your Own Analyzer</h2>
 <p>Create a plugin in <code>src/Plugin/Analyze/</code>, extend <code>AnalyzePluginBase</code>, implement <code>renderSummary()</code> and <code>renderFullReport()</code>. The framework handles routing, tabs, access control, and per-content-type configuration. See the included <a href="https://git.drupalcode.org/project/analyze/-/blob/1.0.x/modules/analyze_plugin_example/src/Plugin/Analyze/Example.php">example plugin</a> for a working reference.</p>
