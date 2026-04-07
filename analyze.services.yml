@@ -15,3 +15,6 @@ services:
   analyze.helper:
     class: Drupal\analyze\Helper
     arguments: ['@entity_type.manager', '@current_route_match', '@plugin.manager.analyze', '@config.factory', '@entity_type.bundle.info']
+  analyze.batch_service:
+    class: Drupal\analyze\Service\AnalyzeBatchService
+    arguments: ['@entity_type.manager', '@plugin.manager.analyze', '@config.factory', '@entity_type.bundle.info']

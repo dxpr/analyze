@@ -80,6 +80,14 @@
   <li>Open any content entity and click the Analyze tab — your data is there</li>
 </ol>
 
+<h2>Batch Processing</h2>
+<p>Run any combination of analyzers across all content from the admin UI or the command line. Analyzer plugins opt-in to batch support by implementing <code>BatchableAnalyzerInterface</code>.</p>
+
+<ul>
+  <li><strong>Centralized Admin UI</strong> — Select analyzers and content types at <em>Configuration &gt; Content &gt; Batch Analysis</em>, run them together in a single batch</li>
+  <li><strong>Drush CLI</strong> — <code>drush analyze:batch --analyzers=sentiments,brand_voice --types=node:article</code>. Filter by analyzer, content type, and entity count. Ideal for cron jobs and CI/CD pipelines</li>
+</ul>
+
 <h2>For Developers: Build Your Own Analyzer</h2>
 <p>Create a plugin in <code>src/Plugin/Analyze/</code>, extend <code>AnalyzePluginBase</code>, implement <code>renderSummary()</code> and <code>renderFullReport()</code>. The framework handles routing, tabs, access control, and per-content-type configuration. See the included <a href="https://git.drupalcode.org/project/analyze/-/blob/1.0.x/modules/analyze_plugin_example/src/Plugin/Analyze/Example.php">example plugin</a> for a working reference.</p>
 

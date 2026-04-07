@@ -4,3 +4,10 @@ analyze.analyze_settings:
   parent: system.admin_config_content
   route_name: analyze.analyze_settings
   weight: 10
+
+analyze.batch:
+  title: 'Batch Analysis'
+  description: 'Run batch analysis across content using one or more analyzers'
+  parent: system.admin_config_content
+  route_name: analyze.batch
+  weight: 11

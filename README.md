@@ -183,6 +183,56 @@ final class MyAnalyzer extends AnalyzePluginBase {
 See the `analyze_plugin_example` module in the codebase for a complete
 working example.
 
+### Batch Processing
+
+The Analyze module provides centralized batch processing infrastructure.
+Analyzer plugins can opt-in to batch processing by implementing
+`BatchableAnalyzerInterface`. This enables both admin UI and Drush CLI
+batch operations, including running multiple analyzers in a single batch.
+
+#### Admin UI
+
+Navigate to **Administration > Configuration > Content > Batch Analysis**
+(`/admin/config/content/analyze-batch`) to run batch analysis. Select one or
+more analyzers, choose entity types, and start the batch.
+
+#### Drush Commands
+
+```bash
+drush analyze:batch                                         # Run all batch-capable analyzers
+drush analyze:batch --analyzers=sentiments,brand_voice      # Run specific analyzers
+drush analyze:batch --types=node:article                    # Filter by entity bundle
+drush analyze:batch --limit=100                             # Limit entities processed
+drush analyze:batch --force                                 # Re-analyze even if results exist
+drush analyze:batch --list                                  # List available batch analyzers
+```
+
+#### For Analyzer Developers
+
+To make your analyzer plugin batch-capable, implement
+`\Drupal\analyze\BatchableAnalyzerInterface`:
+
+```php
+use Drupal\analyze\BatchableAnalyzerInterface;
+
+class MyAnalyzer extends AnalyzePluginBase implements BatchableAnalyzerInterface {
+
+  public function processEntity(EntityInterface $entity, bool $force_refresh = FALSE): bool {
+    if (!$force_refresh && $this->hasResults($entity)) {
+      return FALSE;
+    }
+    // Your analysis logic here. Store results your own way.
+    return TRUE;
+  }
+
+  public function hasResults(EntityInterface $entity): bool {
+    // Check if results already exist for this entity.
+    return !empty($this->storage->getScores($entity));
+  }
+
+}
+```
+
 ### Community Documentation
 
 @todo
