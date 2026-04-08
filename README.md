@@ -256,12 +256,12 @@ class MyAnalyzer extends AnalyzePluginBase
   /**
    * Run analysis on a single entity.
    *
-   * Call your analysis logic directly — do NOT delegate through
+   * Call your analysis logic directly -- do NOT delegate through
    * renderSummary() as it builds throwaway render arrays and
    * swallows exceptions the batch system needs to see.
    *
    * If your analyzer calls AI APIs, let AiRateLimitException
-   * propagate (don't catch it) — the batch system handles
+   * propagate (don't catch it) -- the batch system handles
    * retry with exponential backoff.
    *
    * Return TRUE only when analysis succeeded and results were
@@ -304,12 +304,12 @@ override `countAnalyzedEntities()` from `AnalyzePluginBase` for
 fast `--status` coverage reporting. The default returns 0.
 
 **Key rules:**
-- `processEntity()` must return FALSE on failure — the batch
+- `processEntity()` must return FALSE on failure -- the batch
   system uses this for honest success/failure reporting.
-- Do NOT catch `AiRateLimitException` — the batch system retries
+- Do NOT catch `AiRateLimitException` -- the batch system retries
   with exponential backoff (2s, 4s, 8s).
 - Use `$this->renderer->renderInIsolation()` (not `render()`) if you
-  need to render entities — `render()` throws in CLI/Drush.
+  need to render entities -- `render()` throws in CLI/Drush.
 
 ### Community Documentation
 
