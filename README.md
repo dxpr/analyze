@@ -1,4 +1,13 @@
-# analyze
+> **Analyze** is a content analysis framework for Drupal that unifies SEO
+> scores, readability metrics, AI insights, and link health in a single
+> content tab.
+> Created by [DXPR](https://dxpr.com).
+>
+> [Getting Started](https://dxpr.com/c/getting-started) |
+> [Pricing](https://dxpr.com/pricing) |
+> [Try Free Demo](https://dxpr.com/try)
+
+# Analyze: Unified Content Analysis Framework for Drupal
 
 API framework adding analysis data to Drupal entities' Analyze tab.
 
@@ -210,8 +219,8 @@ drush analyze:batch --limit=50 --force
 
 | Command | Alias | Description |
 |---------|-------|-------------|
-| `analyze:batch` | `ab` | Run batch analysis (`--analyzers`, `--types`, `--limit`, `--force`, `--list`, `--status`) |
-| `analyze:setup-ai` | `analyze-sa` | Install AI skill files (`--host`, `--check`) |
+| `analyze:batch` | `ab` | Run batch analysis on entities |
+| `analyze:setup-ai` | `analyze-sa` | Install AI skill files |
 
 ### AI Coding Assistant Integration
 
@@ -256,12 +265,12 @@ class MyAnalyzer extends AnalyzePluginBase
   /**
    * Run analysis on a single entity.
    *
-   * Call your analysis logic directly — do NOT delegate through
+   * Call your analysis logic directly; do NOT delegate through
    * renderSummary() as it builds throwaway render arrays and
    * swallows exceptions the batch system needs to see.
    *
    * If your analyzer calls AI APIs, let AiRateLimitException
-   * propagate (don't catch it) — the batch system handles
+   * propagate (don't catch it); the batch system handles
    * retry with exponential backoff.
    *
    * Return TRUE only when analysis succeeded and results were
@@ -304,12 +313,46 @@ override `countAnalyzedEntities()` from `AnalyzePluginBase` for
 fast `--status` coverage reporting. The default returns 0.
 
 **Key rules:**
-- `processEntity()` must return FALSE on failure — the batch
+- `processEntity()` must return FALSE on failure; the batch
   system uses this for honest success/failure reporting.
-- Do NOT catch `AiRateLimitException` — the batch system retries
+- Do NOT catch `AiRateLimitException`; the batch system retries
   with exponential backoff (2s, 4s, 8s).
 - Use `$this->renderer->renderInIsolation()` (not `render()`) if you
-  need to render entities — `render()` throws in CLI/Drush.
+  need to render entities; `render()` throws in CLI/Drush.
+
+### Related Modules
+
+Analyze plugins - these modules register `@Analyze` plugins that appear in
+the Analyze tab:
+
+- [AI Brand Voice Analyzer](https://www.drupal.org/project/analyze_ai_brand_voice)
+  - Brand voice consistency scoring via AI
+- [AI Sentiment Analyzer](https://www.drupal.org/project/analyze_ai_sentiments)
+  - Multi-dimensional content tone analysis via AI
+- [AI Marketing Audit](https://www.drupal.org/project/analyze_ai_content_marketing_audit)
+  - Content marketing effectiveness scoring via AI
+- [AI Security Audit](https://www.drupal.org/project/analyze_ai_content_security_audit)
+  - Sensitive data leak detection via AI
+- [Broken Links Analyzer](https://www.drupal.org/project/analyze_broken_links)
+  - Link health monitoring per page
+- [Search Console Analyzer](https://www.drupal.org/project/analyze_search_console)
+  - Google Search performance per page
+
+Bundled submodules (ship inside the Analyze project):
+
+- Basic Content Info - Word count and image count per entity
+- Node Statistics - Page view counts from the
+  [Statistics](https://www.drupal.org/project/statistics) module
+- Google Analytics - Per-page GA data via
+  [Google Analytics Reports](https://www.drupal.org/project/google_analytics_reports)
+
+Modules that integrate with Analyze data:
+
+- [Content Intel](https://www.drupal.org/project/content_intel) - Analyze
+  provides a ContentIntel plugin that exposes analyzer data to the Content
+  Intel framework
+- [AI](https://www.drupal.org/project/ai) - AI-powered analyzers use this as
+  their LLM provider; the batch system handles AI rate-limit backoff
 
 ### Community Documentation
 
