@@ -1,6 +1,10 @@
-> Part of [DXPR CMS](https://dxpr.com/c/marketing-cms) | The AI-Powered Drupal CMS
+> **Analyze** is a content analysis framework for Drupal that unifies SEO scores,
+> readability metrics, AI insights, and link health in a single content tab.
+> Created by [DXPR](https://dxpr.com).
 >
-> [Documentation](https://dxpr.com/docs) | [Try Free](https://dxpr.com/try) | [dxpr.com](https://dxpr.com)
+> [Getting Started](https://dxpr.com/c/getting-started) |
+> [Pricing](https://dxpr.com/pricing) |
+> [Try Free Demo](https://dxpr.com/try)
 
 # Analyze: Unified Content Analysis Framework for Drupal
 
@@ -315,12 +319,15 @@ fast `--status` coverage reporting. The default returns 0.
 - Use `$this->renderer->renderInIsolation()` (not `render()`) if you
   need to render entities; `render()` throws in CLI/Drush.
 
-### Related DXPR Modules
+### Related Modules
 
 - [AI Brand Voice Analyzer](https://www.drupal.org/project/analyze_ai_brand_voice) - Brand voice consistency scoring
 - [AI Sentiment Analyzer](https://www.drupal.org/project/analyze_ai_sentiments) - Multi-dimensional content tone analysis
 - [Broken Links Analyzer](https://www.drupal.org/project/analyze_broken_links) - Link health monitoring per page
 - [Search Console Analyzer](https://www.drupal.org/project/analyze_search_console) - Google Search performance per page
+- [Metatag](https://www.drupal.org/project/metatag) - Manage meta tags for improved SEO and social sharing
+- [Simple Sitemap](https://www.drupal.org/project/simple_sitemap) - XML sitemap generation for search engine indexing
+- [Search API](https://www.drupal.org/project/search_api) - Framework for creating custom search solutions in Drupal
 
 ### Community Documentation
 
