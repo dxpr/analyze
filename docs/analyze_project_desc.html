@@ -1,17 +1,19 @@
+<p><strong>Part of the <a href="https://dxpr.com/c/marketing-cms">DXPR</a> ecosystem</strong> | the AI-powered no-code platform for Drupal. <a href="https://dxpr.com/try">Try free</a> | <a href="https://dxpr.com/docs">Documentation</a></p>
+
 <h2>One Tab to Understand All Your Content</h2>
 
-<blockquote>Content editors shouldn't need five different modules with five different UIs to understand how their content is performing. Analyze puts SEO data, readability scores, AI insights, link health, and traffic stats in a single tab — consistent, scannable, and actionable.</blockquote>
+<blockquote>Content editors shouldn't need five different modules with five different UIs to understand how their content is performing. Analyze puts SEO data, readability scores, AI insights, link health, and traffic stats in a single tab: consistent, scannable, and actionable.</blockquote>
 
 <h3>You need Analyze if</h3>
 <ul>
   <li>Your content tools are scattered across different modules with inconsistent interfaces</li>
   <li>Editors waste time switching between tabs and admin pages to understand content performance</li>
-  <li>You want a single entry point where all content insights live — from word count to AI analysis to search rankings</li>
+  <li>You want a single entry point where all content insights live, from word count to AI analysis to search rankings</li>
   <li>You're building custom analysis tools and need a framework that handles the UI so you can focus on the data</li>
 </ul>
 
 <h2>How It Works</h2>
-<p>Analyze adds an "Analyze" tab to every content entity. Enable the analysis plugins you want per content type, and editors immediately see summary gauges and tables — with full reports one click deeper. No custom theme work, no per-module configuration UIs to learn.</p>
+<p>Analyze adds an "Analyze" tab to every content entity. Enable the analysis plugins you want per content type, and editors immediately see summary gauges and tables, with full reports one click deeper. No custom theme work, no per-module configuration UIs to learn.</p>
 
 <h2>What Plugs Into It</h2>
 
@@ -77,17 +79,17 @@
 <ol>
   <li>Enable the Analyze module and any analysis submodules you want</li>
   <li>Go to Configuration > Content > Analyze Settings and toggle which analyzers run on which content types</li>
-  <li>Open any content entity and click the Analyze tab — your data is there</li>
+  <li>Open any content entity and click the Analyze tab. Your data is there</li>
 </ol>
 
 <h2>Drush CLI &amp; AI Agent Support</h2>
 
 <ul>
-  <li><strong>Centralized Batch Processing</strong> — Run any
+  <li><strong>Centralized Batch Processing</strong>: Run any
   combination of analyzers across all content from the admin
   UI or <code>drush analyze:batch</code>. Filter by analyzer,
   content type, and entity count.</li>
-  <li><strong>AI Agent Integration</strong> — Supports the
+  <li><strong>AI Agent Integration</strong>: Supports the
   <a href="https://agentskills.io">Agent Skills</a> standard
   for AI coding assistants (Claude Code, Codex, Gemini CLI,
   Copilot, Cursor). Run
@@ -120,3 +122,11 @@ standard.</p>
 <p>Create a plugin in <code>src/Plugin/Analyze/</code>, extend <code>AnalyzePluginBase</code>, implement <code>renderSummary()</code> and <code>renderFullReport()</code>. The framework handles routing, tabs, access control, and per-content-type configuration. See the included <a href="https://git.drupalcode.org/project/analyze/-/blob/1.0.x/modules/analyze_plugin_example/src/Plugin/Analyze/Example.php">example plugin</a> for a working reference.</p>
 
 <p>Two display components are available: <code>analyze_gauge</code> for spectrum-based scores and <code>analyze_table</code> for key-value metrics.</p>
+
+<h3>Related DXPR Modules</h3>
+<ul>
+<li><a href="https://www.drupal.org/project/analyze_ai_brand_voice">AI Brand Voice Analyzer</a> - Brand voice consistency scoring</li>
+<li><a href="https://www.drupal.org/project/analyze_ai_sentiments">AI Sentiment Analyzer</a> - Multi-dimensional content tone analysis</li>
+<li><a href="https://www.drupal.org/project/analyze_broken_links">Broken Links Analyzer</a> - Link health monitoring per page</li>
+<li><a href="https://www.drupal.org/project/analyze_search_console">Search Console Analyzer</a> - Google Search performance per page</li>
+</ul>
