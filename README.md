@@ -321,13 +321,26 @@ fast `--status` coverage reporting. The default returns 0.
 
 ### Related Modules
 
-- [AI Brand Voice Analyzer](https://www.drupal.org/project/analyze_ai_brand_voice) - Brand voice consistency scoring
-- [AI Sentiment Analyzer](https://www.drupal.org/project/analyze_ai_sentiments) - Multi-dimensional content tone analysis
+Analyze plugins - these modules register `@Analyze` plugins that appear in
+the Analyze tab:
+
+- [AI Brand Voice Analyzer](https://www.drupal.org/project/analyze_ai_brand_voice) - Brand voice consistency scoring via AI
+- [AI Sentiment Analyzer](https://www.drupal.org/project/analyze_ai_sentiments) - Multi-dimensional content tone analysis via AI
+- [AI Marketing Audit](https://www.drupal.org/project/analyze_ai_content_marketing_audit) - Content marketing effectiveness scoring via AI
+- [AI Security Audit](https://www.drupal.org/project/analyze_ai_content_security_audit) - Sensitive data leak detection via AI
 - [Broken Links Analyzer](https://www.drupal.org/project/analyze_broken_links) - Link health monitoring per page
 - [Search Console Analyzer](https://www.drupal.org/project/analyze_search_console) - Google Search performance per page
-- [Metatag](https://www.drupal.org/project/metatag) - Manage meta tags for improved SEO and social sharing
-- [Simple Sitemap](https://www.drupal.org/project/simple_sitemap) - XML sitemap generation for search engine indexing
-- [Search API](https://www.drupal.org/project/search_api) - Framework for creating custom search solutions in Drupal
+
+Bundled submodules (ship inside the Analyze project):
+
+- Basic Content Info - Word count and image count per entity
+- Node Statistics - Page view counts from the [Statistics](https://www.drupal.org/project/statistics) module
+- Google Analytics - Per-page GA data via [Google Analytics Reports](https://www.drupal.org/project/google_analytics_reports)
+
+Modules that integrate with Analyze data:
+
+- [Content Intel](https://www.drupal.org/project/content_intel) - Analyze provides a ContentIntel plugin that exposes analyzer data to the Content Intel framework
+- [AI](https://www.drupal.org/project/ai) - AI-powered analyzers use this as their LLM provider; the batch system handles AI rate-limit backoff
 
 ### Community Documentation
 

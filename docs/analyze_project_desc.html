@@ -121,13 +121,24 @@ standard.</p>
 
 <p>Two display components are available: <code>analyze_gauge</code> for spectrum-based scores and <code>analyze_table</code> for key-value metrics.</p>
 
+<p>Analyze is included in <a href="https://dxpr.com/c/marketing-cms">DXPR CMS</a>, a Drupal distribution that ships the full Analyze suite alongside DXPR Builder and DXPR Theme so content teams can start auditing content quality out of the box.</p>
+
 <h3>Related Modules</h3>
+
+<p>Analyze plugins - these modules register <code>@Analyze</code> plugins that appear in the Analyze tab:</p>
 <ul>
-<li><a href="https://www.drupal.org/project/analyze_ai_brand_voice">AI Brand Voice Analyzer</a> - Brand voice consistency scoring</li>
-<li><a href="https://www.drupal.org/project/analyze_ai_sentiments">AI Sentiment Analyzer</a> - Multi-dimensional content tone analysis</li>
+<li><a href="https://www.drupal.org/project/analyze_ai_brand_voice">AI Brand Voice Analyzer</a> - Brand voice consistency scoring via AI</li>
+<li><a href="https://www.drupal.org/project/analyze_ai_sentiments">AI Sentiment Analyzer</a> - Multi-dimensional content tone analysis via AI</li>
+<li><a href="https://www.drupal.org/project/analyze_ai_content_marketing_audit">AI Marketing Audit</a> - Content marketing effectiveness scoring via AI</li>
+<li><a href="https://www.drupal.org/project/analyze_ai_content_security_audit">AI Security Audit</a> - Sensitive data leak detection via AI</li>
 <li><a href="https://www.drupal.org/project/analyze_broken_links">Broken Links Analyzer</a> - Link health monitoring per page</li>
 <li><a href="https://www.drupal.org/project/analyze_search_console">Search Console Analyzer</a> - Google Search performance per page</li>
-<li><a href="https://www.drupal.org/project/metatag">Metatag</a> - Metadata management</li>
-<li><a href="https://www.drupal.org/project/simple_sitemap">Simple Sitemap</a> - XML sitemap generation</li>
-<li><a href="https://www.drupal.org/project/search_api">Search API</a> - Search framework</li>
+</ul>
+
+<p>Modules that integrate with Analyze data:</p>
+<ul>
+<li><a href="https://www.drupal.org/project/content_intel">Content Intel</a> - Analyze provides a ContentIntel plugin that exposes analyzer results to the Content Intel framework</li>
+<li><a href="https://www.drupal.org/project/ai">AI</a> - AI-powered analyzers use this as their LLM provider; the batch system handles AI rate-limit backoff</li>
+<li><a href="https://www.drupal.org/project/statistics">Statistics</a> - The bundled Node Statistics submodule displays page view counts from this module</li>
+<li><a href="https://www.drupal.org/project/google_analytics_reports">Google Analytics Reports</a> - The bundled Google Analytics submodule pulls per-page GA data through this module</li>
 </ul>
