@@ -1,4 +1,13 @@
-# analyze
+> **Analyze** is a content analysis framework for Drupal that unifies SEO
+> scores, readability metrics, AI insights, and link health in a single
+> content tab.
+> Created by [DXPR](https://dxpr.com).
+>
+> [Getting Started](https://dxpr.com/c/marketing-cms) |
+> [Pricing](https://dxpr.com/pricing) |
+> [Try Free Demo](https://try.dxpr.com)
+
+# Analyze: Unified Content Analysis Framework for Drupal
 
 API framework adding analysis data to Drupal entities' Analyze tab.
 
@@ -182,6 +191,168 @@ final class MyAnalyzer extends AnalyzePluginBase {
 
 See the `analyze_plugin_example` module in the codebase for a complete
 working example.
+
+### Drush CLI (`analyze:*` namespace)
+
+All Analyze batch operations are available via Drush for AI
+agent and CLI workflows.
+
+**Quick start:**
+
+```bash
+# List available batch-capable analyzers
+drush analyze:batch --list
+
+# Run all analyzers on all enabled content types
+drush analyze:batch
+
+# Run specific analyzers on articles
+drush analyze:batch \
+  --analyzers=analyze_ai_sentiments_analyzer \
+  --types=node:article
+
+# Force re-analysis of first 50 entities
+drush analyze:batch --limit=50 --force
+```
+
+**Commands:**
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `analyze:batch` | `ab` | Run batch analysis on entities |
+| `analyze:setup-ai` | `analyze-sa` | Install AI skill files |
+
+### AI Coding Assistant Integration
+
+The Analyze module includes a built-in
+[Agent Skills](https://agentskills.io) file that teaches AI
+coding assistants how to run content analysis through natural
+language. Run `drush analyze:setup-ai` to enable, then ask
+naturally:
+
+```
+"Run sentiment analysis on all articles"
+"Analyze brand voice consistency across the site"
+"Check all pages for broken links"
+"List available analyzers and which content types they cover"
+"Re-analyze the last 50 published nodes with all analyzers"
+```
+
+**Quick setup:**
+
+```bash
+drush analyze:setup-ai             # All tools
+drush analyze:setup-ai --host=claude   # Claude Code only
+drush analyze:setup-ai --host=agents   # Codex/Gemini/Copilot/Cursor
+```
+
+Compatible with Claude Code, Codex CLI, Gemini CLI, GitHub
+Copilot, Cursor, and other tools supporting the
+[Agent Skills standard](https://agentskills.io/specification).
+
+### For Analyzer Developers
+
+To make your analyzer plugin batch-capable, implement
+`\Drupal\analyze\BatchableAnalyzerInterface`. The interface has
+three methods:
+
+```php
+use Drupal\analyze\BatchableAnalyzerInterface;
+
+class MyAnalyzer extends AnalyzePluginBase
+  implements BatchableAnalyzerInterface {
+
+  /**
+   * Run analysis on a single entity.
+   *
+   * Call your analysis logic directly; do NOT delegate through
+   * renderSummary() as it builds throwaway render arrays and
+   * swallows exceptions the batch system needs to see.
+   *
+   * If your analyzer calls AI APIs, let AiRateLimitException
+   * propagate (don't catch it); the batch system handles
+   * retry with exponential backoff.
+   *
+   * Return TRUE only when analysis succeeded and results were
+   * saved. Return FALSE when skipped or failed.
+   */
+  public function processEntity(
+    EntityInterface $entity,
+    bool $force_refresh = FALSE,
+  ): bool {
+    if (!$force_refresh && $this->hasResults($entity)) {
+      return FALSE;
+    }
+    if ($force_refresh) {
+      $this->storage->deleteScores($entity);
+    }
+    $scores = $this->runAnalysis($entity);
+    if (empty($scores)) {
+      return FALSE;
+    }
+    $this->storage->saveScores($entity, $scores);
+    return TRUE;
+  }
+
+  /**
+   * Check if results exist. May validate content/config hashes.
+   */
+  public function hasResults(
+    EntityInterface $entity,
+  ): bool {
+    return !empty(
+      $this->storage->getScores($entity)
+    );
+  }
+
+}
+```
+
+**Optional:** If your analyzer persists results to a DB table,
+override `countAnalyzedEntities()` from `AnalyzePluginBase` for
+fast `--status` coverage reporting. The default returns 0.
+
+**Key rules:**
+- `processEntity()` must return FALSE on failure; the batch
+  system uses this for honest success/failure reporting.
+- Do NOT catch `AiRateLimitException`; the batch system retries
+  with exponential backoff (2s, 4s, 8s).
+- Use `$this->renderer->renderInIsolation()` (not `render()`) if you
+  need to render entities; `render()` throws in CLI/Drush.
+
+### Related Modules
+
+Analyze plugins - these modules register `@Analyze` plugins that appear in
+the Analyze tab:
+
+- [AI Brand Voice Analyzer](https://www.drupal.org/project/analyze_ai_brand_voice)
+  - Brand voice consistency scoring via AI
+- [AI Sentiment Analyzer](https://www.drupal.org/project/analyze_ai_sentiments)
+  - Multi-dimensional content tone analysis via AI
+- [AI Marketing Audit](https://www.drupal.org/project/analyze_ai_content_marketing_audit)
+  - Content marketing effectiveness scoring via AI
+- [AI Security Audit](https://www.drupal.org/project/analyze_ai_content_security_audit)
+  - Sensitive data leak detection via AI
+- [Broken Links Analyzer](https://www.drupal.org/project/analyze_broken_links)
+  - Link health monitoring per page
+- [Search Console Analyzer](https://www.drupal.org/project/analyze_search_console)
+  - Google Search performance per page
+
+Bundled submodules (ship inside the Analyze project):
+
+- Basic Content Info - Word count and image count per entity
+- Node Statistics - Page view counts from the
+  [Statistics](https://www.drupal.org/project/statistics) module
+- Google Analytics - Per-page GA data via
+  [Google Analytics Reports](https://www.drupal.org/project/google_analytics_reports)
+
+Modules that integrate with Analyze data:
+
+- Content Intel - Analyze
+  provides a ContentIntel plugin that exposes analyzer data to the Content
+  Intel framework
+- [AI](https://www.drupal.org/project/ai) - AI-powered analyzers use this as
+  their LLM provider; the batch system handles AI rate-limit backoff
 
 ### Community Documentation
 

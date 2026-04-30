@@ -1,176 +1,144 @@
-<h2>Unified Content Analysis Framework for Drupal</h2>
+<h2>One Tab to Understand All Your Content</h2>
 
-<blockquote>The Analyze module provides a unified API framework that brings together diverse content analysis tools under a single, accessible interface, transforming how content editors understand and optimize their content.</blockquote>
+<blockquote>Content editors shouldn't need five different modules with five different UIs to understand how their content is performing. Analyze puts SEO data, readability scores, AI insights, link health, and traffic stats in a single tab: consistent, scannable, and actionable.</blockquote>
 
-<h2>Core Features</h2>
-
+<h3>You need Analyze if</h3>
 <ul>
-  <li>
-    <strong>Unified Analysis Tab</strong>
-    <p>Adds a consistent "Analyze" tab to all entities with canonical URLs, providing a central location for all content insights.</p>
-  </li>
-  <li>
-    <strong>Extensible API Framework</strong>
-    <p>Offers a robust API for modules to integrate their analysis data, ensuring consistency across different analysis tools.</p>
-  </li>
-  <li>
-    <strong>Visual Data Components</strong>
-    <p>Includes linear gauge components and tables for intuitive spectrum-based data visualization.</p>
-  </li>
+  <li>Your content tools are scattered across different modules with inconsistent interfaces</li>
+  <li>Editors waste time switching between tabs and admin pages to understand content performance</li>
+  <li>You want a single entry point where all content insights live, from word count to AI analysis to search rankings</li>
+  <li>You're building custom analysis tools and need a framework that handles the UI so you can focus on the data</li>
 </ul>
 
-<h2>Compatible Analysis Modules</h2>
+<h2>How It Works</h2>
+<p>Analyze adds an "Analyze" tab to every content entity. Enable the analysis plugins you want per content type, and editors immediately see summary gauges and tables, with full reports one click deeper. No custom theme work, no per-module configuration UIs to learn.</p>
+
+<h2>What Plugs Into It</h2>
 
 <table>
-  <caption>
-    Modules marked with an asterisk (*) are included in the Analyze project
-  </caption>
+  <caption>Modules marked with * ship inside the Analyze project</caption>
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Description</th>
+      <th>Module</th>
+      <th>What It Shows</th>
       <th>Key Metrics</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><h5>Analyze Basic Content Info*</td>
-      <td>Provides fundamental content metrics.</td>
+      <td>Basic Content Info*</td>
+      <td>Fundamental content stats</td>
       <td>Word count, Image count</td>
     </tr>
     <tr>
-      <td><h5>Analyze Google Analytics*</td>
-      <td>Integrates Google Analytics data into content analysis.</td>
+      <td>Node Statistics*</td>
+      <td>Traffic from Drupal's statistics module</td>
+      <td>Total views, Today's views</td>
+    </tr>
+    <tr>
+      <td>Google Analytics*</td>
+      <td>GA data per page</td>
       <td>Page views, Views per user, Bounce rate</td>
     </tr>
     <tr>
-      <td><h5>Analyze Node Statistics*</td>
-      <td>Provides basic traffic statistics using Drupal's Statistics module.</td>
-      <td>Total page views, Today's views</td>
+      <td><a href="https://www.drupal.org/project/analyze_search_console">Search Console</a></td>
+      <td>Google Search performance per page</td>
+      <td>Clicks, Impressions, CTR, Position</td>
     </tr>
     <tr>
-      <td><h5>Analyze Plugin Example*</td>
-      <td>A developer reference for creating custom analyzers and reports.</td>
-      <td>Custom metrics, Gauge, Table components</td>
+      <td><a href="https://www.drupal.org/project/analyze_broken_links">Broken Links</a></td>
+      <td>Link health for every page</td>
+      <td>Healthy %, broken count, status codes</td>
     </tr>
     <tr>
-      <td><h5><a href="https://www.drupal.org/project/analyze_ai_brand_voice">AI Brand Voice Analysis</a></td>
-      <td>Analyzes content for brand voice consistency.</td>
-      <td>Brand voice alignment score</td>
+      <td><a href="https://www.drupal.org/project/analyze_ai_brand_voice">AI Brand Voice</a></td>
+      <td>Brand alignment scoring</td>
+      <td>Voice alignment (-1.0 to +1.0)</td>
     </tr>
     <tr>
-      <td><h5><a href="https://www.drupal.org/project/analyze_ai_sentiment">AI Sentiment Analysis</a></td>
-      <td>Analyzes the sentiment of content using AI models.</td>
-      <td>Trust, Objectivity, Audience targeting, Reading level</td>
+      <td><a href="https://www.drupal.org/project/analyze_ai_sentiment">AI Sentiments</a></td>
+      <td>Multi-dimensional content tone</td>
+      <td>Trust, Objectivity, Audience, Reading level</td>
     </tr>
     <tr>
-      <td><h5><a href="https://www.drupal.org/project/analyze_ai_content_marketing_audit">AI Content Marketing Audit</a></td>
-      <td>Evaluates content against marketing best practices.</td>
-      <td>Usability, Knowledge level, Actionability, Business value</td>
+      <td><a href="https://www.drupal.org/project/analyze_ai_content_marketing_audit">AI Marketing Audit</a></td>
+      <td>Content marketing effectiveness</td>
+      <td>Usability, Actionability, Business value</td>
     </tr>
     <tr>
-      <td><h5><a href="https://www.drupal.org/project/analyze_ai_content_security_audit">AI Content Security Audit</a></td>
-      <td>Identifies potential security risks in content.</td>
-      <td>PII disclosure, Credentials exposure, Risk scores</td>
+      <td><a href="https://www.drupal.org/project/analyze_ai_content_security_audit">AI Security Audit</a></td>
+      <td>Sensitive data leak detection</td>
+      <td>PII risk, Credentials exposure</td>
     </tr>
   </tbody>
 </table>
 
-<h3>Problem Addressed</h3>
-
-<p>Content analysis modules, such as <a href="https://www.drupal.org/project/yoast_seo">Realtime SEO</a>, <a href="https://www.drupal.org/project/ga_node_reports">Google Analytics Node Reports</a>, and <a href="https://www.drupal.org/project/editoria11y">Editoria11y</a>, often feature inconsistent UI designs. The <a href="https://www.drupal.org/project/statistics">Statistics</a> module, formerly in core, lacks an accessible UI. These discrepancies make it difficult for content editors to use these tools effectively.</p>
-
-<p>The Analyze module unifies these tools within the "Analyze" tab. Concise reports appear on the main tab, while more detailed reports are accessible via secondary tabs.</p>
-
-<h3>User Experience</h3>
-
+<h2>Getting Started</h2>
 <ol>
-  <li>Up to three key metrics are shown on the main "Analyze" tab using tables and gauges.</li>
-  <li>Full reports can be displayed in secondary tabs or sitewide dashboards.</li>
-  <li>This ensures critical data is accessible, with deeper insights available when needed.</li>
+  <li>Enable the Analyze module and any analysis submodules you want</li>
+  <li>Go to Configuration > Content > Analyze Settings and toggle which analyzers run on which content types</li>
+  <li>Open any content entity and click the Analyze tab. Your data is there</li>
 </ol>
 
-<h3>Setup</h3>
+<h2>Drush CLI &amp; AI Agent Support</h2>
 
-<p>After enabling the module on the <strong>Extend</strong> page as usual:</p>
-
-<ol>
-  <li>Navigate to <strong>Configuration > System > Analyze Settings</strong>.</li>
-  <li>Enable desired analysis features for specific content types by toggling the available options (e.g., Basic Content, Google Analytics, Node Statistics).</li>
-  <li>Once configured, the "Analyze" tab will appear on entity pages, displaying metrics and reports.</li>
-</ol>
-
-<p>For example:</p>
 <ul>
-  <li>The main "Analyze" tab displays concise information, such as word count or page views.</li>
-  <li>More detailed reports, like Google Analytics summaries, are available on secondary tabs or linked to sitewide dashboards.</li>
+  <li><strong>Centralized Batch Processing</strong>: Run any
+  combination of analyzers across all content from the admin
+  UI or <code>drush analyze:batch</code>. Filter by analyzer,
+  content type, and entity count.</li>
+  <li><strong>AI Agent Integration</strong>: Supports the
+  <a href="https://agentskills.io">Agent Skills</a> standard
+  for AI coding assistants (Claude Code, Codex, Gemini CLI,
+  Copilot, Cursor). Run
+  <code>drush analyze:setup-ai</code> to install skill
+  files.</li>
 </ul>
 
-Example configuration:
-<img src="https://www.drupal.org/files/project-images/analyze-module-config.png" alt="Example configuration for Analyze module on nodes and social post custom entities" />
+<h3>AI Coding Assistant Integration</h3>
 
-<h3>Creating a custom plugin to display information</h3>
-
-<h4>1. File Structure</h4>
-<code>
-my_module/
-├── my_module.info.yml
-├── src/
-│   └── Plugin/
-│       └── Analyze/
-│           └── MyAnalyzer.php
-</code>
-
-<h4>2. Example Plugin</h4>
-<p>See the <a href="https://git.drupalcode.org/project/analyze/-/blob/1.0.x/modules/analyze_plugin_example/src/Plugin/Analyze/Example.php">full example</a> for details. Here's a basic structure:</p>
-
-<?php
-
-namespace Drupal\my_module\Plugin\Analyze;
-
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\analyze\AnalyzePluginBase;
-
-/**
- * @Analyze(
- *   id = "my_analyzer",
- *   label = @Translation("My Analyzer"),
- *   description = @Translation("Provides custom analysis functionality.")
- * )
- */
-final class MyAnalyzer extends AnalyzePluginBase {
-
-  public function renderSummary(EntityInterface $entity): array {
-    return [
-      '#theme' => 'analyze_table',
-      '#table_title' => 'My Analysis',
-      '#row_one' => ['label' => 'Metric One', 'data' => 'Value 1'],
-      '#row_two' => ['label' => 'Metric Two', 'data' => 'Value 2'],
-    ];
-  }
-
-  public function renderFullReport(EntityInterface $entity): array {
-    return [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Full Analysis'),
-      'gauge' => [
-        '#theme' => 'analyze_gauge',
-        '#caption' => 'Performance Score',
-        '#range_min_label' => 'Poor',
-        '#range_max_label' => 'Excellent',
-        '#value' => 75,
-        '#display_value' => '75%',
-      ],
-    ];
-  }
-}
-
-?>
-
-<h4>3. Display Components</h4>
+<p>The Analyze module includes a built-in
+<a href="https://agentskills.io/specification">Agent
+Skills</a> file that teaches AI coding assistants how to run
+content analysis through natural language. Run
+<code>drush analyze:setup-ai</code> to enable, then ask
+naturally:</p>
 <ul>
-  <li><code>analyze_table</code> for key metrics.</li>
-  <li><code>analyze_gauge</code> for spectrum-based data.</li>
+  <li>"Run sentiment analysis on all articles"</li>
+  <li>"Analyze brand voice consistency across the site"</li>
+  <li>"Check all pages for broken links"</li>
+  <li>"List available analyzers and which content types they
+  cover"</li>
+  <li>"Re-analyze the last 50 published nodes with all
+  analyzers"</li>
+</ul>
+<p>Compatible with Claude Code, Codex CLI, Gemini CLI, GitHub
+Copilot, Cursor, and other tools supporting the
+standard.</p>
+
+<h2>For Developers: Build Your Own Analyzer</h2>
+<p>Create a plugin in <code>src/Plugin/Analyze/</code>, extend <code>AnalyzePluginBase</code>, implement <code>renderSummary()</code> and <code>renderFullReport()</code>. The framework handles routing, tabs, access control, and per-content-type configuration. See the included <a href="https://git.drupalcode.org/project/analyze/-/blob/1.0.x/modules/analyze_plugin_example/src/Plugin/Analyze/Example.php">example plugin</a> for a working reference.</p>
+
+<p>Two display components are available: <code>analyze_gauge</code> for spectrum-based scores and <code>analyze_table</code> for key-value metrics.</p>
+
+<p>Analyze is included in <a href="https://dxpr.com/c/marketing-cms?ref=50701">DXPR CMS</a>, a Drupal distribution that ships the full Analyze suite alongside DXPR Builder and DXPR Theme so content teams can start auditing content quality out of the box.</p>
+
+<h3>Related Modules</h3>
+
+<p>Analyze plugins - these modules register <code>@Analyze</code> plugins that appear in the Analyze tab:</p>
+<ul>
+<li><a href="https://www.drupal.org/project/analyze_ai_brand_voice">AI Brand Voice Analyzer</a> - Brand voice consistency scoring via AI</li>
+<li><a href="https://www.drupal.org/project/analyze_ai_sentiments">AI Sentiment Analyzer</a> - Multi-dimensional content tone analysis via AI</li>
+<li><a href="https://www.drupal.org/project/analyze_ai_content_marketing_audit">AI Marketing Audit</a> - Content marketing effectiveness scoring via AI</li>
+<li><a href="https://www.drupal.org/project/analyze_ai_content_security_audit">AI Security Audit</a> - Sensitive data leak detection via AI</li>
+<li><a href="https://www.drupal.org/project/analyze_broken_links">Broken Links Analyzer</a> - Link health monitoring per page</li>
+<li><a href="https://www.drupal.org/project/analyze_search_console">Search Console Analyzer</a> - Google Search performance per page</li>
 </ul>
 
-<p>Developers can integrate these components to display their analysis on the "Analyze" tab. Configuration and UI are implemented by extending modules.</p>
+<p>Modules that integrate with Analyze data:</p>
+<ul>
+<li>Content Intel - Analyze provides a ContentIntel plugin that exposes analyzer results to the Content Intel framework</li>
+<li><a href="https://www.drupal.org/project/ai">AI</a> - AI-powered analyzers use this as their LLM provider; the batch system handles AI rate-limit backoff</li>
+<li><a href="https://www.drupal.org/project/statistics">Statistics</a> - The bundled Node Statistics submodule displays page view counts from this module</li>
+<li><a href="https://www.drupal.org/project/google_analytics_reports">Google Analytics Reports</a> - The bundled Google Analytics submodule pulls per-page GA data through this module</li>
+</ul>
