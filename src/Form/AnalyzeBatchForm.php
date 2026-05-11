@@ -164,23 +164,40 @@ final class AnalyzeBatchForm extends FormBase {
    *   The remaining operations.
    */
   public static function batchFinished(bool $success, array $results, array $operations): void {
-    if ($success) {
-      $processed = $results['processed'] ?? 0;
+    if (!$success) {
+      \Drupal::messenger()->addError(t('Batch analysis processing failed.'));
+      return;
+    }
+
+    $processed = $results['processed'] ?? 0;
+    $failed = $results['failed'] ?? 0;
+
+    if ($processed > 0) {
       \Drupal::messenger()->addStatus(\Drupal::translation()->formatPlural(
         $processed,
         'Successfully analyzed @count entity.',
         'Successfully analyzed @count entities.',
         ['@count' => $processed]
       ));
+    }
 
-      if (!empty($results['errors'])) {
-        foreach ($results['errors'] as $error) {
-          \Drupal::messenger()->addError($error);
-        }
+    if ($failed > 0) {
+      \Drupal::messenger()->addError(\Drupal::translation()->formatPlural(
+        $failed,
+        'Failed to analyze @count entity.',
+        'Failed to analyze @count entities.',
+        ['@count' => $failed]
+      ));
+    }
+
+    if (!empty($results['errors'])) {
+      foreach ($results['errors'] as $error) {
+        \Drupal::messenger()->addError($error);
       }
     }
-    else {
-      \Drupal::messenger()->addError(t('Batch analysis processing failed.'));
+
+    if ($processed === 0 && $failed === 0) {
+      \Drupal::messenger()->addWarning(t('No entities were processed.'));
     }
   }
 
