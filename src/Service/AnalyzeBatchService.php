@@ -320,12 +320,9 @@ final class AnalyzeBatchService {
       '@max' => $context['sandbox']['total_entities'],
     ])->render();
 
-    if ($context['sandbox']['total_entities'] > 0) {
-      $context['finished'] = $done / $context['sandbox']['total_entities'];
-    }
-    else {
-      $context['finished'] = 1;
-    }
+    // Each chunk is a separate batch operation, so mark it complete.
+    // Drupal advances to the next operation when finished >= 1.
+    $context['finished'] = 1;
   }
 
   /**
@@ -429,7 +426,7 @@ final class AnalyzeBatchService {
           }
         }
         catch (\Exception) {
-          // Entity type may lack a view_builder — skip it.
+          // Entity type may lack a view_builder, skip it.
         }
       }
       // Clear static entity cache to keep memory flat.
