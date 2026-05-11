@@ -49,4 +49,20 @@ interface BatchableAnalyzerInterface {
    */
   public function hasResults(EntityInterface $entity): bool;
 
+  /**
+   * Gets entity IDs that have stored results for a given type and bundle.
+   *
+   * Used during batch assembly to exclude already-analyzed entities without
+   * loading or rendering them. Implementations should use a direct DB query.
+   *
+   * @param string $entity_type_id
+   *   The entity type ID.
+   * @param string $bundle
+   *   The bundle.
+   *
+   * @return array<string|int>
+   *   Array of entity IDs with existing results.
+   */
+  public function getAnalyzedEntityIds(string $entity_type_id, string $bundle): array;
+
 }

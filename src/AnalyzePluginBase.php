@@ -171,6 +171,13 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getAnalyzedEntityIds(string $entity_type_id, string $bundle): array {
+    return [];
+  }
+
+  /**
    * Gets the entity-specific settings for this analyzer.
    *
    * @param string $entity_type_id
