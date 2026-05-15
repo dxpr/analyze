@@ -370,7 +370,7 @@ final class AnalyzeBatchService {
   }
 
   /**
-   * Gets entity IDs that have results from ALL specified analyzers.
+   * Gets entity IDs that have current results from ALL specified analyzers.
    *
    * Uses getAnalyzedEntityIds() on each plugin to query the database
    * directly, avoiding entity loading and rendering.
@@ -383,7 +383,7 @@ final class AnalyzeBatchService {
    *   The bundle.
    *
    * @return array<string|int>
-   *   Array of entity IDs that have results from all analyzers.
+   *   Array of entity IDs that have current results from all analyzers.
    */
   private function getFullyAnalyzedEntityIds(array $analyzer_ids, string $entity_type_id, string $bundle): array {
     $per_analyzer_ids = [];
