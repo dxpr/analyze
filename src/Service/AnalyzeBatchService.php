@@ -370,9 +370,10 @@ final class AnalyzeBatchService {
   }
 
   /**
-   * Gets entity IDs that have results from ALL specified analyzers.
+   * Gets entity IDs that have current results from ALL specified analyzers.
    *
-   * Uses chunked loading to avoid memory issues on large sites.
+   * Uses getAnalyzedEntityIds() on each plugin to query the database
+   * directly, avoiding entity loading and rendering.
    *
    * @param array<string> $analyzer_ids
    *   Array of analyzer plugin IDs.
@@ -382,61 +383,33 @@ final class AnalyzeBatchService {
    *   The bundle.
    *
    * @return array<string|int>
-   *   Array of entity IDs that have results from all analyzers.
+   *   Array of entity IDs that have current results from all analyzers.
    */
   private function getFullyAnalyzedEntityIds(array $analyzer_ids, string $entity_type_id, string $bundle): array {
-    $storage = $this->entityTypeManager->getStorage($entity_type_id);
-    $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
-    $query = $storage->getQuery();
-    $query->accessCheck(FALSE);
+    $per_analyzer_ids = [];
 
-    $bundle_key = $entity_type->getKey('bundle');
-    if ($bundle_key) {
-      $query->condition($bundle_key, $bundle);
-    }
-
-    $all_ids = $query->execute();
-    if (empty($all_ids)) {
-      return [];
-    }
-
-    $analyzers = [];
     foreach ($analyzer_ids as $analyzer_id) {
       $plugin = $this->analyzePluginManager->createInstance($analyzer_id);
       if ($plugin instanceof BatchableAnalyzerInterface) {
-        $analyzers[$analyzer_id] = $plugin;
+        $ids = $plugin->getAnalyzedEntityIds($entity_type_id, $bundle);
+        if (empty($ids)) {
+          return [];
+        }
+        $per_analyzer_ids[] = array_map('strval', $ids);
       }
     }
 
-    if (empty($analyzers)) {
+    if (empty($per_analyzer_ids)) {
       return [];
     }
 
-    $analyzed_ids = [];
-    foreach (array_chunk($all_ids, 50, TRUE) as $chunk) {
-      $entities = $storage->loadMultiple($chunk);
-      foreach ($entities as $id => $entity) {
-        try {
-          $all_have_results = TRUE;
-          foreach ($analyzers as $analyzer) {
-            if (!$analyzer->hasResults($entity)) {
-              $all_have_results = FALSE;
-              break;
-            }
-          }
-          if ($all_have_results) {
-            $analyzed_ids[] = $id;
-          }
-        }
-        catch (\Exception) {
-          // Entity type may lack a view_builder — skip it.
-        }
-      }
-      // Clear static entity cache to keep memory flat.
-      $storage->resetCache($chunk);
+    // Intersect: only IDs present in ALL analyzers are fully analyzed.
+    $analyzed_ids = array_shift($per_analyzer_ids);
+    foreach ($per_analyzer_ids as $ids) {
+      $analyzed_ids = array_intersect($analyzed_ids, $ids);
     }
 
-    return $analyzed_ids;
+    return array_values($analyzed_ids);
   }
 
 }

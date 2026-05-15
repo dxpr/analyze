@@ -171,6 +171,15 @@ abstract class AnalyzePluginBase extends PluginBase implements AnalyzeInterface,
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getAnalyzedEntityIds(string $entity_type_id, string $bundle): array {
+    // Default to no fast-path IDs when a plugin cannot query fresh results
+    // without loading entities. This keeps batch assembly correct.
+    return [];
+  }
+
+  /**
    * Gets the entity-specific settings for this analyzer.
    *
    * @param string $entity_type_id
