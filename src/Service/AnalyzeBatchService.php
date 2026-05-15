@@ -236,13 +236,10 @@ final class AnalyzeBatchService {
    *   Batch context.
    */
   public function processBatch(array $entities, array $analyzer_ids, bool $force_refresh, int $total_entities, array &$context): void {
-    if (!isset($context['sandbox']['total_entities'])) {
-      $context['sandbox']['total_entities'] = $total_entities;
-      $context['results']['processed'] = 0;
-      $context['results']['failed'] = 0;
-      $context['results']['rate_limited'] = 0;
-      $context['results']['errors'] = [];
-    }
+    $context['results']['processed'] = $context['results']['processed'] ?? 0;
+    $context['results']['failed'] = $context['results']['failed'] ?? 0;
+    $context['results']['rate_limited'] = $context['results']['rate_limited'] ?? 0;
+    $context['results']['errors'] = $context['results']['errors'] ?? [];
 
     // Build analyzer instances.
     $all_analyzers = [];
@@ -317,7 +314,7 @@ final class AnalyzeBatchService {
     $done = $context['results']['processed'] + $context['results']['failed'];
     $context['message'] = $this->t('Processed @current of @max entities...', [
       '@current' => $done,
-      '@max' => $context['sandbox']['total_entities'],
+      '@max' => $total_entities,
     ])->render();
 
     // Each chunk is a separate batch operation, so mark it complete.
