@@ -236,13 +236,10 @@ final class AnalyzeBatchService {
    *   Batch context.
    */
   public function processBatch(array $entities, array $analyzer_ids, bool $force_refresh, int $total_entities, array &$context): void {
-    if (!isset($context['sandbox']['total_entities'])) {
-      $context['sandbox']['total_entities'] = $total_entities;
-      $context['results']['processed'] = 0;
-      $context['results']['failed'] = 0;
-      $context['results']['rate_limited'] = 0;
-      $context['results']['errors'] = [];
-    }
+    $context['results']['processed'] = $context['results']['processed'] ?? 0;
+    $context['results']['failed'] = $context['results']['failed'] ?? 0;
+    $context['results']['rate_limited'] = $context['results']['rate_limited'] ?? 0;
+    $context['results']['errors'] = $context['results']['errors'] ?? [];
 
     // Build analyzer instances.
     $all_analyzers = [];
@@ -317,15 +314,12 @@ final class AnalyzeBatchService {
     $done = $context['results']['processed'] + $context['results']['failed'];
     $context['message'] = $this->t('Processed @current of @max entities...', [
       '@current' => $done,
-      '@max' => $context['sandbox']['total_entities'],
+      '@max' => $total_entities,
     ])->render();
 
-    if ($context['sandbox']['total_entities'] > 0) {
-      $context['finished'] = $done / $context['sandbox']['total_entities'];
-    }
-    else {
-      $context['finished'] = 1;
-    }
+    // Each chunk is a separate batch operation, so mark it complete.
+    // Drupal advances to the next operation when finished >= 1.
+    $context['finished'] = 1;
   }
 
   /**
@@ -429,7 +423,7 @@ final class AnalyzeBatchService {
           }
         }
         catch (\Exception) {
-          // Entity type may lack a view_builder — skip it.
+          // Entity type may lack a view_builder, skip it.
         }
       }
       // Clear static entity cache to keep memory flat.
