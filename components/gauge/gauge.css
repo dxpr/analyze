@@ -83,6 +83,7 @@
 .analyze--gauge tbody tr td {
   position: relative;
   height: 2px;
+  min-height: 0;
   width: 100%;
   background-color: #000;
 }
@@ -106,19 +107,6 @@
   white-space: nowrap;
   font-weight: bold;
   color: #000;
-}
-
-/* Special solutions for gin and other dark modes */
-@media (prefers-color-scheme: dark) {
-  .analyze--gauge tbody tr td {
-    background-color: #fff;
-  }
-  .analyze--gauge tbody tr td::before {
-    background-color: #fff;
-  }
-  .analyze--gauge tbody tr td .analyze-data {
-    color: #fff;
-  }
 }
 
 .gin--dark-mode .analyze--gauge tbody tr td {
