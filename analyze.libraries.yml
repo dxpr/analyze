@@ -1,0 +1,4 @@
+gauge-popover:
+  css:
+    component:
+      css/gauge-popover.css: {}

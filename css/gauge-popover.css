@@ -1,0 +1,14 @@
+.vcs-popover .layer-wrapper {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.vcs-popover .analyze--gauge {
+  overflow: visible;
+  padding: 0 2rem;
+}
+
+.vcs-popover .analyze--gauge caption {
+  margin-top: 0;
+}
