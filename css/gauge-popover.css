@@ -1,5 +1,6 @@
 .vcs-popover .layer-wrapper {
   padding: 0;
+  border: 0;
   box-shadow: none;
   border-radius: 0;
 }
