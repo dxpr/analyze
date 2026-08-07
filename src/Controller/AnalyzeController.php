@@ -6,6 +6,7 @@ use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\analyze\AnalyzeInterface;
 use Drupal\analyze\HelperInterface;
@@ -34,6 +35,24 @@ class AnalyzeController extends ControllerBase {
     return new static(
       $container->get('analyze.helper')
     );
+  }
+
+  /**
+   * Provides the page title for the analyze route.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route match.
+   *
+   * @return string|\Drupal\Core\StringTranslation\TranslatableMarkup
+   *   The page title.
+   */
+  public function analyzeTitle(RouteMatchInterface $route_match): string|\Drupal\Core\StringTranslation\TranslatableMarkup {
+    $entity_type = $route_match->getParameter('entity_type');
+    $entity = $this->helper->getEntity($entity_type);
+    if ($entity) {
+      return $this->t('Analyze %label', ['%label' => $entity->label()]);
+    }
+    return $this->t('Analyze');
   }
 
   /**

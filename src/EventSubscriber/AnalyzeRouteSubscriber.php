@@ -56,7 +56,7 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
             ->setDefaults([
               '_controller' => 'Drupal\analyze\Controller\AnalyzeController::analyze',
               'entity_type' => $entity_type->id(),
-              '_title' => 'Analyze',
+              '_title_callback' => 'Drupal\analyze\Controller\AnalyzeController::analyzeTitle',
             ])
             ->setOption('_admin_route', TRUE)
             ->setRequirement('_analyze_access', 'TRUE');
