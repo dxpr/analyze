@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 final class AnalyzeBatchForm extends FormBase {
 
   public function __construct(
-    private readonly AnalyzeBatchService $batchService,
+    protected AnalyzeBatchService $batchService,
   ) {}
 
   /**
