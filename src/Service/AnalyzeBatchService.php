@@ -24,10 +24,10 @@ final class AnalyzeBatchService {
   use DependencySerializationTrait;
 
   public function __construct(
-    private readonly EntityTypeManagerInterface $entityTypeManager,
-    private readonly AnalyzePluginManager $analyzePluginManager,
-    private readonly ConfigFactoryInterface $configFactory,
-    private readonly EntityTypeBundleInfoInterface $entityTypeBundleInfo,
+    protected readonly EntityTypeManagerInterface $entityTypeManager,
+    protected readonly AnalyzePluginManager $analyzePluginManager,
+    protected readonly ConfigFactoryInterface $configFactory,
+    protected readonly EntityTypeBundleInfoInterface $entityTypeBundleInfo,
   ) {}
 
   /**
@@ -429,7 +429,7 @@ final class AnalyzeBatchService {
           }
         }
         catch (\Exception) {
-          // Entity type may lack a view_builder — skip it.
+          // Entity type may lack a view_builder; skip it.
         }
       }
       // Clear static entity cache to keep memory flat.
