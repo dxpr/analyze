@@ -7,6 +7,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\analyze\AnalyzeInterface;
 use Drupal\analyze\HelperInterface;
@@ -46,7 +47,7 @@ class AnalyzeController extends ControllerBase {
    * @return string|\Drupal\Core\StringTranslation\TranslatableMarkup
    *   The page title.
    */
-  public function analyzeTitle(RouteMatchInterface $route_match): string|\Drupal\Core\StringTranslation\TranslatableMarkup {
+  public function analyzeTitle(RouteMatchInterface $route_match): string|TranslatableMarkup {
     $entity_type = $route_match->getParameter('entity_type');
     $entity = $this->helper->getEntity($entity_type);
     if ($entity) {
