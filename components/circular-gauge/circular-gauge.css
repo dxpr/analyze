@@ -1,0 +1,68 @@
+.analyze-circular-gauge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+}
+
+.analyze-circular-gauge__svg {
+  width: 100%;
+  height: 100%;
+}
+
+.analyze-circular-gauge__track {
+  stroke: var(--gin-border-color, #d4d4d8);
+}
+
+.analyze-circular-gauge__fill {
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.analyze-circular-gauge--good .analyze-circular-gauge__fill {
+  stroke: var(--gin-color-green, #058260);
+}
+
+.analyze-circular-gauge--fair .analyze-circular-gauge__fill {
+  stroke: var(--gin-color-warning, #d8b234);
+}
+
+.analyze-circular-gauge--poor .analyze-circular-gauge__fill {
+  stroke: var(--gin-color-danger, #cc3d3d);
+}
+
+.analyze-circular-gauge__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.analyze-circular-gauge__value {
+  font-weight: var(--gin-font-weight-heavy, 625);
+  line-height: 1;
+}
+
+.analyze-circular-gauge--good .analyze-circular-gauge__value {
+  color: var(--gin-color-green, #058260);
+}
+
+.analyze-circular-gauge--fair .analyze-circular-gauge__value {
+  color: var(--gin-color-warning, #d8b234);
+}
+
+.analyze-circular-gauge--poor .analyze-circular-gauge__value {
+  color: var(--gin-color-danger, #cc3d3d);
+}
+
+.analyze-circular-gauge__label {
+  color: var(--gin-color-text-light, #545560);
+  margin-top: 0.25em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

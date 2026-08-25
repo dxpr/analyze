@@ -1,21 +1,15 @@
 .analyze--gauge {
   width: 100%;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
   flex-direction: column;
   overflow-x: clip;
   overflow-y: visible;
 }
 .analyze--gauge .analyze-data {
-  font-size: 0.8rem;
+  font-size: var(--gin-font-size-s, 0.875rem);
 }
 .analyze--gauge caption {
-  font-size: 1.2rem;
-  font-weight: bolder;
+  font-weight: var(--gin-font-weight-bold, 575);
   margin: 0.5rem 0;
 }
 .analyze--gauge table, .analyze--gauge thead, .analyze--gauge tbody, .analyze--gauge tr, .analyze--gauge th, .analyze--gauge td {
@@ -25,17 +19,13 @@
   background: transparent;
 }
 .analyze--gauge thead, .analyze--gauge thead tr, .analyze--gauge tbody tr {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   width: 100%;
 }
 .analyze--gauge thead th {
-  -webkit-box-flex: 1;
-  -ms-flex: 1;
   flex: 1;
   text-align: center;
-  font-weight: bold;
+  font-weight: var(--gin-font-weight-bold, 575);
   white-space: normal;
 }
 .analyze--gauge thead th.analyze-start {
@@ -48,25 +38,18 @@
   text-align: right;
 }
 .analyze--gauge tbody {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
   justify-content: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
   align-items: center;
   height: 50px;
   position: relative;
-  background-image: linear-gradient(90deg, #ddd 2px, transparent 2px);
+  background-image: linear-gradient(90deg, var(--gin-border-color, #d4d4d8) 2px, transparent 2px);
   background-size: calc(25% - 0.5px) 100%;
 }
 .analyze--gauge tbody tr th.analyze-range-label {
   position: absolute;
-  font-weight: bold;
+  font-weight: var(--gin-font-weight-bold, 575);
   top: 50%;
-  -webkit-transform: translateY(-50%);
   transform: translateY(-50%);
   white-space: nowrap;
 }
@@ -85,7 +68,7 @@
   height: 2px;
   min-height: 0;
   width: 100%;
-  background-color: #000;
+  background-color: var(--gin-color-title, #222330);
 }
 .analyze--gauge tbody tr td::before {
   content: "";
@@ -94,29 +77,15 @@
   top: 50%;
   width: 4px;
   height: 30px;
-  background-color: #000;
-  -webkit-transform: translate(-50%, -50%);
+  background-color: var(--gin-color-title, #222330);
   transform: translate(-50%, -50%);
 }
 .analyze--gauge tbody tr td .analyze-data {
   position: absolute;
   left: calc(var(--value, 0) * 100%);
   top: 1rem;
-  -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
   white-space: nowrap;
-  font-weight: bold;
-  color: #000;
-}
-
-.gin--dark-mode .analyze--gauge tbody tr td {
-  background-color: #fff;
-}
-
-.gin--dark-mode .analyze--gauge tbody tr td::before {
-  background-color: #fff;
-}
-
-.gin--dark-mode .analyze--gauge tbody tr td .analyze-data {
-  color: #fff;
+  font-weight: var(--gin-font-weight-bold, 575);
+  color: var(--gin-color-title, #222330);
 }

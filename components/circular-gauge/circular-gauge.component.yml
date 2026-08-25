@@ -1,0 +1,45 @@
+name: Circular Gauge
+props:
+  type: object
+  required:
+    - caption
+    - range_min_label
+    - range_mid_label
+    - range_max_label
+    - range_min
+    - value
+    - display_value
+    - range_max
+  properties:
+    caption:
+      type: string
+      title: Caption
+      description: 'Caption for the gauge chart.'
+    range_min_label:
+      type: string
+      title: 'Min Label'
+      description: 'Label shown when the value is in the low range.'
+    range_mid_label:
+      type: string
+      title: 'Mid Label'
+      description: 'Label shown when the value is in the mid range.'
+    range_max_label:
+      type: string
+      title: 'Max Label'
+      description: 'Label shown when the value is in the high range.'
+    range_min:
+      type: number
+      title: 'Range Min'
+      description: 'Minimum range number for the chart.'
+    value:
+      type: number
+      title: 'Value'
+      description: 'Normalised value between 0 and 1.'
+    display_value:
+      type: string
+      title: 'Display Value'
+      description: 'Formatted value to display (e.g. 32%).'
+    range_max:
+      type: number
+      title: 'Range Max'
+      description: 'Maximum range for the chart.'

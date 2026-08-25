@@ -29,6 +29,18 @@ function analyze_theme(): array {
         'range_max' => NULL,
       ],
     ],
+    'analyze_circular_gauge' => [
+      'variables' => [
+        'caption' => NULL,
+        'range_min_label' => NULL,
+        'range_mid_label' => NULL,
+        'range_max_label' => NULL,
+        'range_min' => NULL,
+        'value' => NULL,
+        'display_value' => NULL,
+        'range_max' => NULL,
+      ],
+    ],
     'analyze_table' => [
       'variables' => [
         'table_title' => NULL,
