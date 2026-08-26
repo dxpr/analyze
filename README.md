@@ -45,6 +45,7 @@ accessibility standards across our analytics user interfaces.
 - Adds an "Analyze" tab to Drupal entities with canonical URLs.
 - Provides an API for other modules to display analysis data.
 - Includes a linear gauge component for displaying a value on a spectrum.
+- Includes a circular gauge (SVG) component for displaying a score as a ring chart.
 
 ### Docker Commands
 
@@ -109,7 +110,8 @@ and marketers, it is opinionated about its presentation:
 
 1. On the Analyze main page, you can display a maximum of three pieces of
    information.
-2. Currently, we support two widgets: Tables and Linear Gauges.
+2. Currently, we support three widgets: Tables, Linear Gauges, and Circular
+   Gauges.
 3. On the secondary tab pages or in your full sitewide topical report, you can
    display anything you want, unrestricted.
 
@@ -168,7 +170,8 @@ final class MyAnalyzer extends AnalyzePluginBase {
   public function renderSummary(EntityInterface $entity): array {
     // Return either:
     // - analyze_table with max 3 rows
-    // - analyze_gauge component
+    // - analyze_gauge (linear) component
+    // - analyze_circular_gauge (SVG ring) component
     return [
       '#theme' => 'analyze_table',
       '#table_title' => 'My Analysis',

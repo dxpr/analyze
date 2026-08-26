@@ -2,3 +2,17 @@ gauge-popover:
   css:
     component:
       css/gauge-popover.css: {}
+
+settings-form:
+  css:
+    component:
+      css/settings-form.css: {}
+  js:
+    js/settings-form.js: {}
+  dependencies:
+    - core/drupal
+
+analyze-tab:
+  css:
+    component:
+      css/analyze-tab.css: {}

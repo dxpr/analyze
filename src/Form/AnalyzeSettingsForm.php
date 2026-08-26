@@ -60,9 +60,21 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
     $values = $this->config('analyze.settings')->get('status') ?? [];
 
     if ($plugins = $this->helper->getPlugins()) {
+      $plugin_count = count($plugins);
+
+      $form['#attached']['library'][] = 'analyze/settings-form';
+
       $form['welcome'] = [
-        '#markup' => $this->t('<p>Enable or disabled the Analyze plugins for each entity with a canonical URL using the form below.</p>'),
+        '#type' => 'container',
+        '#attributes' => ['class' => ['analyze-settings-intro']],
       ];
+      $form['welcome']['text'] = [
+        '#markup' => $this->t('<p>Enable or disable the Analyze plugins for each entity with a canonical URL using the form below.</p>'),
+      ];
+      $form['welcome']['badge'] = [
+        '#markup' => '<span class="analyze-ecosystem-badge">' . $this->formatPlural($plugin_count, '1 analyzer available', '@count analyzers available') . '</span>',
+      ];
+
       foreach ($this->helper->getEntityDefinitions() as $entity_type) {
         $id = $entity_type->id();
         $form[$id] = [
@@ -92,13 +104,30 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
         }
 
         foreach (Element::children($form[$id]) as $key) {
+          $form[$id][$key]['plugin_grid'] = [
+            '#type' => 'container',
+            '#attributes' => ['class' => ['analyze-plugin-grid']],
+          ];
           foreach ($plugins as $plugin_id => $plugin) {
-            // Check so its applicable to the entity.
             if ($plugin->isApplicable($id, $key)) {
-              $form[$id][$key][$plugin_id] = [
+              $is_enabled = isset($values[$id][$key][$plugin_id]);
+              $definition = $plugin->getPluginDefinition();
+              $description = $definition['description'] ?? '';
+
+              $form[$id][$key]['plugin_grid'][$plugin_id] = [
+                '#type' => 'container',
+                '#attributes' => [
+                  'class' => array_merge(
+                    ['analyze-plugin-card'],
+                    $is_enabled ? ['is-enabled'] : []
+                  ),
+                ],
+              ];
+              $form[$id][$key]['plugin_grid'][$plugin_id]['checkbox'] = [
                 '#type' => 'checkbox',
                 '#title' => $plugin->label(),
-                '#default_value' => isset($values[$id][$key][$plugin_id]),
+                '#description' => $description,
+                '#default_value' => $is_enabled,
                 '#parents' => ['analyze', $id, $key, $plugin_id],
               ];
             }
@@ -108,7 +137,7 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
     }
     else {
       $form = [
-        '#markup' => $this->t("You don't currently have any Analyze plugins available: please enable one or modules implementing the plugins."),
+        '#markup' => $this->t("You don't currently have any Analyze plugins available: please enable one or more modules implementing the plugins."),
       ];
     }
 

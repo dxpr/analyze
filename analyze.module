@@ -11,7 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Implements hook_theme().
  *
- * Defines the theme for the analyze gauge.
+ * Defines themes for the analyze gauge components (linear and circular).
  *
  * @phpstan-return array<string, array<string, mixed>>
  */

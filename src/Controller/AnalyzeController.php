@@ -83,7 +83,25 @@ class AnalyzeController extends ControllerBase {
 
     $entity = $this->helper->getEntity($entity_type);
     $build = [];
+    $build['#attached']['library'][] = 'analyze/analyze-tab';
     $weight = 0;
+
+    $enabled_count = 0;
+    foreach ($plugins as $id => $check_plugin) {
+      if ($check_plugin->isEnabled($entity) && $check_plugin->access($entity)) {
+        $enabled_count++;
+      }
+    }
+
+    if ($enabled_count > 0) {
+      $build['ecosystem_strip'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'div',
+        '#value' => $this->t('@count analyzers active', ['@count' => $enabled_count]),
+        '#attributes' => ['class' => ['analyze-ecosystem-strip']],
+        '#weight' => -10,
+      ];
+    }
 
     foreach ($plugins as $id => $plugin) {
       // It should be enabled and the user should have access to it.
@@ -161,6 +179,33 @@ class AnalyzeController extends ControllerBase {
           throw new InvalidPluginDefinitionException($id, 'Plugin does not return an approved render array type for its summary.');
         }
       }
+    }
+
+    if ($enabled_count === 0) {
+      $build['empty_state'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['analyze-empty-state']],
+      ];
+      $build['empty_state']['message'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'p',
+        '#value' => $this->t('No analyzers are enabled for this content type.'),
+        '#attributes' => ['class' => ['analyze-empty-state__message']],
+      ];
+      $build['empty_state']['hint'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'p',
+        '#value' => $this->t('Enable analyzers in the content analysis settings, then return here to see your first report.'),
+        '#attributes' => ['class' => ['analyze-empty-state__hint']],
+      ];
+      $build['empty_state']['action'] = [
+        '#type' => 'link',
+        '#title' => $this->t('Configure content analysis'),
+        '#url' => Url::fromRoute('analyze.analyze_settings'),
+        '#attributes' => [
+          'class' => ['button', 'button--primary'],
+        ],
+      ];
     }
 
     // Ensure reports don't get cached for the wrong entities.
