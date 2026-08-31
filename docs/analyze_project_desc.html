@@ -142,9 +142,38 @@ standard.</p>
 
 <p>Analyze is included in <a href="https://dxpr.com/c/marketing-cms">DXPR CMS</a>, a Drupal distribution that ships the full Analyze suite alongside DXPR Builder and DXPR Theme so content teams can start auditing content quality out of the box.</p>
 
-<h3>Related Modules</h3>
+<h2>FAQ</h2>
 
-<p>Analyze plugins - these modules register <code>@Analyze</code> plugins that appear in the Analyze tab:</p>
+<dl>
+  <dt>How many analyzers can I enable at once?</dt>
+  <dd>
+    <p>All of them. Each analyzer can be toggled independently per content type on the settings page. Enable only the ones you need, or turn them all on; the Analyze tab groups their output into a single summary view with full reports one click deeper.</p>
+  </dd>
+
+  <dt>Do all analyzers require an AI provider?</dt>
+  <dd>
+    <p>No. Several analyzers are fully deterministic: Basic Content Info (word count, image count), Node Statistics, Google Analytics, Search Console, PostHog Analytics, Broken Links, and SEO Analysis all run without any AI provider. Only the AI-prefixed analyzers (Brand Voice, Sentiments, Marketing Audit, Security Audit) and AI Optimization Analysis require an LLM provider via the <a href="https://www.drupal.org/project/ai">AI module</a>.</p>
+  </dd>
+
+  <dt>Does Analyze work with custom entity types?</dt>
+  <dd>
+    <p>Yes. Analyze works with any content entity type, not just nodes. The settings page lets you configure which analyzers run on which entity types.</p>
+  </dd>
+
+  <dt>Can I build my own analyzer plugin?</dt>
+  <dd>
+    <p>Yes. Create a plugin class in <code>src/Plugin/Analyze/</code>, extend <code>AnalyzePluginBase</code>, and implement <code>renderSummary()</code> and <code>renderFullReport()</code>. The framework handles routing, tabs, access control, and per-content-type configuration. Two display components are available: <code>analyze_gauge</code> for spectrum-based scores and <code>analyze_table</code> for key-value metrics. See the included <a href="https://git.drupalcode.org/project/analyze/-/blob/1.0.x/modules/analyze_plugin_example/src/Plugin/Analyze/Example.php">example plugin</a> for a working reference.</p>
+  </dd>
+
+  <dt>How do I run analysis across all content at once?</dt>
+  <dd>
+    <p>Use the batch processing feature from the admin UI or run <code>drush analyze:batch</code> from the command line. You can filter by analyzer, content type, and entity count. The batch system handles rate-limit backoff for AI-powered analyzers automatically.</p>
+  </dd>
+</dl>
+
+<h2>Related modules</h2>
+
+<p>Analyze plugins: these modules register <code>@Analyze</code> plugins that appear in the Analyze tab:</p>
 <ul>
 <li><a href="https://www.drupal.org/project/analyze_ai_brand_voice">AI Brand Voice Analyzer</a> - Brand voice consistency scoring via AI</li>
 <li><a href="https://www.drupal.org/project/analyze_ai_sentiments">AI Sentiment Analyzer</a> - Multi-dimensional content tone analysis via AI</li>
