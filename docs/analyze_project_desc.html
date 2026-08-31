@@ -147,27 +147,28 @@ standard.</p>
 <dl>
   <dt>How many analyzers can I enable at once?</dt>
   <dd>
-    <p>All of them. Each analyzer can be toggled independently per content type on the settings page. Enable only the ones you need, or turn them all on; the Analyze tab groups their output into a single summary view with full reports one click deeper.</p>
+    <p><strong>All of them. Each analyzer can be toggled independently per content type on the settings page, so you can enable only the ones you need or turn them all on. The Analyze tab groups every enabled analyzer's output into a single summary view with gauges and tables, and full reports are one click deeper.</strong></p>
   </dd>
 
   <dt>Do all analyzers require an AI provider?</dt>
   <dd>
-    <p>No. Several analyzers are fully deterministic: Basic Content Info (word count, image count), Node Statistics, Google Analytics, Search Console, PostHog Analytics, Broken Links, and SEO Analysis all run without any AI provider. Only the AI-prefixed analyzers (Brand Voice, Sentiments, Marketing Audit, Security Audit) and AI Optimization Analysis require an LLM provider via the <a href="https://www.drupal.org/project/ai">AI module</a>.</p>
+    <p><strong>No. Several analyzers are fully deterministic and run without any AI provider: Basic Content Info, Node Statistics, Google Analytics, Search Console, PostHog Analytics, Broken Links, and SEO Analysis. Only the AI-prefixed analyzers (Brand Voice, Sentiments, Marketing Audit, Security Audit) and AI Optimization Analysis require an LLM provider via the <a href="https://www.drupal.org/project/ai">AI module</a>.</strong></p>
   </dd>
 
   <dt>Does Analyze work with custom entity types?</dt>
   <dd>
-    <p>Yes. Analyze works with any content entity type, not just nodes. The settings page lets you configure which analyzers run on which entity types.</p>
+    <p><strong>Yes. Analyze works with any content entity type in Drupal, not just nodes. The settings page lets you configure which analyzers run on which entity types, so you can analyse taxonomy terms, media items, commerce products, or any other content entity your site defines.</strong></p>
   </dd>
 
   <dt>Can I build my own analyzer plugin?</dt>
   <dd>
-    <p>Yes. Create a plugin class in <code>src/Plugin/Analyze/</code>, extend <code>AnalyzePluginBase</code>, and implement <code>renderSummary()</code> and <code>renderFullReport()</code>. The framework handles routing, tabs, access control, and per-content-type configuration. Two display components are available: <code>analyze_gauge</code> for spectrum-based scores and <code>analyze_table</code> for key-value metrics. See the included <a href="https://git.drupalcode.org/project/analyze/-/blob/1.0.x/modules/analyze_plugin_example/src/Plugin/Analyze/Example.php">example plugin</a> for a working reference.</p>
+    <p><strong>Yes. Create a plugin class in <code>src/Plugin/Analyze/</code>, extend <code>AnalyzePluginBase</code>, and implement <code>renderSummary()</code> and <code>renderFullReport()</code>. The framework handles routing, tab placement, access control, and per-content-type configuration automatically.</strong></p>
+    <p>Two display components are available: <code>analyze_gauge</code> for spectrum-based scores and <code>analyze_table</code> for key-value metrics. See the included <a href="https://git.drupalcode.org/project/analyze/-/blob/1.0.x/modules/analyze_plugin_example/src/Plugin/Analyze/Example.php">example plugin</a> for a working reference.</p>
   </dd>
 
   <dt>How do I run analysis across all content at once?</dt>
   <dd>
-    <p>Use the batch processing feature from the admin UI or run <code>drush analyze:batch</code> from the command line. You can filter by analyzer, content type, and entity count. The batch system handles rate-limit backoff for AI-powered analyzers automatically.</p>
+    <p><strong>Use the batch processing feature from the admin UI or run <code>drush analyze:batch</code> from the command line. You can filter by analyzer, content type, and entity count. The batch system handles rate-limit backoff for AI-powered analyzers automatically, so large sites can process thousands of entities without hitting provider limits.</strong></p>
   </dd>
 </dl>
 
