@@ -2,7 +2,7 @@
 
 <blockquote>Content editors shouldn't need five different modules with five different UIs to understand how their content is performing. Analyze puts SEO data, readability scores, AI insights, link health, and traffic stats in a single tab: consistent, scannable, and actionable.</blockquote>
 
-<p><img src="/files/project-images/screenshot-1787676169182-2.jpg" alt="Analyze tab summary showing 8 active analyzers with gauges for Brand Voice, Sentiments, SEO, and AIO scores alongside tables for Search Console, Broken Links, and PostHog metrics" /></p>
+<p><a href="/files/project-images/screenshot-1787676169182-2.jpg"><img src="/files/project-images/screenshot-1787676169182-2.jpg" alt="Analyze tab summary showing 8 active analyzers with gauges for Brand Voice, Sentiments, SEO, and AIO scores alongside tables for Search Console, Broken Links, and PostHog metrics" /></a></p>
 
 <h3>You need Analyze if</h3>
 <ul>
@@ -15,7 +15,7 @@
 <h2>How It Works</h2>
 <p>Analyze adds an "Analyze" tab to every content entity. Enable the analysis plugins you want per content type, and editors immediately see summary gauges and tables, with full reports one click deeper. No custom theme work, no per-module configuration UIs to learn.</p>
 
-<p><img src="/files/project-images/screenshot-1787676062091-1.jpg" alt="Content Analysis settings page with card grid layout showing 9 analyzers that can be toggled per content type" /></p>
+<p><a href="/files/project-images/screenshot-1787676062091-1.jpg"><img src="/files/project-images/screenshot-1787676062091-1.jpg" alt="Content Analysis settings page with card grid layout showing 9 analyzers that can be toggled per content type" /></a></p>
 
 <h2>What Plugs Into It</h2>
 
@@ -106,6 +106,11 @@
   combination of analyzers across all content from the admin
   UI or <code>drush analyze:batch</code>. Filter by analyzer,
   content type, and entity count.</li>
+</ul>
+
+<p><a href="/files/analyze-batch.jpg"><img src="/files/analyze-batch.jpg" alt="Analyze batch processing interface showing analyzer selection checkboxes, content type filter, and progress indicator for running analysis across multiple content items" /></a></p>
+
+<ul>
   <li><strong>AI Agent Integration</strong>: Supports the
   <a href="https://agentskills.io">Agent Skills</a> standard
   for AI coding assistants (Claude Code, Codex, Gemini CLI,
@@ -147,28 +152,28 @@ standard.</p>
 <dl>
   <dt>How many analyzers can I enable at once?</dt>
   <dd>
-    <p><strong>All of them. Each analyzer can be toggled independently per content type on the settings page, so you can enable only the ones you need or turn them all on. The Analyze tab groups every enabled analyzer's output into a single summary view with gauges and tables, and full reports are one click deeper.</strong></p>
+    <p>All of them. Each analyzer can be toggled independently per content type on the settings page, so you can enable only the ones you need or turn them all on. The Analyze tab groups every enabled analyzer's output into a single summary view with gauges and tables, and full reports are one click deeper.</p>
   </dd>
 
   <dt>Do all analyzers require an AI provider?</dt>
   <dd>
-    <p><strong>No. Several analyzers are fully deterministic and run without any AI provider: Basic Content Info, Node Statistics, Google Analytics, Search Console, PostHog Analytics, Broken Links, and SEO Analysis. Only the AI-prefixed analyzers (Brand Voice, Sentiments, Marketing Audit, Security Audit) and AI Optimization Analysis require an LLM provider via the <a href="https://www.drupal.org/project/ai">AI module</a>.</strong></p>
+    <p>No. Several analyzers are fully deterministic and run without any AI provider: Basic Content Info, Node Statistics, Google Analytics, Search Console, PostHog Analytics, Broken Links, and SEO Analysis. Only the AI-prefixed analyzers (Brand Voice, Sentiments, Marketing Audit, Security Audit) and AI Optimization Analysis require an LLM provider via the <a href="https://www.drupal.org/project/ai">AI module</a>.</p>
   </dd>
 
   <dt>Does Analyze work with custom entity types?</dt>
   <dd>
-    <p><strong>Yes. Analyze works with any content entity type in Drupal, not just nodes. The settings page lets you configure which analyzers run on which entity types, so you can analyse taxonomy terms, media items, commerce products, or any other content entity your site defines.</strong></p>
+    <p>Yes. Analyze works with any content entity type in Drupal, not just nodes. The settings page lets you configure which analyzers run on which entity types, so you can analyse taxonomy terms, media items, commerce products, or any other content entity your site defines.</p>
   </dd>
 
   <dt>Can I build my own analyzer plugin?</dt>
   <dd>
-    <p><strong>Yes. Create a plugin class in <code>src/Plugin/Analyze/</code>, extend <code>AnalyzePluginBase</code>, and implement <code>renderSummary()</code> and <code>renderFullReport()</code>. The framework handles routing, tab placement, access control, and per-content-type configuration automatically.</strong></p>
+    <p>Yes. Create a plugin class in <code>src/Plugin/Analyze/</code>, extend <code>AnalyzePluginBase</code>, and implement <code>renderSummary()</code> and <code>renderFullReport()</code>. The framework handles routing, tab placement, access control, and per-content-type configuration automatically.</p>
     <p>Two display components are available: <code>analyze_gauge</code> for spectrum-based scores and <code>analyze_table</code> for key-value metrics. See the included <a href="https://git.drupalcode.org/project/analyze/-/blob/1.0.x/modules/analyze_plugin_example/src/Plugin/Analyze/Example.php">example plugin</a> for a working reference.</p>
   </dd>
 
   <dt>How do I run analysis across all content at once?</dt>
   <dd>
-    <p><strong>Use the batch processing feature from the admin UI or run <code>drush analyze:batch</code> from the command line. You can filter by analyzer, content type, and entity count. The batch system handles rate-limit backoff for AI-powered analyzers automatically, so large sites can process thousands of entities without hitting provider limits.</strong></p>
+    <p>Use the batch processing feature from the admin UI or run <code>drush analyze:batch</code> from the command line. You can filter by analyzer, content type, and entity count. The batch system handles rate-limit backoff for AI-powered analyzers automatically, so large sites can process thousands of entities without hitting provider limits.</p>
   </dd>
 </dl>
 
