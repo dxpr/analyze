@@ -11,12 +11,12 @@ description: >
   ecosystem modules via Drush CLI.
 ---
 
-# Analyze — Content Analysis CLI
+# Analyze: Content Analysis CLI
 
 Centralized content analysis framework for Drupal. Run any
 combination of analyzers across all content via Drush CLI.
 
-## Preamble — Auto-discover Current State
+## Preamble: Auto-discover Current State
 
 Run these commands first to understand the site's configuration:
 
