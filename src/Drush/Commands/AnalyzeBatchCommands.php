@@ -65,7 +65,7 @@ final class AnalyzeBatchCommands extends AnalyzeCommandsBase {
     if ($options['list']) {
       $this->logger()->notice(dt('Available batch-capable analyzers:'));
       foreach ($available as $id => $label) {
-        $this->logger()->notice(dt('  @id — @label', [
+        $this->logger()->notice(dt('  @id: @label', [
           '@id' => $id,
           '@label' => $label,
         ]));

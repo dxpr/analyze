@@ -70,9 +70,9 @@ related test needs to be updated. Assume the branch name:
 1. The author of the analyze pull request should communicate the required
    changes to the QA Engineers.
    - The author should mention "QA test changes" in the PR.
-2. The author should share the branch name —
-   `dxpruser/2.x/#123-fix-section-element-bug` — where the fixes were made for
-   the QA Engineer to work against.
+2. The author should share the branch name
+   (`dxpruser/2.x/#123-fix-section-element-bug`), so the QA Engineer
+   knows which branch to work against.
 3. The assigned QA Engineer should apply the required changes as follows:
    - Switch to the provided branch name on the local analyze clone.
    - Start working on the dxpr_maven changes and test them locally.
