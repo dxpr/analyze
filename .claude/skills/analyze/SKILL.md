@@ -1,14 +1,15 @@
 ---
 name: analyze
-version: 1.0.0
 description: >
-  This skill should be used when the user asks to 'analyze
-  content', 'run batch analysis', 'check content scores',
-  'audit content quality', 'check broken links', 'analyze
-  brand voice', 'check sentiment', 'run marketing audit',
-  'check security risks', 'view analytics', or 'search
-  console data'. Manage content analysis across all Analyze
-  ecosystem modules via Drush CLI.
+  Run and read content analysis on a Drupal site with the Analyze
+  module's Drush commands: batch analysis with any installed analyzer
+  (sentiment, brand voice, content marketing and security audits),
+  broken link checks and reports, and PostHog or Search Console data
+  for one page or the whole site. Use it when a task asks to analyze,
+  score or audit site content, find broken links, or pull analytics or
+  search data for URLs.
+metadata:
+  version: "1.0.0"
 ---
 
 # Analyze: Content Analysis CLI
@@ -36,6 +37,7 @@ drush config:get analyze.settings status
 |---------|-------------|
 | `analyze:batch` | Run batch analysis (all or selected analyzers) |
 | `analyze:batch --list` | List available batch-capable analyzers |
+| `analyze:batch --status` | Show analysis coverage and exit |
 | `analyze:setup-ai` | Install AI skill files to project root |
 | `analyze:setup-ai --check` | Check if skill files are up to date |
 
@@ -52,9 +54,13 @@ drush config:get analyze.settings status
 
 | Command | Description |
 |---------|-------------|
-| `analyze:broken-links:check <type> <id>` | Check single entity |
+| `analyze:broken-links:check <type>/<id>` | Check single entity |
 | `analyze:broken-links:report` | Sitewide broken link report |
 | `analyze:broken-links:recheck` | Recheck stale URLs |
+
+The entity is one argument, such as `node/42`. Filter the check with
+`--status=broken|redirect|healthy|all`, `--scope=internal|external|both`
+and `--format=table|json`.
 
 ### Module-Specific Commands (PostHog)
 
@@ -90,7 +96,10 @@ drush analyze:batch \
 drush analyze:batch --limit=50 --force
 
 # Check a single entity for broken links
-drush analyze:broken-links:check node 42
+drush analyze:broken-links:check node/42
+
+# Show only its broken external links
+drush analyze:broken-links:check node/42 --status=broken --scope=external
 
 # View sitewide broken link report
 drush analyze:broken-links:report
