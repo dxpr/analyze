@@ -34,6 +34,8 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
       foreach ($this->entityTypeManager->getDefinitions() as $entity_type) {
         if ($entity_type->hasLinkTemplate('canonical')) {
           $link = $entity_type->getLinkTemplate('canonical');
+          // Upcast the entity so its own view access can be checked.
+          $parameters = [$entity_type->id() => ['type' => 'entity:' . $entity_type->id()]];
 
           foreach ($plugins as $plugin_id => $plugin) {
             $route = new Route($link . '/analyze/' . $plugin_id);
@@ -46,7 +48,9 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
                 '_title' => $plugin['label'] . ' Full Report',
               ])
               ->setOption('_admin_route', TRUE)
-              ->setRequirement('_analyze_access', 'TRUE');
+              ->setOption('parameters', $parameters)
+              ->setRequirement('_analyze_access', 'TRUE')
+              ->setRequirement('_entity_access', $entity_type->id() . '.view');
 
             $collection->add('analyze.' . $entity_type->id() . '.' . $plugin_id, $route);
           }
@@ -59,7 +63,9 @@ final class AnalyzeRouteSubscriber extends RouteSubscriberBase {
               '_title_callback' => 'Drupal\analyze\Controller\AnalyzeController::analyzeTitle',
             ])
             ->setOption('_admin_route', TRUE)
-            ->setRequirement('_analyze_access', 'TRUE');
+            ->setOption('parameters', $parameters)
+            ->setRequirement('_analyze_access', 'TRUE')
+            ->setRequirement('_entity_access', $entity_type->id() . '.view');
 
           $collection->add('entity.' . $entity_type->id() . '.analyze', $route);
         }

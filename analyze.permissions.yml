@@ -4,5 +4,5 @@ administer analyze:
   restrict access: true
 view analyze reports:
   title: 'View Analyze reports'
-  description: 'Access to administer Analyze settings'
+  description: 'View the Analyze reports of content the user is allowed to view'
   restrict access: true
