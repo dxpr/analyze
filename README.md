@@ -45,7 +45,7 @@ accessibility standards across our analytics user interfaces.
 - Adds an "Analyze" tab to Drupal entities with canonical URLs.
 - Provides an API for other modules to display analysis data.
 - Includes a linear gauge component for displaying a value on a spectrum.
-- Includes a circular gauge (SVG) component for displaying a score as a ring chart.
+- Includes a circular gauge (SVG) that shows a score as a ring chart.
 
 ### Docker Commands
 
