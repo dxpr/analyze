@@ -103,8 +103,7 @@ final class AnalyzeBatchService {
 
       $storage = $this->entityTypeManager->getStorage($entity_type_id);
       $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
-      $query = $storage->getQuery();
-      $query->accessCheck(FALSE);
+      $query = $storage->getQuery()->accessCheck(FALSE);
 
       $bundle_key = $entity_type->getKey('bundle');
       if ($bundle_key) {
