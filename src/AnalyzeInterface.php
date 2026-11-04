@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Drupal\analyze;
 
+use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
 
 /**
  * Interface for analyze plugins.
  */
-interface AnalyzeInterface {
+interface AnalyzeInterface extends PluginInspectionInterface {
 
   /**
    * Returns the translated plugin label.
