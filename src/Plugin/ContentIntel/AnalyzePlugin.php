@@ -281,7 +281,7 @@ class AnalyzePlugin extends ContentIntelPluginBase {
    *   A normalized key.
    */
   protected function normalizeKey(string $label): string {
-    return strtolower(str_replace([' ', '-'], '_', trim($label)));
+    return strtolower(str_replace([' ', '-'], '_', trim($label, " \n\r\t\v\x00")));
   }
 
 }
