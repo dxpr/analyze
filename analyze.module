@@ -163,3 +163,15 @@ function analyze_add_settings_form_submit(array &$form, FormStateInterface $form
 function analyze_preprocess_analyze_table(array &$variables): void {
   \Drupal::service(AnalyzeHooks::class)->preprocessAnalyzeTable($variables);
 }
+
+/**
+ * Implements hook_runtime_requirements().
+ */
+function analyze_runtime_requirements(): array {
+  // Drupal 11.2 still invokes the legacy requirements hook.
+  if (version_compare(\Drupal::VERSION, '11.3.0', '<')) {
+    return [];
+  }
+  \Drupal::moduleHandler()->loadInclude('analyze', 'install');
+  return analyze_requirements('runtime');
+}

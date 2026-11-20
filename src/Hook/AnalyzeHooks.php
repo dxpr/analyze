@@ -2,6 +2,9 @@
 
 namespace Drupal\analyze\Hook;
 
+use Drupal\analyze\AnalyzePluginManager;
+use Drupal\analyze\Helper;
+
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
@@ -12,6 +15,14 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
  */
 class AnalyzeHooks {
   use StringTranslationTrait;
+
+  /**
+   * Constructs the hook service.
+   */
+  public function __construct(
+    protected AnalyzePluginManager $pluginManagerAnalyze,
+    protected Helper $analyzeHelper,
+  ) {}
 
   /**
    * Implements hook_theme().
@@ -64,10 +75,10 @@ class AnalyzeHooks {
   #[Hook('local_tasks_alter')]
   public function localTasksAlter(array &$local_tasks): void {
     /** @var \Drupal\analyze\AnalyzePluginManager $service */
-    $service = \Drupal::service('plugin.manager.analyze');
+    $service = $this->pluginManagerAnalyze;
     // Add local actions for all entities if we have plugins enabled.
     if ($plugins = $service->getDefinitions()) {
-      foreach (\Drupal::service('analyze.helper')->getEntityDefinitions() as $entity_type) {
+      foreach ($this->analyzeHelper->getEntityDefinitions() as $entity_type) {
         $id = $entity_type->id();
         $analyze_route = 'entity.' . $id . '.analyze';
         // The analyze route.

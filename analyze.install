@@ -5,6 +5,7 @@
  * Install, update, and uninstall functions for the Analyze module.
  */
 
+use Drupal\Core\Hook\Attribute\LegacyRequirementsHook;
 use Drupal\Core\Extension\Requirement\RequirementSeverity;
 
 /**
@@ -14,6 +15,7 @@ use Drupal\Core\Extension\Requirement\RequirementSeverity;
  *
  * @phpstan-return array<string, array<string, mixed>>
  */
+#[LegacyRequirementsHook]
 function analyze_requirements(string $phase): array {
   $requirements = [];
 

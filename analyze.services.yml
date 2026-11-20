@@ -22,3 +22,6 @@ services:
   Drupal\analyze\Hook\AnalyzeHooks:
     class: Drupal\analyze\Hook\AnalyzeHooks
     autowire: true
+    arguments:
+      - '@plugin.manager.analyze'
+      - '@analyze.helper'
