@@ -5,7 +5,8 @@
  * Provides analysis functionality for the site.
  */
 
-use Drupal\Core\Entity\EntityFormInterface;
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\analyze\Hook\AnalyzeHooks;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -15,39 +16,9 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @phpstan-return array<string, array<string, mixed>>
  */
+#[LegacyHook]
 function analyze_theme(): array {
-  return [
-    'analyze_gauge' => [
-      'variables' => [
-        'caption' => NULL,
-        'range_min_label' => NULL,
-        'range_mid_label' => NULL,
-        'range_max_label' => NULL,
-        'range_min' => NULL,
-        'value' => NULL,
-        'display_value' => NULL,
-        'range_max' => NULL,
-      ],
-    ],
-    'analyze_circular_gauge' => [
-      'variables' => [
-        'caption' => NULL,
-        'range_min_label' => NULL,
-        'range_mid_label' => NULL,
-        'range_max_label' => NULL,
-        'range_min' => NULL,
-        'value' => NULL,
-        'display_value' => NULL,
-        'range_max' => NULL,
-      ],
-    ],
-    'analyze_table' => [
-      'variables' => [
-        'table_title' => NULL,
-        'rows' => [],
-      ],
-    ],
-  ];
+  return \Drupal::service(AnalyzeHooks::class)->theme();
 }
 
 /**
@@ -55,64 +26,9 @@ function analyze_theme(): array {
  *
  * @phpstan-param array<string, array<string, mixed>> $local_tasks
  */
+#[LegacyHook]
 function analyze_local_tasks_alter(array &$local_tasks): void {
-
-  /** @var \Drupal\analyze\AnalyzePluginManager $service */
-  $service = \Drupal::service('plugin.manager.analyze');
-
-  // Add local actions for all entities if we have plugins enabled.
-  if ($plugins = $service->getDefinitions()) {
-    foreach (\Drupal::service('analyze.helper')->getEntityDefinitions() as $entity_type) {
-      $id = $entity_type->id();
-      $analyze_route = 'entity.' . $id . '.analyze';
-
-      // The analyze route.
-      $local_tasks[$analyze_route] = [
-        'id' => $analyze_route,
-        'title' => t('Analyze'),
-        'route_name' => $analyze_route,
-        'route_parameters' => [],
-        'base_route' => 'entity.' . $id . '.canonical',
-        'class' => 'Drupal\Core\Menu\LocalTaskDefault',
-        'provider' => 'analyze',
-        'options' => [],
-        'weight' => 0,
-      ];
-
-      // The default secondary tab.
-      $default = $analyze_route . '.default';
-      $local_tasks[$default] = [
-        'id' => $default,
-        'title' => t('Summary'),
-        'route_name' => $analyze_route,
-        'route_parameters' => [],
-        'base_route' => 'entity.' . $id . '.canonical',
-        'class' => 'Drupal\Core\Menu\LocalTaskDefault',
-        'provider' => 'analyze',
-        'parent_id' => $analyze_route,
-        'options' => [],
-        'weight' => 0,
-      ];
-
-      // Add secondary tabs for all entities if we have plugins enabled.
-      if ($service->getDefinitions()) {
-        foreach ($plugins as $plugin) {
-          $route = 'analyze.' . $id . '.' . $plugin['id'];
-          $local_tasks[$route] = [
-            'id' => $route,
-            'title' => $plugin['label'],
-            'route_name' => $route,
-            'route_parameters' => [],
-            'class' => 'Drupal\Core\Menu\LocalTaskDefault',
-            'parent_id' => $analyze_route,
-            'provider' => 'analyze',
-            'options' => [],
-            'base_route' => 'entity.' . $id . '.canonical',
-          ];
-        }
-      }
-    }
-  }
+  \Drupal::service(AnalyzeHooks::class)->localTasksAlter($local_tasks);
 }
 
 /**
@@ -124,37 +40,9 @@ function analyze_local_tasks_alter(array &$local_tasks): void {
  *
  * @param-out array<string, mixed> $form
  */
+#[LegacyHook]
 function analyze_form_alter(array &$form, FormStateInterface $form_state, string $form_id): void {
-  if ($form_id !== 'analyze_analyze_settings') {
-    $is_bundle_form = $entity_type = $bundle = FALSE;
-    $form_object = $form_state->getFormObject();
-
-    // User's aren't bundle-able, but we want the opportunity to include them in
-    // insights so we'll hard-code the form id.
-    if ($form_id == 'user_admin_settings') {
-      $is_bundle_form = TRUE;
-      $entity_type = 'user';
-      $bundle = 'user';
-    }
-    else {
-      // Otherwise, we need to identify if this is a bundle entity's edit form
-      // by digging down to get the bundle_of setting.
-      if ($form_object instanceof EntityFormInterface) {
-        $entity = $form_object->getEntity();
-        $type = $entity->getEntityType();
-        if ($entity_type = $type->getBundleOf()) {
-          $is_bundle_form = TRUE;
-          $bundle = $entity->id();
-        }
-      }
-    }
-
-    if ($is_bundle_form) {
-      analyze_add_settings_form($form, $entity_type, $bundle);
-      $form_state->set('analyze.entity_type', $entity_type);
-      $form_state->set('analyze.bundle', $bundle);
-    }
-  }
+  \Drupal::service(AnalyzeHooks::class)->formAlter($form, $form_state, $form_id);
 }
 
 /**
@@ -271,11 +159,19 @@ function analyze_add_settings_form_submit(array &$form, FormStateInterface $form
  *
  * @phpstan-param array<string, mixed> $variables
  */
+#[LegacyHook]
 function analyze_preprocess_analyze_table(array &$variables): void {
-  if (!empty($variables['rows'])) {
-    foreach ($variables['rows'] as $key => $row) {
-      // Make sure to case row as string.
-      $variables['rows'][$key]['data'] = (string) $row['data'];
-    }
+  \Drupal::service(AnalyzeHooks::class)->preprocessAnalyzeTable($variables);
+}
+
+/**
+ * Implements hook_runtime_requirements().
+ */
+function analyze_runtime_requirements(): array {
+  // Drupal 11.2 still invokes the legacy requirements hook.
+  if (version_compare(\Drupal::VERSION, '11.3.0', '<')) {
+    return [];
   }
+  \Drupal::moduleHandler()->loadInclude('analyze', 'install');
+  return analyze_requirements('runtime');
 }

@@ -18,3 +18,10 @@ services:
   analyze.batch_service:
     class: Drupal\analyze\Service\AnalyzeBatchService
     arguments: ['@entity_type.manager', '@plugin.manager.analyze', '@config.factory', '@entity_type.bundle.info']
+
+  Drupal\analyze\Hook\AnalyzeHooks:
+    class: Drupal\analyze\Hook\AnalyzeHooks
+    autowire: true
+    arguments:
+      - '@plugin.manager.analyze'
+      - '@analyze.helper'
