@@ -111,7 +111,7 @@ final class AnalyzeSettingsForm extends ConfigFormBase {
           foreach ($plugins as $plugin_id => $plugin) {
             if ($plugin->isApplicable($id, $key)) {
               $is_enabled = isset($values[$id][$key][$plugin_id]);
-              $definition = $plugin->getPluginDefinition();
+              $definition = method_exists($plugin, 'getPluginDefinition') ? $plugin->getPluginDefinition() : [];
               $description = $definition['description'] ?? '';
 
               $form[$id][$key]['plugin_grid'][$plugin_id] = [

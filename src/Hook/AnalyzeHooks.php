@@ -142,8 +142,7 @@ class AnalyzeHooks {
     if ($form_id !== 'analyze_analyze_settings') {
       $is_bundle_form = $entity_type = $bundle = FALSE;
       $form_object = $form_state->getFormObject();
-      // User's aren't bundle-able, but we want the opportunity to include them in
-      // insights so we'll hard-code the form id.
+      // Users have no bundles. Include the user settings form explicitly.
       if ($form_id == 'user_admin_settings') {
         $is_bundle_form = TRUE;
         $entity_type = 'user';
