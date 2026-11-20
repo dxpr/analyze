@@ -5,6 +5,8 @@
  * Install, update, and uninstall functions for the Analyze module.
  */
 
+use Drupal\Core\Extension\Requirement\RequirementSeverity;
+
 /**
  * Implements hook_requirements().
  *
@@ -50,7 +52,7 @@ function analyze_requirements(string $phase): array {
         $requirements['analyze_skill_files'] = [
           'title' => t('Analyze AI Skill Files'),
           'description' => t('The installed AI skill files are outdated. Run <code>drush analyze:setup-ai</code> to update.'),
-          'severity' => REQUIREMENT_WARNING,
+          'severity' => (enum_exists(RequirementSeverity::class) ? RequirementSeverity::Warning : REQUIREMENT_WARNING),
         ];
         break;
       }

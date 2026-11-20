@@ -2,7 +2,7 @@ name: 'Analyze Plugin Example'
 type: module
 description: 'Example code for providing your own Analyze plugin.'
 package: Example
-core_version_requirement: ^10.3 || ^11
+core_version_requirement: ^10.3 || ^11 || ^12
 hidden: false
 dependencies:
   - analyze:analyze
